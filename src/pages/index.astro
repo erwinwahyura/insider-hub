@@ -2,7 +2,14 @@
 import Layout from '../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
 
-const allNews = await getCollection('news');
+let allNews = [];
+let loadError = '';
+try {
+  allNews = await getCollection('news');
+} catch (e) {
+  loadError = e.message;
+  console.error('COLLECTION ERROR:', e);
+}
 const sortedNews = allNews.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 
 const macroNews = sortedNews.filter(n => n.data.category === 'macro');
@@ -86,7 +93,7 @@ function getImpactColor(impact: string) {
 				<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem;">
 					<h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
 						<span style="color: var(--accent-blue);">🌐</span>
-						Macro Landscape ({macroNews.length})
+						Macro Landscape ({macroNews.length}) {loadError && `- Error: ${loadError}`}
 					</h2>
 					<div style="display: flex; flex-direction: column; gap: 0.75rem;">
 						{macroNews.map(news => (
