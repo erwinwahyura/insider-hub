@@ -8,6 +8,8 @@ const sortedNews = allNews.sort((a, b) => new Date(b.data.date).getTime() - new 
 const macroNews = sortedNews.filter(n => n.data.category === 'macro');
 const microNews = sortedNews.filter(n => n.data.category === 'micro');
 
+console.log(`DEBUG: Loaded ${allNews.length} articles, ${macroNews.length} macro, ${microNews.length} micro`);
+
 function formatTimeAgo(dateStr: string) {
   const date = new Date(dateStr);
   const now = new Date();
@@ -84,7 +86,7 @@ function getImpactColor(impact: string) {
 				<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem;">
 					<h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
 						<span style="color: var(--accent-blue);">🌐</span>
-						Macro Landscape
+						Macro Landscape ({macroNews.length})
 					</h2>
 					<div style="display: flex; flex-direction: column; gap: 0.75rem;">
 						{macroNews.map(news => (
@@ -113,7 +115,7 @@ function getImpactColor(impact: string) {
 				<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem;">
 					<h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
 						<span style="color: var(--accent-gold);">📊</span>
-						Micro & Corporate
+						Micro & Corporate ({microNews.length})
 					</h2>
 					<div style="display: flex; flex-direction: column; gap: 0.75rem;">
 						{microNews.map(news => (
