@@ -33,9 +33,18 @@ const cls = getImpactClass(entry.data.impact ?? 'neutral');
   <div class="page">
 
     <header class="topbar">
-      <a href="/" class="back">← Insider Hub</a>
-      <div class="topbar-right">
-        <span class="breadcrumb">{entry.data.category === 'macro' ? 'Macro Landscape' : 'Micro & Corporate'}</span>
+      <div class="topbar-inner">
+        <a href="/" class="back">← Insider Hub</a>
+        <button class="mobile-menu-btn" aria-label="Menu" id="menuBtn">
+          <span></span><span></span><span></span>
+        </button>
+        <nav class="topbar-nav" id="mainNav">
+          <a href="/" class="nav-link">News</a>
+          <a href="/daily-summary" class="nav-link">Summary</a>
+          <a href="/top-picks" class="nav-link">Top Picks</a>
+          <a href="/portfolio" class="nav-link">Portfolio</a>
+          <span class="breadcrumb">{entry.data.category === 'macro' ? 'Macro' : 'Micro'}</span>
+        </nav>
       </div>
     </header>
 
@@ -242,4 +251,107 @@ const cls = getImpactClass(entry.data.impact ?? 'neutral');
     color: var(--text-3);
   }
   .footer-sep { color: var(--border); }
+
+  /* Topbar nav structure */
+  .topbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  .topbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .nav-link {
+    font-size: 12px; color: var(--text-3); text-decoration: none;
+    border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px;
+    transition: all 0.15s;
+  }
+  .nav-link:hover { color: var(--text); border-color: var(--up); background: var(--up-bg); }
+
+  /* Mobile Menu Button */
+  .mobile-menu-btn {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 32px;
+    height: 32px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 4px;
+    gap: 3px;
+    margin-left: auto;
+  }
+  .mobile-menu-btn span {
+    display: block;
+    width: 14px;
+    height: 2px;
+    background: var(--text-2);
+    border-radius: 1px;
+    transition: all 0.2s;
+  }
+  .mobile-menu-btn.open span:nth-child(1) { transform: rotate(45deg) translate(3px, 3px); }
+  .mobile-menu-btn.open span:nth-child(2) { opacity: 0; }
+  .mobile-menu-btn.open span:nth-child(3) { transform: rotate(-45deg) translate(4px, -4px); }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .topbar { height: auto; padding: 0; }
+    .topbar-inner { 
+      flex-wrap: wrap; 
+      padding: 0.5rem 0.75rem;
+      position: relative;
+    }
+    .mobile-menu-btn { display: flex; }
+    .topbar-nav { 
+      display: none; 
+      width: 100%; 
+      flex-direction: column;
+      gap: 0.25rem;
+      padding-top: 0.5rem;
+      margin-top: 0.5rem;
+      border-top: 1px solid var(--border);
+      align-items: flex-start;
+    }
+    .topbar-nav.open { display: flex; }
+    .nav-link { 
+      font-size: 13px; 
+      padding: 0.5rem 0.25rem;
+      border: none;
+      border-radius: 0;
+      border-bottom: 1px solid var(--border-soft);
+      width: 100%;
+    }
+    .nav-link:last-of-type { border-bottom: none; }
+    .breadcrumb { 
+      font-size: 11px; 
+      padding: 0.5rem 0.25rem;
+      margin-top: 0.25rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .main { padding: 1rem; }
+    .article-title { font-size: 18px; }
+    .meta-row { gap: 0.5rem; padding: 0.5rem; }
+    .meta-label { font-size: 10px; }
+    .meta-val, .meta-link { font-size: 12px; }
+  }
 </style>
+
+<script>
+  // Mobile menu toggle
+  const menuBtn = document.getElementById('menuBtn');
+  const mainNav = document.getElementById('mainNav');
+  menuBtn?.addEventListener('click', () => {
+    menuBtn.classList.toggle('open');
+    mainNav?.classList.toggle('open');
+  });
+</script>
