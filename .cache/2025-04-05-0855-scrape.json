@@ -1,0 +1,27 @@
+{
+  "scrapeTimestamp": "2025-04-05T08:55:00Z",
+  "query": "coal price Indonesia export China India demand 2025",
+  "results": [
+    {
+      "title": "Asia's power mix to be shaken up by Indonesia's coal export stoppage",
+      "source": "Reuters",
+      "url": "https://www.reuters.com/markets/commodities/asias-power-mix-be-shaken-up-by-indonesias-coal-export-stoppage-2026-02-04/",
+      "snippet": "Indonesia supplied half of all global thermal coal exports in 2025...",
+      "tickers": ["ITMG", "ADRO", "PTBA"],
+      "score": 8,
+      "savedAsArticle": "2025-04-05-live-scrape-coal-dominance.md"
+    },
+    {
+      "title": "Supply - Coal 2025 - IEA Analysis",
+      "source": "IEA",
+      "url": "https://www.iea.org/reports/coal-2025/supply",
+      "snippet": "Global coal production hit record 9.1 billion tonnes in 2024...",
+      "tickers": [],
+      "score": 6,
+      "savedAsArticle": null
+    }
+  ],
+  "portfolioMatches": ["ITMG", "ADRO", "PTBA"],
+  "articleCreated": true,
+  "articlePath": "src/content/news/2025-04-05-live-scrape-coal-dominance.md"
+}

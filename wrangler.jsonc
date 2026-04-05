@@ -12,8 +12,7 @@
   "r2_buckets": [
     {
       "binding": "R2_BUCKET",
-      "bucket_name": "data-md",
-      "public_access": "read-only"
+      "bucket_name": "data-md"
     }
   ],
   "kv_namespaces": [

@@ -1,9 +1,9 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig } from 'astro:config';
 
 // https://astro.build/config
 export default defineConfig({
-  output: 'hybrid',
+  output: 'static',
   site: 'https://insider-hub.pages.dev',
-  // R2 bucket ready: data-md
+  // R2 bucket ready: data-md (archival only, not SSR)
 });
