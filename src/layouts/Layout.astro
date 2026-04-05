@@ -15,31 +15,48 @@ const { title } = Astro.props;
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
 		<style is:global>
 			:root {
-				--background: #0a0a0f;
-				--surface: #14141a;
-				--border: #23232a;
-				--accent-green: #00d084;
-				--accent-red: #ff4757;
-				--accent-gold: #ffa502;
-				--accent-blue: #3742fa;
-				--text: #e4e4e7;
-				--text-muted: #a1a1aa;
+				--bg:          #f5f0e8;
+				--bg-raised:   #faf7f2;
+				--bg-subtle:   #ede8df;
+				--border:      #d8d0c4;
+				--border-soft: #e4ddd4;
+
+				--text:        #111110;
+				--text-2:      #5c5955;
+				--text-3:      #a09c98;
+
+				--up:          #1a6e3c;
+				--up-bg:       #edf7f1;
+				--down:        #b52828;
+				--down-bg:     #fdf0f0;
+				--amber:       #7a5c1e;
+				--amber-bg:    #fdf6e8;
+
+				--sans: 'IBM Plex Sans', system-ui, sans-serif;
+				--mono: 'IBM Plex Mono', 'Courier New', monospace;
 			}
-			* {
-				margin: 0;
-				padding: 0;
-				box-sizing: border-box;
+
+			*, *::before, *::after {
+				margin: 0; padding: 0; box-sizing: border-box;
 			}
+
 			html {
-				background: var(--background);
+				background: var(--bg);
 				color: var(--text);
-				font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+				font-family: var(--sans);
+				font-size: 14px;
+				line-height: 1.5;
+				-webkit-font-smoothing: antialiased;
 			}
-			body {
-				min-height: 100vh;
-			}
+
+			body { min-height: 100vh; }
+
+			a { color: inherit; text-decoration: none; }
 		</style>
 	</head>
 	<body>
