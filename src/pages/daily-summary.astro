@@ -1,0 +1,545 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const allNews = await getCollection('news');
+
+// Sort by date descending
+const sortedNews = allNews.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+
+// Get today's news (last 24h)
+const now = new Date();
+const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+const todayNews = sortedNews.filter(n => new Date(n.data.date) > oneDayAgo);
+
+// Get last 7 days news
+const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+const weekNews = sortedNews.filter(n => new Date(n.data.date) > sevenDaysAgo);
+
+// Summarize by ticker
+const tickerSummary: Record<string, {
+  mentions: number;
+  bullish: number;
+  bearish: number;
+  neutral: number;
+  latest: typeof allNews[0] | null;
+}> = {};
+
+weekNews.forEach(news => {
+  const tickers = news.data.tickers || [];
+  const impact = news.data.impact || 'neutral';
+  tickers.forEach(ticker => {
+    if (!tickerSummary[ticker]) {
+      tickerSummary[ticker] = { mentions: 0, bullish: 0, bearish: 0, neutral: 0, latest: null };
+    }
+    tickerSummary[ticker].mentions++;
+    if (impact === 'positive') tickerSummary[ticker].bullish++;
+    else if (impact === 'negative') tickerSummary[ticker].bearish++;
+    else tickerSummary[ticker].neutral++;
+    if (!tickerSummary[ticker].latest || new Date(news.data.date) > new Date(tickerSummary[ticker].latest!.data.date)) {
+      tickerSummary[ticker].latest = news;
+    }
+  });
+});
+
+// Sort tickers by mention count
+const hotTickers = Object.entries(tickerSummary)
+  .sort((a, b) => b[1].mentions - a[1].mentions)
+  .slice(0, 8);
+
+// Summary insights
+const insights = [
+  {
+    category: 'macro',
+    title: 'Foreign Flows Negative',
+    detail: 'YTD net sell Rp 18.7T. Capital outflow pressure continues.',
+    sentiment: 'negative',
+    impact: 'Risk-off sentiment, focus on domestic-centric names'
+  },
+  {
+    category: 'commodity',
+    title: 'Coal Prices Stabilizing',
+    detail: 'Newcastle coal holding at $128-130. China post-LNY demand supporting.',
+    sentiment: 'neutral',
+    impact: 'ADRO, ITMG, PTBA — hold for dividend'
+  },
+  {
+    category: 'commodity',
+    title: 'Nickel Weakness',
+    detail: 'LME nickel $16,200, down 0.5%. EV demand soft.',
+    sentiment: 'negative',
+    impact: 'ANTM, INCO, ESSA — margin pressure'
+  },
+  {
+    category: 'monetary',
+    title: 'BI Rate on Hold',
+    detail: 'BI 6.25% unchanged. Next meeting 23-24 April.',
+    sentiment: 'neutral',
+    impact: 'NIM support for banks BBRI, BBCA'
+  },
+  {
+    category: 'portfolio',
+    title: 'Redeployment Opportunity',
+    detail: 'ESSA underperforming. ISSP offers better value at PER 5.95.',
+    sentiment: 'positive',
+    impact: 'Priority: Exit ESSA 50-70%, deploy to ISSP'
+  }
+];
+
+// Key actions
+const keyActions = [
+  { ticker: 'ESSA', action: 'EXIT 50-70%', reason: 'Underwater, better redeployment', urgency: 'high' },
+  { ticker: 'ISSP', action: 'ENTRY', reason: 'Best value in construction', urgency: 'high' },
+  { ticker: 'PTPS', action: 'ANALYZE', reason: '15% portfolio needs keystat', urgency: 'high' },
+  { ticker: 'ELSA', action: 'WAIT', reason: 'BPK governance risk', urgency: 'medium' },
+  { ticker: 'ADRO', action: 'HOLD', reason: 'Dividend play, not exceptional', urgency: 'low' }
+];
+
+function impactClass(impact: string) {
+  if (impact === 'positive') return 'up';
+  if (impact === 'negative') return 'down';
+  return 'neutral';
+}
+
+function urgencyClass(urgency: string) {
+  if (urgency === 'high') return 'down';
+  if (urgency === 'medium') return 'amber';
+  return 'neutral';
+}
+
+function formatDate(dateStr: string) {
+  const date = new Date(dateStr);
+  const diffMins = Math.floor((now.getTime() - date.getTime()) / 60000);
+  if (diffMins < 60) return `${diffMins}m ago`;
+  const hrs = Math.floor(diffMins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+}
+---
+
+<Layout title="Daily Summary — Insider Hub">
+<div class="page">
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="topbar-left">
+        <a href="/" class="logo">Insider Hub</a>
+        <span class="logo-sub">Daily Summary</span>
+        <span class="private-badge">Private</span>
+      </div>
+      <button class="mobile-menu-btn" aria-label="Menu" id="menuBtn">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="topbar-nav" id="mainNav">
+        <a href="/" class="nav-link">News</a>
+        <a href="/top-picks" class="nav-link">Top Picks</a>
+        <a href="/portfolio" class="nav-link">Portfolio</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="body">
+
+    <!-- Header -->
+    <section class="header">
+      <h1 class="page-title">Daily Summary</h1>
+      <p class="page-sub">
+        Last 24h: {todayNews.length} articles · 
+        {todayNews.filter(n => n.data.impact === 'positive').length} bullish ·
+        {todayNews.filter(n => n.data.impact === 'negative').length} bearish
+      </p>
+    </section>
+
+    <!-- Key Actions -->
+    <section class="section">
+      <h2 class="section-title">🔥 Priority Actions</h2>
+      <div class="actions-grid">
+        {keyActions.map(action => (
+          <div class={`action-card ${action.urgency}`}>
+            <div class="action-header">
+              <span class="action-ticker">{action.ticker}</span>
+              <span class={`action-badge ${action.urgency}`}>{action.action}</span>
+            </div>
+            <p class="action-reason">{action.reason}</p>
+            <div class="action-meta">
+              <span class={`urgency-tag ${action.urgency}`}>{action.urgency} urgency</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Market Insights -->
+    <section class="section">
+      <h2 class="section-title">📊 Market Insights</h2>
+      <div class="insights-list">
+        {insights.map(insight => (
+          <div class={`insight-card ${insight.sentiment}`}>
+            <div class="insight-header">
+              <span class="insight-category">{insight.category}</span>
+              <span class={`insight-sentiment ${insight.sentiment}`}>
+                {insight.sentiment === 'positive' ? '▲' : insight.sentiment === 'negative' ? '▼' : '→'}
+                {insight.sentiment}
+              </span>
+            </div>
+            <h3 class="insight-title">{insight.title}</h3>
+            <p class="insight-detail">{insight.detail}</p>
+            <div class="insight-impact">
+              <span class="impact-label">Impact:</span>
+              <span class="impact-text">{insight.impact}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Hot Tickers -->
+    <section class="section">
+      <h2 class="section-title">📈 Most Mentioned (7 days)</h2>
+      <div class="tickers-grid">
+        {hotTickers.map(([ticker, stats]) => {
+          const sentiment = stats.bullish > stats.bearish ? 'up' : stats.bearish > stats.bullish ? 'down' : 'neutral';
+          return (
+            <a href="/" class={`ticker-card ${sentiment}`}>
+              <div class="ticker-main">
+                <span class="ticker-name">{ticker}</span>
+                <span class="ticker-mentions">{stats.mentions} mentions</span>
+              </div>
+              <div class="ticker-sentiment">
+                <span class="sent-up">▲ {stats.bullish}</span>
+                <span class="sent-neutral">→ {stats.neutral}</span>
+                <span class="sent-down">▼ {stats.bearish}</span>
+              </div>
+              {stats.latest && (
+                <div class="ticker-latest">
+                  <span class="latest-date">{formatDate(stats.latest.data.date)}</span>
+                  <span class="latest-title">{stats.latest.data.title.slice(0, 40)}...</span>
+                </div>
+              )}
+            </a>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- Recent News Quick View -->
+    <section class="section">
+      <h2 class="section-title">🕐 Today's News ({todayNews.length})</h2>
+      {todayNews.length === 0 ? (
+        <div class="empty-state">
+          <p>No new articles in last 24h.</p>
+          <a href="/" class="view-all">View all news →</a>
+        </div>
+      ) : (
+        <div class="news-quick">
+          {todayNews.slice(0, 5).map(news => (
+            <a href={`/news/${news.id}`} class="news-item">
+              <span class={`news-bar ${impactClass(news.data.impact || 'neutral')}`}></span>
+              <div class="news-content">
+                <span class="news-meta">{formatDate(news.data.date)} · {news.data.source}</span>
+                <h4 class="news-title-sm">{news.data.title}</h4>
+                <div class="news-chips">
+                  {(news.data.tickers || []).slice(0, 3).map(t => <span class="chip">{t}</span>)}
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      )}
+      <a href="/" class="view-all">View all {sortedNews.length} articles →</a>
+    </section>
+
+  </div>
+
+  <footer class="footer">
+    Insider Hub · Daily Summary auto-generated · {now.toLocaleDateString('en-GB')}
+  </footer>
+
+</div>
+</Layout>
+
+<style>
+  .page { min-height: 100vh; display: flex; flex-direction: column; }
+
+  /* Topbar */
+  .topbar {
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 1.5rem; height: 48px;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; background: var(--bg); z-index: 10;
+  }
+  .topbar-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; max-width: 860px;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 0.75rem; }
+  .topbar-right { display: flex; align-items: center; gap: 0.5rem; }
+  .logo { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+  .logo-sub { font-size: 12px; color: var(--text-3); }
+  .private-badge {
+    font-size: 10px; font-weight: 500; color: var(--text-3);
+    border: 1px solid var(--border); padding: 1px 6px; border-radius: 3px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .nav-link {
+    font-size: 12px; color: var(--text-3); text-decoration: none;
+    border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px;
+    transition: all 0.15s;
+  }
+  .nav-link:hover { color: var(--text); border-color: var(--up); background: var(--up-bg); }
+
+  .topbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Mobile Menu Button */
+  .mobile-menu-btn {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 32px;
+    height: 32px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 4px;
+    gap: 3px;
+    margin-left: auto;
+  }
+  .mobile-menu-btn span {
+    display: block;
+    width: 14px;
+    height: 2px;
+    background: var(--text-2);
+    border-radius: 1px;
+    transition: all 0.2s;
+  }
+  .mobile-menu-btn.open span:nth-child(1) { transform: rotate(45deg) translate(3px, 3px); }
+  .mobile-menu-btn.open span:nth-child(2) { opacity: 0; }
+  .mobile-menu-btn.open span:nth-child(3) { transform: rotate(-45deg) translate(4px, -4px); }
+
+  /* Body */
+  .body { flex: 1; padding: 1.25rem 1.5rem; max-width: 860px; margin: 0 auto; width: 100%; }
+
+  /* Header */
+  .header { margin-bottom: 1.25rem; }
+  .page-title { font-size: 24px; font-weight: 600; margin: 0 0 0.25rem; }
+  .page-sub { font-size: 13px; color: var(--text-3); margin: 0; }
+
+  /* Section */
+  .section { margin-bottom: 1.5rem; }
+  .section-title { font-size: 14px; font-weight: 600; margin: 0 0 0.75rem; color: var(--text); }
+
+  /* Actions Grid */
+  .actions-grid {
+    display: grid; grid-template-columns: repeat(1, 1fr); gap: 0.625rem;
+  }
+  @media (min-width: 640px) { .actions-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 860px) { .actions-grid { grid-template-columns: repeat(3, 1fr); } }
+
+  .action-card {
+    background: var(--bg-raised); border: 1px solid var(--border); border-radius: 6px;
+    padding: 0.75rem; display: flex; flex-direction: column; gap: 0.4rem;
+  }
+  .action-card.high { border-left: 3px solid var(--down); }
+  .action-card.medium { border-left: 3px solid var(--amber); }
+  .action-card.low { border-left: 3px solid var(--up); }
+
+  .action-header {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .action-ticker { font-size: 14px; font-weight: 600; font-family: var(--mono); color: var(--text); }
+  .action-badge {
+    font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 3px; color: #fff;
+  }
+  .action-badge.high { background: var(--down); }
+  .action-badge.medium { background: var(--amber); }
+  .action-badge.low { background: var(--text-3); }
+
+  .action-reason { font-size: 12px; color: var(--text-2); margin: 0; line-height: 1.4; }
+  .action-meta { margin-top: auto; padding-top: 0.25rem; }
+  .urgency-tag {
+    font-size: 10px; text-transform: uppercase; color: var(--text-3);
+  }
+  .urgency-tag.high { color: var(--down); }
+
+  /* Insights */
+  .insights-list { display: flex; flex-direction: column; gap: 0.625rem; }
+
+  .insight-card {
+    background: var(--bg-raised); border: 1px solid var(--border); border-radius: 6px;
+    padding: 0.875rem; border-left: 3px solid var(--border);
+  }
+  .insight-card.positive { border-left-color: var(--up); }
+  .insight-card.negative { border-left-color: var(--down); }
+  .insight-card.neutral { border-left-color: var(--amber); }
+
+  .insight-header {
+    display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.375rem;
+  }
+  .insight-category {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--text-3); background: var(--bg-subtle); padding: 1px 6px; border-radius: 2px;
+  }
+  .insight-sentiment { font-size: 10px; font-weight: 600; }
+  .insight-sentiment.positive { color: var(--up); }
+  .insight-sentiment.negative { color: var(--down); }
+  .insight-sentiment.neutral { color: var(--amber); }
+
+  .insight-title { font-size: 14px; font-weight: 600; margin: 0 0 0.25rem; color: var(--text); }
+  .insight-detail { font-size: 12px; color: var(--text-2); margin: 0 0 0.5rem; line-height: 1.45; }
+  .insight-impact { font-size: 11px; }
+  .impact-label { color: var(--text-3); }
+  .impact-text { color: var(--text-2); }
+
+  /* Tickers */
+  .tickers-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.625rem;
+  }
+  @media (min-width: 640px) { .tickers-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 860px) { .tickers-grid { grid-template-columns: repeat(4, 1fr); } }
+
+  .ticker-card {
+    background: var(--bg-raised); border: 1px solid var(--border); border-radius: 6px;
+    padding: 0.625rem; text-decoration: none; transition: all 0.12s;
+    display: flex; flex-direction: column; gap: 0.375rem;
+  }
+  .ticker-card:hover { background: var(--bg-subtle); transform: translateY(-1px); }
+  .ticker-card.up { border-top: 2px solid var(--up); }
+  .ticker-card.down { border-top: 2px solid var(--down); }
+  .ticker-card.neutral { border-top: 2px solid var(--border); }
+
+  .ticker-main { display: flex; align-items: baseline; gap: 0.5rem; }
+  .ticker-name { font-size: 14px; font-weight: 600; font-family: var(--mono); color: var(--text); }
+  .ticker-mentions { font-size: 11px; color: var(--text-3); }
+
+  .ticker-sentiment {
+    display: flex; gap: 0.5rem; font-size: 11px; font-family: var(--mono);
+  }
+  .sent-up { color: var(--up); }
+  .sent-neutral { color: var(--text-3); }
+  .sent-down { color: var(--down); }
+
+  .ticker-latest { margin-top: 0.25rem; padding-top: 0.375rem; border-top: 1px solid var(--border-soft); }
+  .latest-date { font-size: 10px; color: var(--amber); margin-right: 0.25rem; }
+  .latest-title { font-size: 10px; color: var(--text-3); }
+
+  /* News Quick */
+  .news-quick { display: flex; flex-direction: column; gap: 0.5rem; }
+  .news-item {
+    display: flex; gap: 0.625rem; background: var(--bg-raised);
+    border: 1px solid var(--border); border-radius: 6px; padding: 0.625rem;
+    text-decoration: none; transition: all 0.12s;
+  }
+  .news-item:hover { background: var(--bg-subtle); }
+  .news-bar { width: 3px; flex-shrink: 0; border-radius: 1px; }
+  .news-bar.up { background: var(--up); }
+  .news-bar.down { background: var(--down); }
+  .news-bar.neutral { background: var(--border); }
+
+  .news-content { flex: 1; min-width: 0; }
+  .news-meta { font-size: 11px; color: var(--text-3); margin-bottom: 0.2rem; }
+  .news-title-sm { font-size: 13px; font-weight: 500; color: var(--text); margin: 0 0 0.3rem; line-height: 1.4; }
+  .news-chips { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+  .chip {
+    font-size: 10px; font-family: var(--mono); background: var(--up-bg); color: var(--up);
+    border: 1px solid rgba(26,110,60,0.18); padding: 1px 4px; border-radius: 2px;
+  }
+
+  /* Empty state */
+  .empty-state { background: var(--bg-raised); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; text-align: center; }
+  .empty-state p { font-size: 13px; color: var(--text-3); margin: 0 0 0.5rem; }
+
+  .view-all {
+    display: block; font-size: 13px; color: var(--text-2); text-decoration: none;
+    margin-top: 0.75rem; padding: 0.5rem; text-align: center; border: 1px solid var(--border);
+    border-radius: 4px; background: var(--bg-raised);
+  }
+  .view-all:hover { background: var(--bg-subtle); color: var(--up); }
+
+  /* Footer */
+  .footer {
+    padding: 1rem 1.5rem; border-top: 1px solid var(--border);
+    text-align: center; font-size: 12px; color: var(--text-3);
+    background: var(--bg-subtle);
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .tickers-grid { grid-template-columns: repeat(2, 1fr); }
+    .actions-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 640px) {
+    .topbar { height: auto; }
+    .topbar-inner { 
+      flex-wrap: wrap; 
+      padding: 0.5rem 0.75rem;
+      position: relative;
+    }
+    .mobile-menu-btn { display: flex; }
+    .topbar-nav { 
+      display: none; 
+      width: 100%; 
+      flex-direction: column;
+      gap: 0.25rem;
+      padding-top: 0.5rem;
+      margin-top: 0.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .topbar-nav.open { display: flex; }
+    .nav-link { 
+      font-size: 13px; 
+      padding: 0.5rem 0.25rem;
+      border: none;
+      border-radius: 0;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .nav-link:last-of-type { border-bottom: none; }
+    
+    .logo-sub { display: none; }
+    
+    .body { padding: 0.75rem; }
+    .page-title { font-size: 20px; }
+    
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    
+    .actions-grid { grid-template-columns: 1fr; }
+    .action-card { padding: 0.625rem; }
+    
+    .tickers-grid { grid-template-columns: repeat(2, 1fr); }
+    .ticker-card { padding: 0.5rem; }
+    .ticker-latest { display: none; }
+    
+    .insight-card { padding: 0.625rem; }
+    .insight-title { font-size: 13px; }
+    .insight-detail { font-size: 11px; }
+    .insight-impact { font-size: 10px; }
+    
+    .news-item { padding: 0.5rem; }
+    .news-title-sm { font-size: 12px; }
+    .news-chips { display: none; }
+    
+    .private-badge { display: none; }
+  }
+
+  @media (max-width: 480px) {
+    .tickers-grid { grid-template-columns: 1fr; }
+    .ticker-sentiment { font-size: 10px; }
+  }
+</style>
+
+<script>
+  // Mobile menu toggle
+  const menuBtn = document.getElementById('menuBtn');
+  const mainNav = document.getElementById('mainNav');
+  menuBtn?.addEventListener('click', () => {
+    menuBtn.classList.toggle('open');
+    mainNav?.classList.toggle('open');
+  });
+</script>
+</Layout>

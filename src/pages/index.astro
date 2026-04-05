@@ -33,16 +33,22 @@ function impactClass(impact: string) {
   <header class="topbar">
     <div class="topbar-inner">
       <div class="topbar-left">
-        <span class="logo">Insider Hub</span>
+        <a href="/" class="logo">Insider Hub</a>
         <span class="logo-sub">Indonesia Market Intelligence</span>
         <span class="private-badge">Private</span>
       </div>
-      <div class="topbar-right">
+      <button class="mobile-menu-btn" aria-label="Menu" id="menuBtn">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="topbar-nav" id="mainNav">
+        <a href="/daily-summary" class="nav-link">Summary</a>
         <a href="/top-picks" class="nav-link">Top Picks</a>
         <a href="/portfolio" class="nav-link">Portfolio</a>
-        <span class="mono dim">{sortedNews.length} articles</span>
-        <span class="dim">Updated {formatDate(sortedNews[0]?.data.date || new Date().toISOString())}</span>
-      </div>
+        <span class="nav-stats">
+          <span class="mono dim">{sortedNews.length} articles</span>
+          <span class="dim">Updated {formatDate(sortedNews[0]?.data.date || new Date().toISOString())}</span>
+        </span>
+      </nav>
     </div>
   </header>
 
@@ -405,6 +411,49 @@ function impactClass(impact: string) {
   }
   .nav-link:hover { color: var(--text-1); border-color: var(--accent-green); background: rgba(0, 208, 132, 0.1); }
 
+  .topbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  /* Mobile Menu Button */
+  .mobile-menu-btn {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 32px;
+    height: 32px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 4px;
+    gap: 3px;
+    margin-left: auto;
+  }
+  .mobile-menu-btn span {
+    display: block;
+    width: 14px;
+    height: 2px;
+    background: var(--text-2);
+    border-radius: 1px;
+    transition: all 0.2s;
+  }
+  .mobile-menu-btn.open span:nth-child(1) { transform: rotate(45deg) translate(3px, 3px); }
+  .mobile-menu-btn.open span:nth-child(2) { opacity: 0; }
+  .mobile-menu-btn.open span:nth-child(3) { transform: rotate(-45deg) translate(4px, -4px); }
+
+  .nav-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: 0.75rem;
+    padding-left: 0.75rem;
+    border-left: 1px solid var(--border);
+  }
+
   /* Body */
   .body { flex: 1; padding: 1.25rem 1.5rem; max-width: 860px; margin: 0 auto; width: 100%; }
 
@@ -709,6 +758,85 @@ function impactClass(impact: string) {
     text-align: center; font-size: 12px; color: var(--text-3);
     background: var(--bg-subtle);
   }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .topbar { height: auto; }
+    .topbar-inner { 
+      flex-wrap: wrap; 
+      padding: 0.5rem 0.75rem;
+      position: relative;
+    }
+    .mobile-menu-btn { display: flex; }
+    .topbar-nav { 
+      display: none; 
+      width: 100%; 
+      flex-direction: column;
+      gap: 0.25rem;
+      padding-top: 0.5rem;
+      margin-top: 0.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .topbar-nav.open { display: flex; }
+    .nav-link { 
+      font-size: 13px; 
+      padding: 0.5rem 0.25rem;
+      border: none;
+      border-radius: 0;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .nav-link:last-of-type { border-bottom: none; }
+    .nav-stats { display: none; }
+    .logo { font-size: 16px; }
+    .logo-sub { display: none; }
+    .private-badge { font-size: 9px; padding: 1px 4px; }
+  }
+
+  @media (max-width: 640px) {
+    .body { padding: 0.75rem; }
+    
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .stat { padding: 0.625rem; }
+    .stat-n { font-size: 18px; }
+    
+    .commodities { grid-template-columns: repeat(2, 1fr); }
+    .commodity { padding: 0.5rem; }
+    .comm-name { font-size: 12px; }
+    .comm-price { font-size: 11px; }
+    
+    .two-col { grid-template-columns: 1fr; }
+    
+    .flow-body { grid-template-columns: 1fr; }
+    .fc-bars { height: 60px; }
+    
+    .sector-row {
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      padding: 0.5rem;
+    }
+    .sector-tickers, .sector-bars, .sector-nums, .sector-period-labels { display: none; }
+    
+    .filters { padding: 0.5rem; }
+    .btn-group { gap: 0.25rem; }
+    .cat-btn, .filter-btn { font-size: 11px; padding: 2px 6px; }
+    
+    .card { padding: 0.5rem; }
+    .card-title { font-size: 14px; }
+    .preview { font-size: 12px; -webkit-line-clamp: 1; }
+    .chips { display: none; }
+    
+    .pagination { gap: 0.5rem; padding: 1rem 0; }
+    .pg-btn { font-size: 12px; padding: 4px 10px; }
+  }
+
+  @media (max-width: 480px) {
+    .commodities { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: 1fr; }
+    .stat { flex-direction: row; justify-content: space-between; align-items: center; }
+    .stat-l { font-size: 11px; }
+    
+    .private-badge { display: none; }
+  }
 </style>
 
 <script>
@@ -795,6 +923,14 @@ function impactClass(impact: string) {
   prevBtn?.addEventListener('click', () => { if (page > 1) { page--; render(); scrollTo(0, 0); } });
   nextBtn?.addEventListener('click', () => {
     if (page < Math.ceil(items.length / PER_PAGE)) { page++; render(); scrollTo(0, 0); }
+  });
+
+  // Mobile menu toggle
+  const menuBtn = document.getElementById('menuBtn') as HTMLButtonElement;
+  const mainNav = document.getElementById('mainNav') as HTMLElement;
+  menuBtn?.addEventListener('click', () => {
+    menuBtn.classList.toggle('open');
+    mainNav?.classList.toggle('open');
   });
 </script>
 </Layout>
