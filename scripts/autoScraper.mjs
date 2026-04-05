@@ -105,6 +105,70 @@ function fingerprint(title) {
   return createHash('md5').update(title.toLowerCase().replace(/\s+/g, ' ').trim()).digest('hex').slice(0, 12);
 }
 
+function scoreRelevance(text, hintTickers) {
+  const t = text.toLowerCase();
+  let score = 0;
+  const reasons = [];
+
+  // +3 portfolio ticker match
+  const tickerHits = PORTFOLIO.filter(tk =>
+    t.includes(tk.toLowerCase()) ||
+    t.includes((TICKER_META[tk]?.name || '').toLowerCase())
+  );
+  if (tickerHits.length > 0) {
+    score += 3;
+    reasons.push(`tickers(${tickerHits.join(',')})`);
+  }
+
+  // +2 hint tickers (query-specific)
+  if (hintTickers.length > 0 && hintTickers.some(tk => t.includes(tk.toLowerCase()))) {
+    score += 2;
+    reasons.push('hint-ticker');
+  }
+
+  // +2 sector keywords
+  const sectorWords = ['coal', 'batu bara', 'nickel', 'nikel', 'palm oil', 'cpo', 'geothermal',
+                       'banking', 'perbankan', 'telecom', 'mining', 'tambang', 'energy', 'energi'];
+  if (sectorWords.some(w => t.includes(w))) {
+    score += 2;
+    reasons.push('sector');
+  }
+
+  // +2 IDX / Indonesia market mentions
+  const idxWords = ['ihsg', 'idx', 'bursa efek', 'indonesia stock', 'saham indonesia', 'bei'];
+  if (idxWords.some(w => t.includes(w))) {
+    score += 2;
+    reasons.push('idx');
+  }
+
+  // +2 price action / financial event
+  const actionWords = ['naik', 'turun', 'rally', 'surge', 'drop', 'crash', 'earnings', 'laba',
+                       'revenue', 'profit', 'loss', 'rugi', 'dividen', 'dividend', 'buyback',
+                       'ipo', 'rights issue', 'target price', 'upgrade', 'downgrade'];
+  if (actionWords.some(w => t.includes(w))) {
+    score += 2;
+    reasons.push('action');
+  }
+
+  // +1 earnings / corporate events
+  const corpWords = ['quarterly', 'triwulan', 'annual', 'tahunan', 'rups', 'rupst', 'agm',
+                     'analyst', 'rekomendasi', 'recommendation'];
+  if (corpWords.some(w => t.includes(w))) {
+    score += 1;
+    reasons.push('corp-event');
+  }
+
+  // -2 generic market noise (no specific company or sector)
+  const noiseWords = ['global market', 'wall street', 'dow jones', 'crypto', 'bitcoin',
+                      'forex tips', 'trading signal', 'free webinar'];
+  if (noiseWords.some(w => t.includes(w)) && tickerHits.length === 0) {
+    score -= 2;
+    reasons.push('noise(-2)');
+  }
+
+  return { score, reasons };
+}
+
 function detectImpact(text) {
   const t = text.toLowerCase();
   const positive = ['naik', 'rally', 'surge', 'jump', 'rise', 'gain', 'profit', 'laba', 'bullish',
@@ -234,6 +298,14 @@ async function scrapeNews() {
       if (ageMs > 7 * 24 * 60 * 60 * 1000) continue;
 
       const fullText = `${item.title} ${item.description}`;
+
+      // Score relevance — skip low-signal articles
+      const { score, reasons } = scoreRelevance(fullText, query.tickers);
+      if (score < 4) {
+        console.log(`  ↷ Skip (score ${score}): ${item.title.slice(0, 60)}`);
+        continue;
+      }
+
       const tickers  = detectTickers(fullText, query.tickers);
       const impact   = detectImpact(fullText);
       const region   = detectRegion(fullText);
@@ -260,7 +332,7 @@ async function scrapeNews() {
 
       await writeFile(filepath, markdown, 'utf8');
       created.push(filename);
-      console.log(`  ✓ Created: ${filename}`);
+      console.log(`  ✓ [${score}] Created: ${filename}`);
     }
 
     // Small delay between requests to be polite
