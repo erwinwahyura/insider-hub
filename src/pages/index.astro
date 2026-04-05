@@ -70,6 +70,238 @@ function impactClass(impact: string) {
       </div>
     </section>
 
+    <!-- Commodities -->
+    <section class="commodities">
+      <div class="commodity comm-up">
+        <span class="comm-name">Coal <span class="comm-sub">Newcastle</span></span>
+        <span class="comm-tickers">ADRO · ITMG · PTBA</span>
+        <div class="comm-right">
+          <span class="mono comm-price">$128.50</span>
+          <span class="mono up comm-delta">▲ +2.4%</span>
+        </div>
+      </div>
+      <div class="commodity comm-down">
+        <span class="comm-name">Nickel <span class="comm-sub">LME</span></span>
+        <span class="comm-tickers">ANTM · INCO · NCKL</span>
+        <div class="comm-right">
+          <span class="mono comm-price">$16,200</span>
+          <span class="mono down comm-delta">▼ −0.5%</span>
+        </div>
+      </div>
+      <div class="commodity comm-up">
+        <span class="comm-name">Palm Oil <span class="comm-sub">CPO</span></span>
+        <span class="comm-tickers">AALI · LSIP · TAPG</span>
+        <div class="comm-right">
+          <span class="mono comm-price">RM 3,850</span>
+          <span class="mono up comm-delta">▲ +0.8%</span>
+        </div>
+      </div>
+      <div class="commodity comm-down">
+        <span class="comm-name">IDR/USD</span>
+        <span class="comm-tickers">Bank Indonesia</span>
+        <div class="comm-right">
+          <span class="mono comm-price">15,842</span>
+          <span class="mono down comm-delta">▼ −0.3%</span>
+        </div>
+      </div>
+      <div class="commodity comm-up">
+        <span class="comm-name">Gold <span class="comm-sub">spot</span></span>
+        <span class="comm-tickers">ANTM · global</span>
+        <div class="comm-right">
+          <span class="mono comm-price">$2,318</span>
+          <span class="mono up comm-delta">▲ +0.6%</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- BI Rate + Market Breadth -->
+    <div class="two-col">
+
+      <!-- BI Rate -->
+      <section class="panel">
+        <div class="panel-head">
+          <span class="panel-title">BI Rate</span>
+          <span class="panel-badge neutral-badge">Monetary Policy</span>
+        </div>
+        <div class="bi-body">
+          <div class="bi-rate">
+            <span class="mono bi-num">6.25%</span>
+            <span class="bi-unchanged">unchanged</span>
+          </div>
+          <div class="bi-meta">
+            <div class="bi-row">
+              <span class="bi-label">Last decision</span>
+              <span class="bi-val">19 Mar 2025 — Hold</span>
+            </div>
+            <div class="bi-row">
+              <span class="bi-label">Next meeting</span>
+              <span class="bi-val hi">23–24 Apr 2025</span>
+            </div>
+            <div class="bi-row">
+              <span class="bi-label">Consensus</span>
+              <span class="bi-val">Hold expected</span>
+            </div>
+            <div class="bi-row">
+              <span class="bi-label">Rate vs equity</span>
+              <span class="bi-val down">Negative pressure</span>
+            </div>
+          </div>
+        </div>
+        <div class="rate-history">
+          <div class="rh-label">Rate history (12m)</div>
+          <div class="rh-bars">
+            {[5.75, 6.00, 6.00, 6.25, 6.25, 6.25, 6.25, 6.25, 6.25, 6.25, 6.25, 6.25].map((r, i) => (
+              <div class="rh-bar-wrap" title={`${r}%`}>
+                <div class="rh-bar" style={`height: ${((r - 5.5) / 1) * 100}%`}></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- Market Breadth -->
+      <section class="panel">
+        <div class="panel-head">
+          <span class="panel-title">Market Breadth</span>
+          <span class="panel-badge down-badge">Weak</span>
+        </div>
+        <div class="breadth-body">
+          <div class="breadth-counts">
+            <div class="bc up">
+              <span class="mono bc-n">312</span>
+              <span class="bc-l">Advancing</span>
+            </div>
+            <div class="bc down">
+              <span class="mono bc-n">489</span>
+              <span class="bc-l">Declining</span>
+            </div>
+            <div class="bc neutral-bc">
+              <span class="mono bc-n">121</span>
+              <span class="bc-l">Unchanged</span>
+            </div>
+          </div>
+          <div class="breadth-bar-wrap">
+            <div class="breadth-bar">
+              <div class="bb-up" style="width: 34%"></div>
+              <div class="bb-neutral" style="width: 13%"></div>
+              <div class="bb-down" style="width: 53%"></div>
+            </div>
+            <div class="bb-labels">
+              <span class="up">34%</span>
+              <span class="down">53%</span>
+            </div>
+          </div>
+          <div class="breadth-signal">
+            <span class="signal-label">A/D Ratio</span>
+            <span class="mono down signal-val">0.64 — more sellers than buyers</span>
+          </div>
+          <div class="breadth-signal">
+            <span class="signal-label">52w High</span>
+            <span class="mono signal-val">18 stocks</span>
+          </div>
+          <div class="breadth-signal">
+            <span class="signal-label">52w Low</span>
+            <span class="mono down signal-val">47 stocks</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Foreign Flows -->
+    <section class="panel flow-panel">
+      <div class="panel-head">
+        <span class="panel-title">Foreign Investor Net Flow</span>
+        <span class="panel-badge down-badge">Net Sell</span>
+        <span class="panel-note">IDX · Week of 31 Mar 2025</span>
+      </div>
+      <div class="flow-body">
+        <div class="flow-summary">
+          <div class="flow-main">
+            <span class="mono flow-num down">−Rp 2.34T</span>
+            <span class="flow-label">net sell this week</span>
+          </div>
+          <div class="flow-stats">
+            <div class="fs-row">
+              <span class="fs-label">Gross buy</span>
+              <span class="mono fs-val up">Rp 8.12T</span>
+            </div>
+            <div class="fs-row">
+              <span class="fs-label">Gross sell</span>
+              <span class="mono fs-val down">Rp 10.46T</span>
+            </div>
+            <div class="fs-row">
+              <span class="fs-label">YTD net</span>
+              <span class="mono fs-val down">−Rp 18.7T</span>
+            </div>
+            <div class="fs-row">
+              <span class="fs-label">Signal</span>
+              <span class="fs-val down">Capital outflow — caution</span>
+            </div>
+          </div>
+        </div>
+        <div class="flow-chart">
+          <div class="fc-label">4-week net flow (IDR Trillion)</div>
+          <div class="fc-bars">
+            {[
+              { val: 1.2,  dir: 'up' },
+              { val: -0.8, dir: 'down' },
+              { val: -1.5, dir: 'down' },
+              { val: -2.34,dir: 'down' },
+            ].map(w => (
+              <div class="fc-col">
+                <div class="fc-bar-wrap">
+                  <div class={`fc-bar ${w.dir}`} style={`height: ${Math.abs(w.val) / 2.5 * 100}%`}></div>
+                </div>
+                <span class={`mono fc-val ${w.dir}`}>{w.val > 0 ? '+' : ''}{w.val}T</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sector Performance -->
+    <section class="panel">
+      <div class="panel-head">
+        <span class="panel-title">Sector Performance</span>
+        <span class="panel-note">IDX Sector Indices · YTD 2025</span>
+      </div>
+      <div class="sector-list">
+        {[
+          { name: 'Energy',       code: 'IDXENERGY',   ytd: +8.4,  mtd: +3.1,  stocks: ['ADRO','ITMG','PTBA'] },
+          { name: 'Basic Mat.',   code: 'IDXBASIC',    ytd: +5.2,  mtd: +1.8,  stocks: ['ANTM','INCO','TINS'] },
+          { name: 'Consumer',     code: 'IDXCYCLIC',   ytd: +2.1,  mtd: +0.4,  stocks: ['MAPI','ACES','ERAA'] },
+          { name: 'Financials',   code: 'IDXFINANCE',  ytd: -1.3,  mtd: -0.9,  stocks: ['BBRI','BMRI','BBCA'] },
+          { name: 'Industrials',  code: 'IDXINDUST',   ytd: -2.8,  mtd: -1.2,  stocks: ['ASII','SMGR','INTP'] },
+          { name: 'Healthcare',   code: 'IDXHEALTH',   ytd: -3.5,  mtd: -2.1,  stocks: ['SIDO','KLBF','MIKA'] },
+          { name: 'Technology',   code: 'IDXTECHNO',   ytd: -5.1,  mtd: -3.4,  stocks: ['GOTO','BUKA','EMTK'] },
+          { name: 'Properties',   code: 'IDXPROPERT',  ytd: -6.7,  mtd: -2.8,  stocks: ['BSDE','CTRA','PWON'] },
+        ].sort((a, b) => b.ytd - a.ytd).map(s => (
+          <div class="sector-row">
+            <div class="sector-left">
+              <span class="sector-name">{s.name}</span>
+              <span class="sector-code">{s.code}</span>
+            </div>
+            <div class="sector-tickers">
+              {s.stocks.map(t => <span class="sticker">{t}</span>)}
+            </div>
+            <div class="sector-bars">
+              <div class="sector-bar-wrap">
+                <div class={`sector-bar ${s.ytd >= 0 ? 'up' : 'down'}`} style={`width: ${Math.min(Math.abs(s.ytd) / 10 * 100, 100)}%`}></div>
+              </div>
+            </div>
+            <div class="sector-nums">
+              <span class={`mono sector-ytd ${s.ytd >= 0 ? 'up' : 'down'}`}>{s.ytd > 0 ? '+' : ''}{s.ytd}%</span>
+              <span class={`mono sector-mtd ${s.mtd >= 0 ? 'up' : 'down'}`}>{s.mtd > 0 ? '+' : ''}{s.mtd}%</span>
+            </div>
+            <div class="sector-period-labels">
+              <span>YTD</span><span>MTD</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
     <!-- Filters -->
     <section class="filters">
       <div class="filter-row">
@@ -139,7 +371,7 @@ function impactClass(impact: string) {
 </div>
 </Layout>
 
-<style>
+<style is:global>
   .page { min-height: 100vh; display: flex; flex-direction: column; }
 
   /* Topbar */
@@ -186,6 +418,180 @@ function impactClass(impact: string) {
   .stat.amber .stat-n { color: var(--amber); }
   .stat.blue  .stat-n { color: #2563eb; }
   .stat.default .stat-n { color: var(--text-2); }
+
+  /* Commodities */
+  .commodities {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  .commodity {
+    background: var(--bg-raised);
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    transition: background 0.12s;
+    border-top: 2px solid transparent;
+  }
+  .commodity:hover { background: var(--bg-subtle); }
+  .comm-up      { border-top-color: var(--up);   background: var(--up-bg); }
+  .comm-down    { border-top-color: var(--down);  background: var(--down-bg); }
+  .comm-neutral { border-top-color: var(--border); }
+  .comm-up:hover   { background: #e2f2e9; }
+  .comm-down:hover { background: #fce8e8; }
+  .comm-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .comm-sub {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-3);
+    margin-left: 3px;
+  }
+  .comm-tickers {
+    font-size: 11px;
+    color: var(--text-3);
+  }
+  .comm-right {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+  }
+  .comm-price { font-size: 13px; color: var(--text); }
+  .comm-delta { font-size: 12px; }
+
+  /* Shared panel */
+  .panel {
+    border: 1px solid var(--border);
+    background: var(--bg-raised);
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+  .panel-head {
+    display: flex; align-items: center; gap: 0.625rem;
+    padding: 0.625rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-subtle);
+  }
+  .panel-title { font-size: 12px; font-weight: 600; color: var(--text); text-transform: uppercase; letter-spacing: 0.06em; }
+  .panel-note  { font-size: 11px; color: var(--text-3); margin-left: auto; }
+  .panel-badge {
+    font-size: 10px; font-weight: 600; padding: 1px 6px;
+    border-radius: 2px; text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .neutral-badge { color: var(--text-2); background: var(--bg-subtle); border: 1px solid var(--border); }
+  .up-badge      { color: var(--up);   background: var(--up-bg); }
+  .down-badge    { color: var(--down); background: var(--down-bg); }
+
+  /* Two-col */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .two-col .panel { margin-bottom: 0; }
+
+  /* BI Rate */
+  .bi-body { display: flex; gap: 1.5rem; padding: 1rem; }
+  .bi-rate { display: flex; align-items: baseline; gap: 0.625rem; margin-bottom: 0.75rem; }
+  .bi-num  { font-size: 32px; font-weight: 500; color: var(--text); line-height: 1; }
+  .bi-unchanged { font-size: 11px; color: var(--text-3); border: 1px solid var(--border); padding: 1px 6px; border-radius: 2px; }
+  .bi-meta { display: flex; flex-direction: column; gap: 0.3rem; width: 100%; }
+  .bi-body { flex-direction: column; }
+  .bi-row  { display: flex; justify-content: space-between; font-size: 12px; }
+  .bi-label { color: var(--text-3); }
+  .bi-val  { color: var(--text); font-weight: 500; }
+  .bi-val.hi { color: var(--amber); font-weight: 600; }
+
+  .rate-history { padding: 0.75rem 1rem; border-top: 1px solid var(--border); }
+  .rh-label { font-size: 11px; color: var(--text-3); margin-bottom: 0.375rem; }
+  .rh-bars  { display: flex; align-items: flex-end; gap: 3px; height: 32px; }
+  .rh-bar-wrap { flex: 1; height: 100%; display: flex; align-items: flex-end; }
+  .rh-bar { width: 100%; background: var(--amber); opacity: 0.7; border-radius: 1px 1px 0 0; min-height: 3px; }
+
+  /* Market Breadth */
+  .breadth-body { padding: 1rem; }
+  .breadth-counts { display: flex; gap: 1rem; margin-bottom: 0.875rem; }
+  .bc { display: flex; flex-direction: column; gap: 0.15rem; }
+  .bc-n { font-size: 20px; font-weight: 500; line-height: 1; }
+  .bc-l { font-size: 11px; color: var(--text-3); }
+  .bc.up   .bc-n { color: var(--up); }
+  .bc.down .bc-n { color: var(--down); }
+  .bc.neutral-bc .bc-n { color: var(--text-2); }
+
+  .breadth-bar-wrap { margin-bottom: 0.75rem; }
+  .breadth-bar { display: flex; height: 6px; border-radius: 3px; overflow: hidden; gap: 1px; }
+  .bb-up      { background: var(--up); }
+  .bb-neutral { background: var(--border); }
+  .bb-down    { background: var(--down); }
+  .bb-labels  { display: flex; justify-content: space-between; margin-top: 3px; font-size: 11px; }
+
+  .breadth-signal { display: flex; justify-content: space-between; font-size: 12px; padding: 0.25rem 0; border-top: 1px solid var(--border-soft); }
+  .signal-label { color: var(--text-3); }
+  .signal-val   { color: var(--text); font-size: 11px; }
+
+  /* Foreign Flows */
+  .flow-panel .panel-head { flex-wrap: wrap; }
+  .flow-body { display: grid; grid-template-columns: 1fr 200px; gap: 1rem; padding: 1rem; }
+  .flow-summary { display: flex; flex-direction: column; gap: 0.75rem; }
+  .flow-main { display: flex; flex-direction: column; gap: 0.2rem; }
+  .flow-num  { font-size: 28px; font-weight: 500; line-height: 1; }
+  .flow-label { font-size: 12px; color: var(--text-3); }
+  .flow-stats { display: flex; flex-direction: column; gap: 0.3rem; }
+  .fs-row  { display: flex; justify-content: space-between; font-size: 12px; }
+  .fs-label { color: var(--text-3); }
+  .fs-val  { font-weight: 500; }
+
+  .flow-chart { display: flex; flex-direction: column; gap: 0.5rem; }
+  .fc-label  { font-size: 11px; color: var(--text-3); }
+  .fc-bars   { display: flex; gap: 0.5rem; align-items: flex-end; height: 80px; }
+  .fc-col    { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.25rem; height: 100%; justify-content: flex-end; }
+  .fc-bar-wrap { flex: 1; width: 100%; display: flex; align-items: flex-end; }
+  .fc-bar    { width: 100%; border-radius: 2px 2px 0 0; min-height: 4px; }
+  .fc-bar.up   { background: var(--up); }
+  .fc-bar.down { background: var(--down); }
+  .fc-val    { font-size: 10px; }
+
+  /* Sector Performance */
+  .sector-list { display: flex; flex-direction: column; }
+  .sector-row {
+    display: grid;
+    grid-template-columns: 140px 1fr 120px 64px 40px;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 1rem;
+    border-bottom: 1px solid var(--border-soft);
+    transition: background 0.12s;
+  }
+  .sector-row:last-child { border-bottom: none; }
+  .sector-row:hover { background: var(--bg-subtle); }
+  .sector-left { display: flex; flex-direction: column; gap: 0.1rem; }
+  .sector-name { font-size: 13px; font-weight: 500; color: var(--text); }
+  .sector-code { font-size: 10px; color: var(--text-3); font-family: var(--mono); }
+  .sector-tickers { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+  .sticker {
+    font-size: 10px; font-family: var(--mono); color: var(--text-2);
+    background: var(--bg-subtle); border: 1px solid var(--border-soft);
+    padding: 0 4px; border-radius: 2px;
+  }
+  .sector-bars { display: flex; align-items: center; }
+  .sector-bar-wrap { width: 100%; height: 6px; background: var(--bg-subtle); border-radius: 3px; overflow: hidden; }
+  .sector-bar { height: 100%; border-radius: 3px; }
+  .sector-bar.up   { background: var(--up); }
+  .sector-bar.down { background: var(--down); }
+  .sector-nums { display: flex; flex-direction: column; gap: 0.1rem; align-items: flex-end; }
+  .sector-ytd { font-size: 13px; font-weight: 600; }
+  .sector-mtd { font-size: 11px; }
+  .sector-period-labels { display: flex; flex-direction: column; gap: 0.1rem; font-size: 10px; color: var(--text-3); }
+
+  /* Color utilities */
+  .up     { color: var(--up); }
+  .down   { color: var(--down); }
+  .amber  { color: var(--amber); }
 
   /* Filters */
   .filters {
