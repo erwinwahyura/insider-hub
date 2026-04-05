@@ -4,12 +4,12 @@ const newsCollection = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
-    date: z.string(), // Relaxed from .datetime()
-    category: z.enum(['macro', 'micro']),
-    impact: z.enum(['positive', 'negative', 'neutral']),
-    region: z.string(),
-    tickers: z.array(z.string()).default([]),
-    source: z.string(),
+    date: z.string(),
+    category: z.string(),
+    impact: z.string().optional(),
+    region: z.string().optional(),
+    tickers: z.array(z.string()).optional().default([]),
+    source: z.string().optional(),
     url: z.string().optional(),
   }),
 });
