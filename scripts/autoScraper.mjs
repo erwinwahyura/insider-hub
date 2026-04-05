@@ -227,6 +227,47 @@ ${body}
 `;
 }
 
+function buildPendingMarkdown({ title, date, category, impact, region, tickers, source, url, description, queryTickers }) {
+  const tickersJson = JSON.stringify(tickers);
+  const safeTitle = title.replace(/"/g, '\\"');
+  const safeSource = (source || 'Google News').replace(/"/g, '\\"');
+  const safeUrl = url || '';
+  const queryTickersJson = JSON.stringify(queryTickers);
+
+  // Raw RSS data for Elesis to process
+  return `---
+title: "${safeTitle}"
+date: "${date.toISOString()}"
+category: ${category}
+impact: ${impact}
+region: ${region}
+tickers: ${tickersJson}
+query_tickers: ${queryTickersJson}
+source: "${safeSource}"
+url: "${safeUrl}"
+status: "pending"
+scraped_at: "${new Date().toISOString()}"
+---
+
+## Raw RSS Summary
+
+${description || 'No description available.'}
+
+## Source URL
+
+${safeUrl}
+
+## Processing Notes
+
+- Priority: ${tickers.some(t => ['ITMG', 'ADRO', 'ESSA', 'PTPS', 'PGEO'].includes(t)) ? 'HIGH (portfolio)' : 'NORMAL'}
+- Action needed: Fetch full article and summarize
+
+---
+
+*Pending summarization by Elesis 💻 · [View Source](${safeUrl})*
+`;
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 async function scrapeNews() {
@@ -234,9 +275,11 @@ async function scrapeNews() {
   console.log(`[${new Date().toISOString()}] Starting scrape...`);
 
   const newsDir = 'src/content/news';
+  const pendingDir = 'src/content/news/.pending';
   const cacheDir = '.cache';
 
   await mkdir(cacheDir, { recursive: true });
+  await mkdir(pendingDir, { recursive: true });
 
   // Load existing article fingerprints to avoid duplicates
   const existing = await readdir(newsDir).catch(() => []);
@@ -313,9 +356,36 @@ async function scrapeNews() {
       const source   = item.source || 'Google News';
 
       const filename = `${slug(item.title, date)}.md`;
+      
+      // High-value articles (score >= 6 or portfolio tickers) → pending for Elesis to summarize
+      const isHighValue = score >= 6 || tickers.some(t => ['ITMG', 'ADRO', 'ESSA', 'PTPS', 'PGEO'].includes(t));
+      
+      if (isHighValue) {
+        // Save to pending for Elesis summarization
+        const pendingPath = `${pendingDir}/${filename}`;
+        if (existsSync(pendingPath)) continue;
+        
+        const pendingMarkdown = buildPendingMarkdown({
+          title: item.title,
+          date,
+          category,
+          impact,
+          region,
+          tickers,
+          source,
+          url: item.link,
+          description: item.description,
+          queryTickers: query.tickers
+        });
+        
+        await writeFile(pendingPath, pendingMarkdown);
+        created.push({ file: filename, title: item.title, score, pending: true });
+        console.log(`  ✓ Pending (score ${score}): ${item.title.slice(0, 60)}`);
+        continue;
+      }
+      
+      // Lower-value articles → publish directly with RSS summary only
       const filepath = `${newsDir}/${filename}`;
-
-      // Skip if file already exists
       if (existsSync(filepath)) continue;
 
       const markdown = buildMarkdown({
