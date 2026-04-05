@@ -20,45 +20,104 @@ export const prerender = false;
     .file-size { color: #888; font-size: 0.875rem; }
     .view-btn { background: #00d084; color: #000; padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; font-weight: 600; }
     .empty { color: #888; font-style: italic; }
+    .directories { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .dir-card { background: #1a1a1a; padding: 1rem; border-radius: 8px; border-left: 3px solid #00d084; }
+    .dir-card h3 { color: #00d084; margin-bottom: 0.5rem; }
+    .dir-card p { color: #888; font-size: 0.875rem; }
+    .type-selector { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .type-selector button { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
+    .type-selector button:hover { background: #00d084; color: #000; }
+    .dir-header { color: #00d084; font-weight: 600; margin-top: 1rem; padding: 0.5rem; background: #1a1a1a; border-radius: 4px; }
+    .more-files { color: #666; text-align: center; padding: 0.5rem; }
   </style>
 </head>
 <body>
-  <h1>📦 R2 Data Browser</h1>
+  <h1>📦 Insider-Hub Data Browser</h1>
   <div class="bucket-info">
     <strong>Bucket:</strong> data-md<br>
+    <strong>Path:</strong> insider-hub/data/<br>
     <strong>Binding:</strong> R2_BUCKET<br>
     <strong>Status:</strong> Connected ✅
   </div>
 
-  <h2>Files in Bucket</h2>
-  <ul class="file-list" id="fileList">
-    <li class="empty">Loading...</li>
-  </ul>
+  <h2>📁 Directories</h2>
+  <div class="directories" id="directories">
+    <div class="dir-card">
+      <h3>📊 scrapes/</h3>
+      <p>Raw API scrape JSON (90d retention)</p>
+    </div>
+    <div class="dir-card">
+      <h3>📝 articles/</h3>
+      <p>Processed markdown (forever)</p>
+    </div>
+    <div class="dir-card">
+      <h3>💹 prices/</h3>
+      <p>Historical price data (2y retention)</p>
+    </div>
+    <div class="dir-card">
+      <h3>🧠 summaries/</h3>
+      <p>Elesis analysis (30d retention)</p>
+    </div>
+    <div class="dir-card">
+      <h3>📋 logs/</h3>
+      <p>Scraping metadata (7d retention)</p>
+    </div>
+  </div>
+
+  <h2>📂 Files by Type</h2>
+  <div id="fileSection">
+    <div class="type-selector">
+      <button onclick="loadType('scrapes')">📊 Scrapes</button>
+      <button onclick="loadType('articles')">📝 Articles</button>
+      <button onclick="loadType('prices')">💹 Prices</button>
+      <button onclick="loadType('summaries')">🧠 Summaries</button>
+      <button onclick="loadType('logs')">📋 Logs</button>
+      <button onclick="loadType('')">📁 All</button>
+    </div>
+    <ul class="file-list" id="fileList">
+      <li class="empty">Select a directory above to browse files</li>
+    </ul>
+  </div>
 
   <script>
-    // List R2 bucket contents via API endpoint
-    fetch('/api/r2-list')
-      .then(r => r.json())
-      .then(data => {
-        const list = document.getElementById('fileList');
-        if (!data.objects || data.objects.length === 0) {
-          list.innerHTML = '<li class="empty">Bucket is empty. Upload files to see them here.</li>';
-          return;
-        }
-        list.innerHTML = data.objects.map(obj => `
-          <li class="file-item">
-            <span>
-              <span class="file-name">${obj.key}</span>
-              <span class="file-size">(${(obj.size / 1024).toFixed(1)} KB)</span>
-            </span>
-            <a class="view-btn" href="/api/r2-get?key=${encodeURIComponent(obj.key)}" target="_blank">View</a>
-          </li>
-        `).join('');
-      })
-      .catch(err => {
-        document.getElementById('fileList').innerHTML = 
-          `<li class="empty">Error loading: ${err.message}</li>`;
-      });
+    function loadType(type) {
+      const list = document.getElementById('fileList');
+      list.innerHTML = '<li class="empty">Loading...</li>';
+      
+      const url = type ? `/api/r2-list?type=${type}` : '/api/r2-list';
+      fetch(url)
+        .then(r => r.json())
+        .then(data => {
+          if (!data.directories || Object.keys(data.directories).length === 0) {
+            list.innerHTML = '<li class="empty">No files found. Upload data to see it here.</li>';
+            return;
+          }
+          
+          let html = '';
+          Object.entries(data.directories).forEach(([dir, files]) => {
+            if (type && dir !== type) return;
+            html += `<li class="dir-header">📁 ${dir}/ (${files.length} files)</li>`;
+            files.slice(0, 20).forEach(obj => {
+              html += `
+                <li class="file-item">
+                  <span>
+                    <span class="file-name">${obj.filename}</span>
+                    <span class="file-size">(${(obj.size / 1024).toFixed(1)} KB)</span>
+                  </span>
+                  <a class="view-btn" href="/api/r2-get?path=${encodeURIComponent(obj.fullPath)}" target="_blank">View</a>
+                </li>
+              `;
+            });
+            if (files.length > 20) {
+              html += `<li class="more-files">...and ${files.length - 20} more files</li>`;
+            }
+          });
+          list.innerHTML = html || '<li class="empty">No files in this directory.</li>';
+        })
+        .catch(err => {
+          list.innerHTML = `<li class="empty">Error loading: ${err.message}</li>`;
+        });
+    }
   </script>
 </body>
 </html>

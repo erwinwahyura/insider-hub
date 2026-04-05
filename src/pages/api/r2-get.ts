@@ -12,14 +12,16 @@ export async function GET({ request, locals }) {
   }
 
   const url = new URL(request.url);
-  const key = url.searchParams.get('key');
+  const path = url.searchParams.get('path');
   
-  if (!key) {
-    return new Response(JSON.stringify({ error: 'Missing key parameter' }), {
+  if (!path) {
+    return new Response(JSON.stringify({ error: 'Missing path parameter' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' }
     });
   }
+
+  const key = path.startsWith('insider-hub/data/') ? path : `insider-hub/data/${path}`;
 
   try {
     const object = await bucket.get(key);
@@ -31,10 +33,14 @@ export async function GET({ request, locals }) {
     }
 
     const body = await object.text();
+    const contentType = object.httpMetadata?.contentType || 'application/json';
+    
     return new Response(body, {
       headers: { 
-        'Content-Type': object.httpMetadata?.contentType || 'application/json',
-        'Cache-Control': 'public, max-age=300'
+        'Content-Type': contentType,
+        'Cache-Control': 'public, max-age=300',
+        'X-R2-Key': key,
+        'X-R2-Size': object.size.toString()
       }
     });
   } catch (err) {

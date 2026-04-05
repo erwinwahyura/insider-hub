@@ -1,0 +1,26 @@
+{
+  "version": "1.0",
+  "project": "insider-hub",
+  "bucket": "data-md",
+  "basePath": "insider-hub/data",
+  "directories": {
+    "scrapes": "Raw API scrape JSON (timestamped)",
+    "articles": "Processed markdown articles (final output)",
+    "prices": "Historical price data (commodities, stocks)",
+    "summaries": "Elesis analysis summaries (intermediate)",
+    "logs": "Scraping logs and metadata"
+  },
+  "naming": {
+    "scrapes": "YYYY-MM-DD-HHMM-{source}-{ticker}.json",
+    "articles": "YYYY-MM-DD-{slug}.md",
+    "prices": "YYYY-MM-DD-{commodity}.json",
+    "summaries": "YYYY-MM-DD-HHMM-{article-id}.json"
+  },
+  "retention": {
+    "scrapes": "90 days",
+    "articles": "forever",
+    "prices": "2 years",
+    "summaries": "30 days",
+    "logs": "7 days"
+  }
+}
