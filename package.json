@@ -10,7 +10,6 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "deploy": "wrangler pages deploy dist",
     "astro": "astro"
   },
   "dependencies": {
