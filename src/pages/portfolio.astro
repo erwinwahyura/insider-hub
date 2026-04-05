@@ -34,7 +34,7 @@ import Layout from '../layouts/Layout.astro';
         </div>
         <div class="stat-card">
           <div class="stat-label">Cash Available</div>
-          <div class="stat-value" style="color: var(--green)">Rp 62.0M</div>
+          <div class="stat-value" style="color: var(--up)">Rp 62.0M</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Total Assets</div>
@@ -42,7 +42,7 @@ import Layout from '../layouts/Layout.astro';
         </div>
         <div class="stat-card">
           <div class="stat-label">Cash %</div>
-          <div class="stat-value" style="color: var(--yellow)">48%</div>
+          <div class="stat-value" style="color: var(--amber)">48%</div>
         </div>
       </div>
     </section>
@@ -250,7 +250,7 @@ import Layout from '../layouts/Layout.astro';
         </div>
       </div>
 
-      <div class="panel note-panel" style="margin-top: 1rem;">
+      <div class="note-panel">
         <p><strong>Hard Rule:</strong> "Would I buy this fresh today at this price?"<br>
         If <strong>NO</strong> → Consider exiting. Governance red flags override all attractive valuations.</p>
       </div>
@@ -258,82 +258,166 @@ import Layout from '../layouts/Layout.astro';
 
   </div>
 </div>
-</Layout>
 
 <style>
+  /* Layout */
+  .page { min-height: 100vh; display: flex; flex-direction: column; }
+  
+  /* Topbar */
+  .topbar {
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 1.5rem; height: 48px;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; background: var(--bg); z-index: 10;
+  }
+  .topbar-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; max-width: 860px;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 0.75rem; }
+  .topbar-right { display: flex; align-items: center; gap: 1rem; }
+  .logo { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+  .logo-sub { font-size: 12px; color: var(--text-3); }
+  .private-badge {
+    font-size: 10px; font-weight: 500; color: var(--text-3);
+    border: 1px solid var(--border); padding: 1px 6px; border-radius: 3px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .dim { font-size: 12px; color: var(--text-3); }
+  .mono { font-family: var(--mono); }
   .nav-link {
-    color: var(--text-dim);
-    text-decoration: none;
-    font-size: 0.875rem;
+    font-size: 12px; color: var(--text-3); text-decoration: none;
+    border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px;
+    transition: all 0.15s;
   }
-  .nav-link:hover {
-    color: var(--accent-blue);
+  .nav-link:hover { color: var(--text); border-color: var(--up); background: var(--up-bg); }
+
+  /* Body */
+  .body { flex: 1; padding: 1.25rem 1.5rem; max-width: 860px; margin: 0 auto; width: 100%; }
+
+  /* Section */
+  .section { margin-bottom: 1.5rem; }
+  .section-head { margin-bottom: 0.75rem; }
+  .section-title { font-size: 14px; font-weight: 600; color: var(--text); margin: 0 0 0.25rem; }
+  .section-sub { font-size: 12px; color: var(--text-3); margin: 0; }
+
+  /* Cards Grid */
+  .cards-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem;
   }
-  .priority-high {
-    border-left: 3px solid var(--accent-red);
+  @media (min-width: 860px) { .cards-grid { grid-template-columns: repeat(3, 1fr); } }
+  
+  .cards-row {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem;
   }
-  .priority-med {
-    border-left: 3px solid var(--accent-yellow);
+  @media (min-width: 640px) { .cards-row { grid-template-columns: repeat(4, 1fr); } }
+
+  /* Stat Card */
+  .stat-card {
+    background: var(--bg-raised); border: 1px solid var(--border); border-radius: 6px;
+    padding: 0.75rem; text-align: center;
   }
-  .priority-low {
-    border-left: 3px solid var(--accent-green);
+  .stat-label { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
+  .stat-value { font-size: 16px; font-weight: 600; color: var(--text); }
+
+  /* News Card */
+  .news-card {
+    display: flex; flex-direction: column; gap: 0.5rem;
+    background: var(--bg-raised); border: 1px solid var(--border); border-radius: 6px;
+    padding: 0.75rem; transition: all 0.15s;
   }
+  .news-card:hover { border-color: var(--border-soft); transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+  .news-header { display: flex; align-items: center; gap: 0.5rem; }
+  .news-ticker {
+    font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 4px;
+    background: var(--bg-subtle); color: var(--text-2);
+  }
+  .news-ticker.up { background: var(--up-bg); color: var(--up); }
+  .news-ticker.down { background: var(--down-bg); color: var(--down); }
+  .news-ticker.warn { background: var(--amber-bg); color: var(--amber); }
+  .news-title { font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.4; }
+  .news-body { font-size: 12px; color: var(--text-2); line-height: 1.5; }
+  .news-body p { margin: 0 0 0.25rem; }
+  .news-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 11px; margin-top: auto; padding-top: 0.25rem;
+  }
+
+  /* Badge */
+  .badge {
+    font-size: 10px; font-weight: 500; padding: 2px 6px; border-radius: 4px;
+    background: var(--bg-subtle); color: var(--text-3);
+  }
+  .badge.up { background: var(--up-bg); color: var(--up); }
+  .badge.down { background: var(--down-bg); color: var(--down); }
+  .badge.warn { background: var(--amber-bg); color: var(--amber); }
+  .badge.neutral { background: var(--bg-subtle); color: var(--text-2); }
+
+  /* Colors */
+  .up { color: var(--up); font-weight: 500; }
+  .down { color: var(--down); font-weight: 500; }
+  .warn { color: var(--amber); font-weight: 500; }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; }
+  .data-table {
+    width: 100%; border-collapse: collapse; font-size: 12px;
+    background: var(--bg-raised); border: 1px solid var(--border); border-radius: 6px;
+  }
+  .data-table thead { background: var(--bg-subtle); }
+  .data-table th {
+    text-align: left; padding: 0.5rem 0.75rem; font-weight: 500; color: var(--text-2);
+    border-bottom: 1px solid var(--border); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .data-table td { padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border-soft); color: var(--text); }
+  .data-table tbody tr:hover { background: var(--bg-subtle); }
+  .data-table tbody tr:last-child td { border-bottom: none; }
+
+  /* Priority indicators */
+  .priority-high { border-left: 3px solid var(--down); }
+  .priority-med { border-left: 3px solid var(--amber); }
+  .priority-low { border-left: 3px solid var(--up); }
+
+  /* Action buttons */
   .action-exit {
-    background: var(--accent-red);
-    color: #000;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
+    display: inline-block; background: var(--down); color: #fff;
+    padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600;
   }
   .action-buy {
-    background: var(--accent-green);
-    color: #000;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
+    display: inline-block; background: var(--up); color: #fff;
+    padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600;
   }
   .action-hold {
-    background: var(--accent-yellow);
-    color: #000;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
+    display: inline-block; background: var(--amber); color: #fff;
+    padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600;
   }
   .action-analyze {
-    background: var(--accent-blue);
-    color: #fff;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
+    display: inline-block; background: var(--text-2); color: #fff;
+    padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600;
   }
   .action-dca {
-    background: var(--text-dim);
-    color: #fff;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
+    display: inline-block; background: var(--text-3); color: #fff;
+    padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600;
   }
+
+  /* Note panel */
   .note-panel {
-    background: rgba(255, 193, 7, 0.1);
-    border: 1px solid rgba(255, 193, 7, 0.3);
+    background: var(--amber-bg); border: 1px solid var(--amber-bg);
+    border-radius: 6px; padding: 0.75rem; margin-top: 1rem;
   }
-  .body-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  .body-list li {
-    padding: 4px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    font-size: 0.875rem;
-  }
-  .body-list li:last-child {
-    border-bottom: none;
+  .note-panel p { margin: 0; font-size: 12px; color: var(--amber); line-height: 1.5; }
+
+  /* Body list */
+  .body-list { list-style: none; padding: 0; margin: 0; }
+  .body-list li { padding: 4px 0; border-bottom: 1px solid var(--border-soft); font-size: 12px; color: var(--text-2); }
+  .body-list li:last-child { border-bottom: none; }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .cards-grid { grid-template-columns: 1fr; }
+    .cards-row { grid-template-columns: repeat(2, 1fr); }
+    .data-table { font-size: 11px; }
+    .data-table th, .data-table td { padding: 0.375rem 0.5rem; }
   }
 </style>
 </Layout>
