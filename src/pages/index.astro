@@ -2,11 +2,18 @@
 import Layout from '../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
 
+// Get all news and process
 const allNews = await getCollection('news');
 const sortedNews = allNews.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 
-const macroNews = sortedNews.filter(n => n.data.category === 'macro');
-const microNews = sortedNews.filter(n => n.data.category === 'micro');
+// Extract all unique tickers and categories for filters
+const allTickers = [...new Set(sortedNews.flatMap(n => n.data.tickers || []))].sort();
+const allCategories = [...new Set(sortedNews.map(n => n.data.category).filter(Boolean))];
+const allRegions = [...new Set(sortedNews.map(n => n.data.region).filter(Boolean))];
+
+// Pagination
+const ITEMS_PER_PAGE = 10;
+const totalPages = Math.ceil(sortedNews.length / ITEMS_PER_PAGE);
 
 function formatTimeAgo(dateStr: string) {
   const date = new Date(dateStr);
@@ -14,7 +21,7 @@ function formatTimeAgo(dateStr: string) {
   const diffMs = now.getTime() - date.getTime();
   const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
   const diffMins = Math.floor(diffMs / (1000 * 60));
-
+  
   if (diffMins < 60) return `${diffMins}m ago`;
   if (diffHrs < 24) return `${diffHrs}h ago`;
   return `${Math.floor(diffHrs / 24)}d ago`;
@@ -27,235 +34,304 @@ function getImpactColor(impact: string) {
     default: return '#6b7280';
   }
 }
+
+function getImpactEmoji(impact: string) {
+  switch (impact) {
+    case 'positive': return '🟢';
+    case 'negative': return '🔴';
+    default: return '🟡';
+  }
+}
 ---
 
 <Layout title="Insider Hub — Macro Intelligence">
-	<main style="padding: 1rem; max-width: 1400px; margin: 0 auto;">
-		<!-- Header -->
-		<header style="margin-bottom: 1.5rem;">
-			<h1 style="font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.25rem;">
-				<span style="color: var(--accent-gold);">⚡</span>
-				Insider Hub
-			</h1>
-			<p style="color: var(--text-muted); font-size: 0.875rem;">Macro & Micro Economic Intelligence — Indonesia Focus</p>
-		</header>
+  <main style="padding: 1rem; max-width: 1400px; margin: 0 auto;">
+    
+    <!-- Header -->
+    <header style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h1 style="font-size: 1.75rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.25rem;">
+          <span style="color: var(--accent-gold);">⚡</span>
+          Insider Hub
+        </h1>
+        <p style="color: var(--text-muted); font-size: 0.875rem;">
+          Macro & Micro Intelligence • {sortedNews.length} Articles • Last Updated: {formatTimeAgo(sortedNews[0]?.data.date || new Date().toISOString())}
+        </p>
+      </div>
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        <span style="font-size: 0.75rem; background: var(--surface); padding: 0.375rem 0.75rem; border-radius: 9999px; color: var(--text-muted);">
+          🔒 Private Access
+        </span>
+      </div>
+    </header>
 
-		<!-- Market Cards -->
-		<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
-			<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; border-left: 3px solid var(--accent-green);">
-				<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-					<span style="font-size: 0.875rem; color: var(--text-muted);">US Markets</span>
-					<span style="color: var(--accent-green);">↗</span>
-				</div>
-				<div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-green);">+1.2%</div>
-				<p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Futures green on tech earnings</p>
-			</div>
-			<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; border-left: 3px solid var(--text-muted);">
-				<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-					<span style="font-size: 0.875rem; color: var(--text-muted);">Asia Pacific</span>
-					<span style="color: var(--text-muted);">→</span>
-				</div>
-				<div style="font-size: 1.5rem; font-weight: 700; color: var(--text-muted);">-0.3%</div>
-				<p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Mixed on China data wait</p>
-			</div>
-			<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; border-left: 3px solid var(--accent-red);">
-				<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-					<span style="font-size: 0.875rem; color: var(--text-muted);">Commodities</span>
-					<span style="color: var(--accent-red);">↘</span>
-				</div>
-				<div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-red);">-2.1%</div>
-				<p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Oil slips on demand concerns</p>
-			</div>
-			<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; border-left: 3px solid var(--accent-gold);">
-				<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-					<span style="font-size: 0.875rem; color: var(--text-muted);">Risk Events</span>
-					<span style="color: var(--accent-gold);">⚠</span>
-				</div>
-				<div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-gold);">—</div>
-				<p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Fed speakers this week</p>
-			</div>
-		</div>
+    <!-- Quick Stats -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem;">
+      <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.75rem; text-align: center;">
+        <div style="font-size: 1.25rem; font-weight: 700; color: var(--accent-green);">{sortedNews.filter(n => n.data.impact === 'positive').length}</div>
+        <div style="font-size: 0.75rem; color: var(--text-muted);">Bullish</div>
+      </div>
+      <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.75rem; text-align: center;">
+        <div style="font-size: 1.25rem; font-weight: 700; color: var(--accent-red);">{sortedNews.filter(n => n.data.impact === 'negative').length}</div>
+        <div style="font-size: 0.75rem; color: var(--text-muted);">Bearish</div>
+      </div>
+      <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.75rem; text-align: center;">
+        <div style="font-size: 1.25rem; font-weight: 700; color: var(--accent-gold);">{sortedNews.filter(n => n.data.category === 'macro').length}</div>
+        <div style="font-size: 0.75rem; color: var(--text-muted);">Macro</div>
+      </div>
+      <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.75rem; text-align: center;">
+        <div style="font-size: 1.25rem; font-weight: 700; color: var(--accent-blue);">{allTickers.length}</div>
+        <div style="font-size: 0.75rem; color: var(--text-muted);">Tickers</div>
+      </div>
+    </div>
 
-		<!-- Main Grid -->
-		<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
-			<!-- Left Column: News -->
-			<div style="display: flex; flex-direction: column; gap: 1rem;">
-				<!-- Macro News -->
-				<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem;">
-					<h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-						<span style="color: var(--accent-blue);">🌐</span>
-						Macro Landscape
-					</h2>
-					<div style="display: flex; flex-direction: column; gap: 0.75rem;">
-						{macroNews.map(news => (
-							<a href={`/news/${news.id}`} style="text-decoration: none;">
-							<article style="display: flex; gap: 0.75rem; padding: 0.75rem; border-radius: 0.375rem; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-								<div style={`width: 3px; border-radius: 9999px; flex-shrink: 0; background: ${getImpactColor(news.data.impact ?? 'neutral')};`} />
-								<div style="flex: 1;">
-									<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; flex-wrap: wrap;">
-										<span style="font-size: 0.75rem; color: var(--text-muted);">{formatTimeAgo(news.data.date)}</span>
-										<span style="font-size: 0.75rem; color: var(--accent-blue);">{news.data.source}</span>
-										<span style="font-size: 0.75rem; background: var(--background); padding: 0.125rem 0.5rem; border-radius: 9999px; color: var(--text-muted);">{news.data.region}</span>
-									</div>
-									<h3 style="font-size: 0.875rem; font-weight: 500; color: var(--text); margin-bottom: 0.5rem;">{news.data.title}</h3>
-									<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-										{(news.data.tickers ?? []).map(ticker => (
-											<span style="font-size: 0.75rem; background: rgba(0, 208, 132, 0.2); color: var(--accent-green); padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-weight: 500;">${ticker}</span>
-										))}
-									</div>
-								</div>
-							</article>
-							</a>
-						))}
-						{macroNews.length === 0 && <p style="color: var(--text-muted); font-size: 0.875rem;">No macro news available.</p>}
-					</div>
-				</div>
+    <!-- Filter Tags -->
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.5rem;">
+      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap;">
+        <span style="font-size: 0.875rem; font-weight: 600;">🔍 Filter by Ticker:</span>
+        <button class="filter-btn active" data-filter="all" style="font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 9999px; border: 1px solid var(--border); background: var(--accent-green); color: #000; cursor: pointer;">All</button>
+        {allTickers.map(ticker => (
+          <button class="filter-btn" data-filter={ticker} style="font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 9999px; border: 1px solid var(--border); background: var(--background); color: var(--text); cursor: pointer; transition: all 0.2s;">
+            ${ticker}
+          </button>
+        ))}
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+        <span style="font-size: 0.875rem; font-weight: 600;">Category:</span>
+        <button class="cat-btn active" data-cat="all" style="font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 9999px; border: 1px solid var(--border); background: var(--accent-green); color: #000; cursor: pointer;">All</button>
+        <button class="cat-btn" data-cat="macro" style="font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 9999px; border: 1px solid var(--border); background: var(--background); color: var(--text); cursor: pointer;">🌐 Macro</button>
+        <button class="cat-btn" data-cat="micro" style="font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 9999px; border: 1px solid var(--border); background: var(--background); color: var(--text); cursor: pointer;">📊 Micro</button>
+      </div>
+    </div>
 
-				<!-- Micro News -->
-				<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem;">
-					<h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-						<span style="color: var(--accent-gold);">📊</span>
-						Micro & Corporate
-					</h2>
-					<div style="display: flex; flex-direction: column; gap: 0.75rem;">
-						{microNews.map(news => (
-							<a href={`/news/${news.id}`} style="text-decoration: none;">
-							<article style="display: flex; gap: 0.75rem; padding: 0.75rem; border-radius: 0.375rem; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-								<div style={`width: 3px; border-radius: 9999px; flex-shrink: 0; background: ${getImpactColor(news.data.impact ?? 'neutral')};`} />
-								<div style="flex: 1;">
-									<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; flex-wrap: wrap;">
-										<span style="font-size: 0.75rem; color: var(--text-muted);">{formatTimeAgo(news.data.date)}</span>
-										<span style="font-size: 0.75rem; color: var(--accent-blue);">{news.data.source}</span>
-										<span style="font-size: 0.75rem; background: var(--background); padding: 0.125rem 0.5rem; border-radius: 9999px; color: var(--text-muted);">{news.data.region}</span>
-									</div>
-									<h3 style="font-size: 0.875rem; font-weight: 500; color: var(--text); margin-bottom: 0.5rem;">{news.data.title}</h3>
-									<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-										{(news.data.tickers ?? []).map(ticker => (
-											<span style="font-size: 0.75rem; background: rgba(0, 208, 132, 0.2); color: var(--accent-green); padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-weight: 500;">${ticker}</span>
-										))}
-									</div>
-								</div>
-							</article>
-							</a>
-						))}
-						{microNews.length === 0 && <p style="color: var(--text-muted); font-size: 0.875rem;">No micro news available.</p>}
-					</div>
-				</div>
-			</div>
+    <!-- News Grid -->
+    <div id="news-container" style="display: flex; flex-direction: column; gap: 0.75rem;">
+      {sortedNews.slice(0, ITEMS_PER_PAGE).map((news, index) => (
+        <article 
+          class={`news-item ${(news.data.tickers || []).join(' ')} cat-${news.data.category}`}
+          data-tickers={(news.data.tickers || []).join(' ')}
+          data-category={news.data.category}
+          style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s;"
+        >
+          <a href={`/news/${news.id}`} style="text-decoration: none; display: block; padding: 1rem;">
+            <div style="display: flex; gap: 0.75rem;">
+              <!-- Impact Indicator -->
+              <div style={`width: 4px; border-radius: 9999px; flex-shrink: 0; background: ${getImpactColor(news.data.impact ?? 'neutral')};`} />
+              
+              <div style="flex: 1; min-width: 0;">
+                <!-- Meta Row -->
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+                  <span style="font-size: 0.75rem; color: var(--text-muted);">{formatTimeAgo(news.data.date)}</span>
+                  <span style="font-size: 0.75rem; color: var(--text-muted);">•</span>
+                  <span style="font-size: 0.75rem; color: var(--accent-blue);">{news.data.source}</span>
+                  <span style="font-size: 0.75rem; color: var(--text-muted);">•</span>
+                  <span style={`font-size: 0.7rem; padding: 0.125rem 0.5rem; border-radius: 9999px; background: var(--background); color: var(--text-muted);`}>
+                    {news.data.category === 'macro' ? '🌐' : '📊'} {news.data.category}
+                  </span>
+                  {news.data.impact && (
+                    <span style={`font-size: 0.7rem; padding: 0.125rem 0.5rem; border-radius: 9999px; background: ${getImpactColor(news.data.impact)}20; color: ${getImpactColor(news.data.impact)};`}>
+                      {getImpactEmoji(news.data.impact)} {news.data.impact}
+                    </span>
+                  )}
+                </div>
+                
+                <!-- Title -->
+                <h3 style="font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 0.5rem; line-height: 1.4;">
+                  {news.data.title}
+                </h3>
+                
+                <!-- Tickers -->
+                {(news.data.tickers || []).length > 0 && (
+                  <div style="display: flex; gap: 0.375rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
+                    {(news.data.tickers || []).map(ticker => (
+                      <span 
+                        class="ticker-tag"
+                        data-ticker={ticker}
+                        style="font-size: 0.75rem; background: rgba(0, 208, 132, 0.15); color: var(--accent-green); padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-weight: 500; cursor: pointer; transition: background 0.2s;"
+                        onclick="event.preventDefault(); event.stopPropagation(); filterByTicker('{ticker}');"
+                      >
+                        ${ticker}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                
+                <!-- Summary Preview -->
+                <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                  {news.body?.slice(0, 200).replace(/[#\*]/g, '').trim()}...
+                </p>
+              </div>
+              
+              <!-- Arrow -->
+              <div style="display: flex; align-items: center; color: var(--text-muted);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 18l6-6-6-6"/>
+                </svg>
+              </div>
+            </div>
+          </a>
+        </article>
+      ))}
+    </div>
 
-			<!-- Right Column: IDX & Commodities -->
-			<div style="display: flex; flex-direction: column; gap: 1rem;">
-				<!-- IDX Movers -->
-				<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem;">
-					<h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-						<span style="color: var(--accent-green);">↗</span>
-						IDX Movers
-					</h2>
-					<div style="display: flex; flex-direction: column; gap: 0.5rem;">
-						<div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; border-radius: 0.375rem; transition: background 0.2s; cursor: pointer;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-							<div style="display: flex; align-items: center; gap: 0.75rem;">
-								<div style="width: 2.5rem; height: 2.5rem; background: rgba(0, 208, 132, 0.1); border-radius: 0.375rem; display: flex; align-items: center; justify-content: center; color: var(--accent-green); font-weight: 700; font-size: 0.75rem;">BBRI</div>
-								<div>
-									<div style="font-weight: 600; font-size: 0.875rem;">BBRI</div>
-									<div style="font-size: 0.75rem; color: var(--text-muted);">Bank Rakyat</div>
-								</div>
-							</div>
-							<div style="text-align: right;">
-								<div style="font-size: 0.875rem; font-weight: 500;">3,850</div>
-								<div style="font-size: 0.75rem; color: var(--accent-green);">↗ +2.1%</div>
-							</div>
-						</div>
-						<div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; border-radius: 0.375rem; transition: background 0.2s; cursor: pointer;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-							<div style="display: flex; align-items: center; gap: 0.75rem;">
-								<div style="width: 2.5rem; height: 2.5rem; background: rgba(255, 71, 87, 0.1); border-radius: 0.375rem; display: flex; align-items: center; justify-content: center; color: var(--accent-red); font-weight: 700; font-size: 0.75rem;">TLKM</div>
-								<div>
-									<div style="font-weight: 600; font-size: 0.875rem;">TLKM</div>
-									<div style="font-size: 0.75rem; color: var(--text-muted);">Telkom Indonesia</div>
-								</div>
-							</div>
-							<div style="text-align: right;">
-								<div style="font-size: 0.875rem; font-weight: 500;">3,120</div>
-								<div style="font-size: 0.75rem; color: var(--accent-red);">↘ -1.5%</div>
-							</div>
-						</div>
-						<div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; border-radius: 0.375rem; transition: background 0.2s; cursor: pointer;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-							<div style="display: flex; align-items: center; gap: 0.75rem;">
-								<div style="width: 2.5rem; height: 2.5rem; background: rgba(0, 208, 132, 0.1); border-radius: 0.375rem; display: flex; align-items: center; justify-content: center; color: var(--accent-green); font-weight: 700; font-size: 0.75rem;">ADRO</div>
-								<div>
-									<div style="font-weight: 600; font-size: 0.875rem;">ADRO</div>
-									<div style="font-size: 0.75rem; color: var(--text-muted);">Adaro Energy</div>
-								</div>
-							</div>
-							<div style="text-align: right;">
-								<div style="font-size: 0.875rem; font-weight: 500;">2,180</div>
-								<div style="font-size: 0.75rem; color: var(--accent-green);">↗ +3.4%</div>
-							</div>
-						</div>
-						<div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; border-radius: 0.375rem; transition: background 0.2s; cursor: pointer;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-							<div style="display: flex; align-items: center; gap: 0.75rem;">
-								<div style="width: 2.5rem; height: 2.5rem; background: rgba(0, 208, 132, 0.1); border-radius: 0.375rem; display: flex; align-items: center; justify-content: center; color: var(--accent-green); font-weight: 700; font-size: 0.5rem;">ITMG</div>
-								<div>
-									<div style="font-weight: 600; font-size: 0.875rem;">ITMG</div>
-									<div style="font-size: 0.75rem; color: var(--text-muted);">Indo Tambang</div>
-								</div>
-							</div>
-							<div style="text-align: right;">
-								<div style="font-size: 0.875rem; font-weight: 500;">28,400</div>
-								<div style="font-size: 0.75rem; color: var(--accent-green);">↗ +1.9%</div>
-							</div>
-						</div>
-					</div>
-					<div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 0.75rem;">
-						<span style="color: var(--text-muted);">IHSG Index</span>
-						<span style="color: var(--accent-green); font-weight: 500;">7,284.12 (+0.45%)</span>
-					</div>
-				</div>
+    <!-- Pagination -->
+    {sortedNews.length > ITEMS_PER_PAGE && (
+      <div style="display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin-top: 1.5rem; padding: 1rem;">
+        <button id="prev-btn" disabled style="padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid var(--border); background: var(--surface); color: var(--text-muted); cursor: not-allowed; font-size: 0.875rem;">
+          ← Prev
+        </button>
+        <span id="page-info" style="font-size: 0.875rem; color: var(--text-muted); padding: 0 1rem;">
+          Page 1 of {totalPages}
+        </span>
+        <button id="next-btn" style="padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid var(--border); background: var(--accent-green); color: #000; cursor: pointer; font-size: 0.875rem; font-weight: 500;">
+          Next →
+        </button>
+      </div>
+    )}
 
-				<!-- Commodities -->
-				<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem;">
-					<h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-						<span style="color: var(--accent-gold);">⚡</span>
-						Commodities Watch
-					</h2>
-					<div style="display: flex; flex-direction: column; gap: 0.75rem;">
-						<div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: var(--background); border: 1px solid var(--border); border-radius: 0.375rem;">
-							<div>
-								<div style="font-size: 0.875rem; font-weight: 500;">Coal (Newcastle)</div>
-								<div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Relevant: ADRO, ITMG, PTBA</div>
-							</div>
-							<div style="text-align: right;">
-								<div style="font-size: 0.875rem; font-weight: 500;">$128.50</div>
-								<div style="font-size: 0.75rem; color: var(--accent-green);">↗ +2.4%</div>
-							</div>
-						</div>
-						<div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: var(--background); border: 1px solid var(--border); border-radius: 0.375rem;">
-							<div>
-								<div style="font-size: 0.875rem; font-weight: 500;">Nickel (LME)</div>
-								<div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Relevant: ANTM, INCO, NCKL</div>
-							</div>
-							<div style="text-align: right;">
-								<div style="font-size: 0.875rem; font-weight: 500;">$16,200</div>
-								<div style="font-size: 0.75rem; color: var(--accent-red);">↘ -0.5%</div>
-							</div>
-						</div>
-						<div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: var(--background); border: 1px solid var(--border); border-radius: 0.375rem;">
-							<div>
-								<div style="font-size: 0.875rem; font-weight: 500;">Palm Oil (CPO)</div>
-								<div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Relevant: AALI, LSIP, TAPG</div>
-							</div>
-							<div style="text-align: right;">
-								<div style="font-size: 0.875rem; font-weight: 500;">RM 3,850</div>
-								<div style="font-size: 0.75rem; color: var(--accent-green);">↗ +0.8%</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+    <!-- Footer -->
+    <footer style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); text-align: center;">
+      <p style="font-size: 0.75rem; color: var(--text-muted);">
+        Insider Hub • Auto-scraping active • Protected by Cloudflare Access
+      </p>
+    </footer>
 
-		<!-- Footer -->
-		<footer style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); text-align: center; font-size: 0.75rem; color: var(--text-muted);">
-			Insider Hub • Built by Elesis 💻 • Content from Markdown
-		</footer>
-	</main>
+  </main>
+
+  <script define:vars={{ allNews: sortedNews, itemsPerPage: ITEMS_PER_PAGE }}>
+    let currentPage = 1;
+    let filteredNews = allNews;
+    let currentFilter = 'all';
+    let currentCategory = 'all';
+    
+    const container = document.getElementById('news-container');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const pageInfo = document.getElementById('page-info');
+    
+    function renderNews() {
+      const start = (currentPage - 1) * itemsPerPage;
+      const end = start + itemsPerPage;
+      const pageNews = filteredNews.slice(start, end);
+      
+      container.innerHTML = pageNews.map(news => `
+        <article 
+          class="news-item"
+          style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s;"
+        >
+          <a href="/news/${news.id}" style="text-decoration: none; display: block; padding: 1rem;">
+            <div style="display: flex; gap: 0.75rem;">
+              <div style="width: 4px; border-radius: 9999px; flex-shrink: 0; background: ${news.data.impact === 'positive' ? '#00d084' : news.data.impact === 'negative' ? '#ff4757' : '#6b7280'};" />
+              <div style="flex: 1; min-width: 0;">
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+                  <span style="font-size: 0.75rem; color: var(--text-muted);">${new Date(news.data.date).toLocaleDateString()}</span>
+                  <span style="font-size: 0.75rem; color: var(--text-muted);">•</span>
+                  <span style="font-size: 0.75rem; color: var(--accent-blue);">${news.data.source}</span>
+                  <span style="font-size: 0.75rem; color: var(--text-muted);">•</span>
+                  <span style="font-size: 0.7rem; padding: 0.125rem 0.5rem; border-radius: 9999px; background: var(--background); color: var(--text-muted);">
+                    ${news.data.category === 'macro' ? '🌐' : '📊'} ${news.data.category}
+                  </span>
+                </div>
+                <h3 style="font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 0.5rem; line-height: 1.4;">
+                  ${news.data.title}
+                </h3>
+                ${(news.data.tickers || []).length > 0 ? `
+                  <div style="display: flex; gap: 0.375rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
+                    ${(news.data.tickers || []).map(t => `
+                      <span style="font-size: 0.75rem; background: rgba(0, 208, 132, 0.15); color: var(--accent-green); padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-weight: 500;">
+                        $${t}
+                      </span>
+                    `).join('')}
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          </a>
+        </article>
+      `).join('');
+      
+      if (pageInfo) {
+        const totalPages = Math.ceil(filteredNews.length / itemsPerPage);
+        pageInfo.textContent = `Page ${currentPage} of ${totalPages} (${filteredNews.length} articles)`;
+        if (prevBtn) prevBtn.disabled = currentPage === 1;
+        if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+      }
+    }
+    
+    function filterByTicker(ticker) {
+      currentFilter = ticker;
+      currentPage = 1;
+      if (ticker === 'all') {
+        filteredNews = currentCategory === 'all' ? allNews : allNews.filter(n => n.data.category === currentCategory);
+      } else {
+        filteredNews = allNews.filter(n => (n.data.tickers || []).includes(ticker));
+        if (currentCategory !== 'all') {
+          filteredNews = filteredNews.filter(n => n.data.category === currentCategory);
+        }
+      }
+      updateFilterButtons();
+      renderNews();
+    }
+    
+    function filterByCategory(cat) {
+      currentCategory = cat;
+      currentPage = 1;
+      if (cat === 'all') {
+        filteredNews = currentFilter === 'all' ? allNews : allNews.filter(n => (n.data.tickers || []).includes(currentFilter));
+      } else {
+        filteredNews = allNews.filter(n => n.data.category === cat);
+        if (currentFilter !== 'all') {
+          filteredNews = filteredNews.filter(n => (n.data.tickers || []).includes(currentFilter));
+        }
+      }
+      updateCategoryButtons();
+      renderNews();
+    }
+    
+    function updateFilterButtons() {
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        const isActive = btn.dataset.filter === currentFilter;
+        btn.style.background = isActive ? 'var(--accent-green)' : 'var(--background)';
+        btn.style.color = isActive ? '#000' : 'var(--text)';
+      });
+    }
+    
+    function updateCategoryButtons() {
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        const isActive = btn.dataset.cat === currentCategory;
+        btn.style.background = isActive ? 'var(--accent-green)' : 'var(--background)';
+        btn.style.color = isActive ? '#000' : 'var(--text)';
+      });
+    }
+    
+    // Event listeners
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => filterByTicker(btn.dataset.filter));
+    });
+    
+    document.querySelectorAll('.cat-btn').forEach(btn => {
+      btn.addEventListener('click', () => filterByCategory(btn.dataset.cat));
+    });
+    
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => {
+        if (currentPage > 1) {
+          currentPage--;
+          renderNews();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+    }
+    
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        const totalPages = Math.ceil(filteredNews.length / itemsPerPage);
+        if (currentPage < totalPages) {
+          currentPage++;
+          renderNews();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+    }
+  </script>
 </Layout>
