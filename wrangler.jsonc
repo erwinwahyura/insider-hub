@@ -6,6 +6,9 @@
   "observability": {
     "enabled": true
   },
+  "assets": {
+    "directory": "./dist"
+  },
   "r2_buckets": [
     {
       "binding": "ASSETS",
