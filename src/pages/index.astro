@@ -1,0 +1,271 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const allNews = await getCollection('news');
+const sortedNews = allNews.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+
+const macroNews = sortedNews.filter(n => n.data.category === 'macro');
+const microNews = sortedNews.filter(n => n.data.category === 'micro');
+
+function formatTimeAgo(dateStr: string) {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffMins = Math.floor(diffMs / (1000 * 60));
+  
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHrs < 24) return `${diffHrs}h ago`;
+  return `${Math.floor(diffHrs / 24)}d ago`;
+}
+
+function getImpactColor(impact: string) {
+  switch (impact) {
+    case 'positive': return '#00d084';
+    case 'negative': return '#ff4757';
+    default: return '#6b7280';
+  }
+}
+---
+
+<Layout title="Insider Hub — Macro Intelligence">
+	<main style="padding: 1rem; max-width: 1400px; margin: 0 auto;">
+		<!-- Header -->
+		<header style="margin-bottom: 1.5rem;">
+			<h1 style="font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.25rem;">
+				<span style="color: var(--accent-gold);">⚡</span>
+				Insider Hub
+			</h1>
+			<p style="color: var(--text-muted); font-size: 0.875rem;">Macro & Micro Economic Intelligence — Indonesia Focus</p>
+		</header>
+
+		<!-- Market Cards -->
+		<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+			<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; border-left: 3px solid var(--accent-green);">
+				<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+					<span style="font-size: 0.875rem; color: var(--text-muted);">US Markets</span>
+					<span style="color: var(--accent-green);">↗</span>
+				</div>
+				<div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-green);">+1.2%</div>
+				<p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Futures green on tech earnings</p>
+			</div>
+			<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; border-left: 3px solid var(--text-muted);">
+				<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+					<span style="font-size: 0.875rem; color: var(--text-muted);">Asia Pacific</span>
+					<span style="color: var(--text-muted);">→</span>
+				</div>
+				<div style="font-size: 1.5rem; font-weight: 700; color: var(--text-muted);">-0.3%</div>
+				<p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Mixed on China data wait</p>
+			</div>
+			<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; border-left: 3px solid var(--accent-red);">
+				<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+					<span style="font-size: 0.875rem; color: var(--text-muted);">Commodities</span>
+					<span style="color: var(--accent-red);">↘</span>
+				</div>
+				<div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-red);">-2.1%</div>
+				<p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Oil slips on demand concerns</p>
+			</div>
+			<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; border-left: 3px solid var(--accent-gold);">
+				<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+					<span style="font-size: 0.875rem; color: var(--text-muted);">Risk Events</span>
+					<span style="color: var(--accent-gold);">⚠</span>
+				</div>
+				<div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-gold);">—</div>
+				<p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Fed speakers this week</p>
+			</div>
+		</div>
+
+		<!-- Main Grid -->
+		<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+			<!-- Left Column: News -->
+			<div style="display: flex; flex-direction: column; gap: 1rem;">
+				<!-- Macro News -->
+				<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem;">
+					<h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+						<span style="color: var(--accent-blue);">🌐</span>
+						Macro Landscape
+					</h2>
+					<div style="display: flex; flex-direction: column; gap: 0.75rem;">
+						{macroNews.map(news => (
+							<article style="display: flex; gap: 0.75rem; padding: 0.75rem; border-radius: 0.375rem; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+								<div style={`width: 3px; border-radius: 9999px; flex-shrink: 0; background: ${getImpactColor(news.data.impact)};`} />
+								<div style="flex: 1;">
+									<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; flex-wrap: wrap;">
+										<span style="font-size: 0.75rem; color: var(--text-muted);">{formatTimeAgo(news.data.date)}</span>
+										<span style="font-size: 0.75rem; color: var(--accent-blue);">{news.data.source}</span>
+										<span style="font-size: 0.75rem; background: var(--background); padding: 0.125rem 0.5rem; border-radius: 9999px; color: var(--text-muted);">{news.data.region}</span>
+									</div>
+									<h3 style="font-size: 0.875rem; font-weight: 500; color: var(--text); margin-bottom: 0.5rem;">{news.data.title}</h3>
+									<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+										{news.data.tickers.map(ticker => (
+											<span style="font-size: 0.75rem; background: rgba(0, 208, 132, 0.2); color: var(--accent-green); padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-weight: 500;">${ticker}</span>
+										))}
+									</div>
+								</div>
+							</article>
+						))}
+						{macroNews.length === 0 && <p style="color: var(--text-muted); font-size: 0.875rem;">No macro news available.</p>}
+					</div>
+				</div>
+
+				<!-- Micro News -->
+				<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem;">
+					<h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+						<span style="color: var(--accent-gold);">📊</span>
+						Micro & Corporate
+					</h2>
+					<div style="display: flex; flex-direction: column; gap: 0.75rem;">
+						{microNews.map(news => (
+							<article style="display: flex; gap: 0.75rem; padding: 0.75rem; border-radius: 0.375rem; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+								<div style={`width: 3px; border-radius: 9999px; flex-shrink: 0; background: ${getImpactColor(news.data.impact)};`} />
+								<div style="flex: 1;">
+									<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; flex-wrap: wrap;">
+										<span style="font-size: 0.75rem; color: var(--text-muted);">{formatTimeAgo(news.data.date)}</span>
+										<span style="font-size: 0.75rem; color: var(--accent-blue);">{news.data.source}</span>
+										<span style="font-size: 0.75rem; background: var(--background); padding: 0.125rem 0.5rem; border-radius: 9999px; color: var(--text-muted);">{news.data.region}</span>
+									</div>
+									<h3 style="font-size: 0.875rem; font-weight: 500; color: var(--text); margin-bottom: 0.5rem;">{news.data.title}</h3>
+									<div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+										{news.data.tickers.map(ticker => (
+											<span style="font-size: 0.75rem; background: rgba(0, 208, 132, 0.2); color: var(--accent-green); padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-weight: 500;">${ticker}</span>
+										))}
+									</div>
+								</div>
+							</article>
+						))}
+						{microNews.length === 0 && <p style="color: var(--text-muted); font-size: 0.875rem;">No micro news available.</p>}
+					</div>
+				</div>
+			</div>
+
+			<!-- Right Column: IDX & Commodities -->
+			<div style="display: flex; flex-direction: column; gap: 1rem;">
+				<!-- IDX Movers -->
+				<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem;">
+					<h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+						<span style="color: var(--accent-green);">↗</span>
+						IDX Movers
+					</h2>
+					<div style="display: flex; flex-direction: column; gap: 0.5rem;">
+						<div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; border-radius: 0.375rem; transition: background 0.2s; cursor: pointer;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+							<div style="display: flex; align-items: center; gap: 0.75rem;">
+								<div style="width: 2.5rem; height: 2.5rem; background: rgba(0, 208, 132, 0.1); border-radius: 0.375rem; display: flex; align-items: center; justify-content: center; color: var(--accent-green); font-weight: 700; font-size: 0.75rem;">BBRI</div>
+								<div>
+									<div style="font-weight: 600; font-size: 0.875rem;">BBRI</div>
+									<div style="font-size: 0.75rem; color: var(--text-muted);">Bank Rakyat</div>
+								</div>
+							</div>
+							<div style="text-align: right;">
+								<div style="font-size: 0.875rem; font-weight: 500;">3,850</div>
+								<div style="font-size: 0.75rem; color: var(--accent-green); display: flex; align-items: center; gap: 0.25rem; justify-content: flex-end;">
+									<span>↗</span> +2.1%
+								</div>
+							</div>
+						</div>
+						<div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; border-radius: 0.375rem; transition: background 0.2s; cursor: pointer;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+							<div style="display: flex; align-items: center; gap: 0.75rem;">
+								<div style="width: 2.5rem; height: 2.5rem; background: rgba(255, 71, 87, 0.1); border-radius: 0.375rem; display: flex; align-items: center; justify-content: center; color: var(--accent-red); font-weight: 700; font-size: 0.75rem;">TLKM</div>
+								<div>
+									<div style="font-weight: 600; font-size: 0.875rem;">TLKM</div>
+									<div style="font-size: 0.75rem; color: var(--text-muted);">Telkom Indonesia</div>
+								</div>
+							</div>
+							<div style="text-align: right;">
+								<div style="font-size: 0.875rem; font-weight: 500;">3,120</div>
+								<div style="font-size: 0.75rem; color: var(--accent-red); display: flex; align-items: center; gap: 0.25rem; justify-content: flex-end;">
+									<span>↘</span> -1.5%
+								</div>
+							</div>
+						</div>
+						<div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; border-radius: 0.375rem; transition: background 0.2s; cursor: pointer;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+							<div style="display: flex; align-items: center; gap: 0.75rem;">
+								<div style="width: 2.5rem; height: 2.5rem; background: rgba(0, 208, 132, 0.1); border-radius: 0.375rem; display: flex; align-items: center; justify-content: center; color: var(--accent-green); font-weight: 700; font-size: 0.75rem;">ADRO</div>
+								<div>
+									<div style="font-weight: 600; font-size: 0.875rem;">ADRO</div>
+									<div style="font-size: 0.75rem; color: var(--text-muted);">Adaro Energy</div>
+								</div>
+							</div>
+							<div style="text-align: right;">
+								<div style="font-size: 0.875rem; font-weight: 500;">2,180</div>
+								<div style="font-size: 0.75rem; color: var(--accent-green); display: flex; align-items: center; gap: 0.25rem; justify-content: flex-end;">
+									<span>↗</span> +3.4%
+								</div>
+							</div>
+						</div>
+						<div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; border-radius: 0.375rem; transition: background 0.2s; cursor: pointer;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+							<div style="display: flex; align-items: center; gap: 0.75rem;">
+								<div style="width: 2.5rem; height: 2.5rem; background: rgba(0, 208, 132, 0.1); border-radius: 0.375rem; display: flex; align-items: center; justify-content: center; color: var(--accent-green); font-weight: 700; font-size: 0.5rem;">ITMG</div>
+								<div>
+									<div style="font-weight: 600; font-size: 0.875rem;">ITMG</div>
+									<div style="font-size: 0.75rem; color: var(--text-muted);">Indo Tambang</div>
+								</div>
+							</div>
+							<div style="text-align: right;">
+								<div style="font-size: 0.875rem; font-weight: 500;">28,400</div>
+								<div style="font-size: 0.75rem; color: var(--accent-green); display: flex; align-items: center; gap: 0.25rem; justify-content: flex-end;">
+									<span>↗</span> +1.9%
+								</div>
+							</div>
+						</div>
+					</div>
+					<div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 0.75rem;">
+						<span style="color: var(--text-muted);">IHSG Index</span>
+						<span style="color: var(--accent-green); font-weight: 500;">7,284.12 (+0.45%)</span>
+					</div>
+				</div>
+
+				<!-- Commodities -->
+				<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem;">
+					<h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+						<span style="color: var(--accent-gold);">⚡</span>
+						Commodities Watch
+					</h2>
+					<div style="display: flex; flex-direction: column; gap: 0.75rem;">
+						<div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: var(--background); border: 1px solid var(--border); border-radius: 0.375rem;">
+							<div>
+								<div style="font-size: 0.875rem; font-weight: 500;">Coal (Newcastle)</div>
+								<div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Relevant: ADRO, ITMG, PTBA</div>
+							</div>
+							<div style="text-align: right;">
+								<div style="font-size: 0.875rem; font-weight: 500;">$128.50</div>
+								<div style="font-size: 0.75rem; color: var(--accent-green); display: flex; align-items: center; gap: 0.25rem; justify-content: flex-end;">
+									<span>↗</span> +2.4%
+								</div>
+							</div>
+						</div>
+						<div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: var(--background); border: 1px solid var(--border); border-radius: 0.375rem;">
+							<div>
+								<div style="font-size: 0.875rem; font-weight: 500;">Nickel (LME)</div>
+								<div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Relevant: ANTM, INCO, NCKL</div>
+							</div>
+							<div style="text-align: right;">
+								<div style="font-size: 0.875rem; font-weight: 500;">$16,200</div>
+								<div style="font-size: 0.75rem; color: var(--accent-red); display: flex; align-items: center; gap: 0.25rem; justify-content: flex-end;">
+									<span>↘</span> -0.5%
+								</div>
+							</div>
+						</div>
+						<div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: var(--background); border: 1px solid var(--border); border-radius: 0.375rem;">
+							<div>
+								<div style="font-size: 0.875rem; font-weight: 500;">Palm Oil (CPO)</div>
+								<div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Relevant: AALI, LSIP, TAPG</div>
+							</div>
+							<div style="text-align: right;">
+								<div style="font-size: 0.875rem; font-weight: 500;">RM 3,850</div>
+								<div style="font-size: 0.75rem; color: var(--accent-green); display: flex; align-items: center; gap: 0.25rem; justify-content: flex-end;">
+									<span>↗</span> +0.8%
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Footer -->
+		<footer style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); text-align: center; font-size: 0.75rem; color: var(--text-muted);">
+			Insider Hub • Built by Elesis 💻 • Content from Markdown
+		</footer>
+	</main>
+</Layout>
