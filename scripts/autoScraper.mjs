@@ -1,73 +1,284 @@
-// Scraper that runs in GitHub Actions environment
-// Uses web search APIs or RSS feeds to gather news
+/**
+ * Insider Hub — Auto Scraper
+ * Fetches Google News RSS for IDX portfolio stocks, scores relevance,
+ * deduplicates, and writes markdown articles to src/content/news/.
+ */
+
+import { readdir, readFile, writeFile, mkdir } from 'fs/promises';
+import { existsSync } from 'fs';
+import { createHash } from 'crypto';
+
+// ── Portfolio & keywords ──────────────────────────────────────────────────────
 
 const PORTFOLIO = ['ITMG', 'ADRO', 'PTPS', 'ESSA', 'PGEO', 'ANTM', 'INCO', 'BBRI', 'BBCA', 'TLKM'];
 
-const SEARCH_QUERIES = [
-  'ITMG Indo Tambangraya Megah stock news Indonesia',
-  'coal price Newcastle Indonesia export 2025',
-  'nickel price LME Indonesia ANTM INCO',
-  'IDX Indonesia stock market news',
-  'ADRO Adaro Energy news',
-  'ESSA stainless steel nickel Indonesia',
-  'PGEO Pertamina geothermal news'
+const TICKER_META = {
+  ITMG:  { name: 'Indo Tambangraya Megah', sector: 'coal',       category: 'micro' },
+  ADRO:  { name: 'Adaro Energy',           sector: 'coal',       category: 'micro' },
+  PTPS:  { name: 'Pertamina Trans',        sector: 'energy',     category: 'micro' },
+  ESSA:  { name: 'ESSA Industries',        sector: 'nickel',     category: 'micro' },
+  PGEO:  { name: 'Pertamina Geothermal',   sector: 'energy',     category: 'micro' },
+  ANTM:  { name: 'Aneka Tambang',          sector: 'mining',     category: 'micro' },
+  INCO:  { name: 'Vale Indonesia',         sector: 'nickel',     category: 'micro' },
+  BBRI:  { name: 'Bank Rakyat Indonesia',  sector: 'banking',    category: 'micro' },
+  BBCA:  { name: 'Bank Central Asia',      sector: 'banking',    category: 'micro' },
+  TLKM:  { name: 'Telkom Indonesia',       sector: 'telecom',    category: 'micro' },
+};
+
+// Google News RSS queries — mix of ticker-specific and macro IDX topics
+const RSS_QUERIES = [
+  // Portfolio tickers
+  { q: 'ITMG "Indo Tambangraya" saham',       tickers: ['ITMG'],        category: 'micro' },
+  { q: 'ADRO Adaro "Alamtri" saham',          tickers: ['ADRO'],        category: 'micro' },
+  { q: 'ANTM "Aneka Tambang" nikel emas',     tickers: ['ANTM'],        category: 'micro' },
+  { q: 'INCO Vale Indonesia nickel',          tickers: ['INCO'],        category: 'micro' },
+  { q: 'ESSA Industries nickel Indonesia',    tickers: ['ESSA'],        category: 'micro' },
+  { q: 'PGEO Pertamina Geothermal IPO',       tickers: ['PGEO'],        category: 'micro' },
+  { q: 'BBRI "Bank Rakyat" saham kredit',     tickers: ['BBRI'],        category: 'micro' },
+  { q: 'BBCA "Bank Central Asia" saham',      tickers: ['BBCA'],        category: 'micro' },
+  { q: 'TLKM Telkom Indonesia',               tickers: ['TLKM'],        category: 'micro' },
+  // Macro
+  { q: 'IDX IHSG stock market Indonesia',     tickers: [],              category: 'macro' },
+  { q: 'coal price Newcastle Indonesia export',tickers: ['ITMG','ADRO','PTBA'], category: 'macro' },
+  { q: 'nickel price LME Indonesia 2026',     tickers: ['ANTM','INCO','ESSA'], category: 'macro' },
+  { q: 'palm oil CPO price Malaysia Indonesia',tickers: [],             category: 'macro' },
+  { q: 'Bank Indonesia BI rate rupiah',       tickers: [],              category: 'macro' },
+  { q: 'Trump tariff Indonesia economy 2026', tickers: [],              category: 'macro' },
+  { q: 'Indonesia GDP growth 2026',           tickers: [],              category: 'macro' },
 ];
 
-async function fetchWithRetry(url, options, retries = 3) {
-  for (let i = 0; i < retries; i++) {
-    try {
-      const res = await fetch(url, options);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return res;
-    } catch (e) {
-      if (i === retries - 1) throw e;
-      await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function googleNewsRssUrl(query) {
+  const encoded = encodeURIComponent(query);
+  return `https://news.google.com/rss/search?q=${encoded}&hl=en-ID&gl=ID&ceid=ID:en`;
+}
+
+async function fetchRss(url) {
+  const res = await fetch(url, {
+    headers: { 'User-Agent': 'Mozilla/5.0 (compatible; InsiderHubBot/1.0)' },
+    signal: AbortSignal.timeout(10000),
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
+  return res.text();
+}
+
+function parseRssItems(xml) {
+  const items = [];
+  const itemRegex = /<item>([\s\S]*?)<\/item>/g;
+  let match;
+  while ((match = itemRegex.exec(xml)) !== null) {
+    const block = match[1];
+    const get = (tag) => {
+      const m = block.match(new RegExp(`<${tag}[^>]*><!\\[CDATA\\[([\\s\\S]*?)\\]\\]><\\/${tag}>|<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`));
+      return m ? (m[1] || m[2] || '').trim() : '';
+    };
+    const title = get('title').replace(/\s*-\s*[^-]+$/, '').trim(); // strip source suffix
+    const link  = get('link');
+    const pubDate = get('pubDate');
+    const description = get('description')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"')
+      .replace(/\s+/g, ' ').trim();
+    const source = get('source') || block.match(/<source[^>]*>([^<]+)<\/source>/)?.[1] || '';
+
+    if (title && link) {
+      items.push({ title, link, pubDate, description, source });
     }
   }
+  return items;
 }
+
+function slug(title, date) {
+  const dateStr = date.toISOString().split('T')[0];
+  const clean = title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .slice(0, 60)
+    .replace(/-$/, '');
+  return `${dateStr}-${clean}`;
+}
+
+function fingerprint(title) {
+  return createHash('md5').update(title.toLowerCase().replace(/\s+/g, ' ').trim()).digest('hex').slice(0, 12);
+}
+
+function detectImpact(text) {
+  const t = text.toLowerCase();
+  const positive = ['naik', 'rally', 'surge', 'jump', 'rise', 'gain', 'profit', 'laba', 'bullish',
+                    'buy', 'upgrade', 'outperform', 'record', 'high', 'buyback', 'dividen', 'dividend'];
+  const negative = ['turun', 'drop', 'fall', 'crash', 'decline', 'loss', 'rugi', 'bearish',
+                    'sell', 'downgrade', 'underperform', 'low', 'ban', 'tariff', 'sanction', 'risk'];
+  const posScore = positive.filter(w => t.includes(w)).length;
+  const negScore = negative.filter(w => t.includes(w)).length;
+  if (posScore > negScore) return 'positive';
+  if (negScore > posScore) return 'negative';
+  return 'neutral';
+}
+
+function detectTickers(text, hintTickers) {
+  const found = new Set(hintTickers);
+  const t = text.toUpperCase();
+  for (const ticker of PORTFOLIO) {
+    if (t.includes(ticker) || t.includes(TICKER_META[ticker]?.name?.toUpperCase() || '')) {
+      found.add(ticker);
+    }
+  }
+  return [...found];
+}
+
+function detectRegion(text) {
+  const t = text.toLowerCase();
+  if (t.includes('ihsg') || t.includes('idx') || t.includes('bursa efek')) return 'IDX';
+  if (t.includes('indonesia')) return 'Indonesia';
+  if (t.includes('malaysia') || t.includes('singapore')) return 'Asia';
+  if (t.includes('china') || t.includes('us ') || t.includes('fed ')) return 'Global';
+  return 'Indonesia';
+}
+
+function buildMarkdown({ title, date, category, impact, region, tickers, source, url, description }) {
+  const tickersJson = JSON.stringify(tickers);
+  const safeTitle = title.replace(/"/g, '\\"');
+  const safeSource = (source || 'Google News').replace(/"/g, '\\"');
+  const safeUrl = url || '';
+
+  const body = description
+    ? `## Summary\n\n${description}\n\n---\n\n*Auto-scraped by Insider Hub Bot · [Source](${safeUrl})*`
+    : `*Auto-scraped by Insider Hub Bot · [Source](${safeUrl})*`;
+
+  return `---
+title: "${safeTitle}"
+date: "${date.toISOString()}"
+category: ${category}
+impact: ${impact}
+region: ${region}
+tickers: ${tickersJson}
+source: "${safeSource}"
+url: "${safeUrl}"
+---
+
+${body}
+`;
+}
+
+// ── Main ──────────────────────────────────────────────────────────────────────
 
 async function scrapeNews() {
-  console.log(`[${new Date().toISOString()}] Starting automated scrape...`);
-  
-  const results = {
-    timestamp: new Date().toISOString(),
-    articles: [],
-    created: []
-  };
-  
-  // In GitHub Actions, we can use RSS feeds or web scraping
-  // For now, placeholder - in production uses RSS APIs
-  
-  // Check if any articles need creating (placeholder logic)
-  const fs = await import('fs/promises');
-  const path = await import('path');
-  
-  // Read existing articles to avoid duplicates
+  const startTime = Date.now();
+  console.log(`[${new Date().toISOString()}] Starting scrape...`);
+
   const newsDir = 'src/content/news';
-  const existing = await fs.readdir(newsDir).catch(() => []);
-  
+  const cacheDir = '.cache';
+
+  await mkdir(cacheDir, { recursive: true });
+
+  // Load existing article fingerprints to avoid duplicates
+  const existing = await readdir(newsDir).catch(() => []);
+  const existingTitles = new Set();
+  for (const file of existing) {
+    try {
+      const content = await readFile(`${newsDir}/${file}`, 'utf8');
+      const titleMatch = content.match(/^title:\s*"(.+)"/m);
+      if (titleMatch) existingTitles.add(fingerprint(titleMatch[1]));
+    } catch {}
+  }
   console.log(`Existing articles: ${existing.length}`);
-  
-  // In real implementation:
-  // 1. Fetch RSS feeds (Google News, Bloomberg, Reuters)
-  // 2. Score articles for portfolio relevance
-  // 3. Create markdown files for high-scoring articles
-  // 4. Save raw scrapes to .cache/
-  
-  return results;
+
+  // Load cache of seen URLs
+  const cacheFile = `${cacheDir}/seen-urls.json`;
+  let seenUrls = new Set();
+  try {
+    const raw = await readFile(cacheFile, 'utf8');
+    seenUrls = new Set(JSON.parse(raw));
+  } catch {}
+
+  const created = [];
+  const errors = [];
+
+  for (const query of RSS_QUERIES) {
+    const url = googleNewsRssUrl(query.q);
+    console.log(`  Fetching: ${query.q}`);
+
+    let xml;
+    try {
+      xml = await fetchRss(url);
+    } catch (e) {
+      console.warn(`  ✗ Failed: ${e.message}`);
+      errors.push({ query: query.q, error: e.message });
+      continue;
+    }
+
+    const items = parseRssItems(xml);
+    console.log(`  → ${items.length} items`);
+
+    for (const item of items.slice(0, 5)) { // max 5 per query
+      // Skip if URL already seen
+      if (seenUrls.has(item.link)) continue;
+      seenUrls.add(item.link);
+
+      // Skip if title already exists
+      const fp = fingerprint(item.title);
+      if (existingTitles.has(fp)) continue;
+      existingTitles.add(fp);
+
+      // Skip very short or generic titles
+      if (item.title.length < 20) continue;
+
+      const date = item.pubDate ? new Date(item.pubDate) : new Date();
+      if (isNaN(date.getTime())) continue;
+
+      // Skip articles older than 7 days
+      const ageMs = Date.now() - date.getTime();
+      if (ageMs > 7 * 24 * 60 * 60 * 1000) continue;
+
+      const fullText = `${item.title} ${item.description}`;
+      const tickers  = detectTickers(fullText, query.tickers);
+      const impact   = detectImpact(fullText);
+      const region   = detectRegion(fullText);
+      const category = query.category;
+      const source   = item.source || 'Google News';
+
+      const filename = `${slug(item.title, date)}.md`;
+      const filepath = `${newsDir}/${filename}`;
+
+      // Skip if file already exists
+      if (existsSync(filepath)) continue;
+
+      const markdown = buildMarkdown({
+        title: item.title,
+        date,
+        category,
+        impact,
+        region,
+        tickers,
+        source,
+        url: item.link,
+        description: item.description,
+      });
+
+      await writeFile(filepath, markdown, 'utf8');
+      created.push(filename);
+      console.log(`  ✓ Created: ${filename}`);
+    }
+
+    // Small delay between requests to be polite
+    await new Promise(r => setTimeout(r, 500));
+  }
+
+  // Save updated URL cache
+  await writeFile(cacheFile, JSON.stringify([...seenUrls], null, 2), 'utf8');
+
+  const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+  console.log(`\nDone in ${elapsed}s — ${created.length} new articles, ${errors.length} errors`);
+  if (created.length) console.log('Created:', created);
+  if (errors.length)  console.log('Errors:', errors);
+
+  return { created, errors };
 }
 
-// Run if called directly
-if (process.argv[1] === import.meta.url?.slice(7) || process.argv[1].includes('autoScraper')) {
-  scrapeNews()
-    .then(r => {
-      console.log('Scrape complete:', r);
-      process.exit(0);
-    })
-    .catch(e => {
-      console.error('Scrape failed:', e);
-      process.exit(1);
-    });
-}
-
-export { scrapeNews, PORTFOLIO };
+// Run
+scrapeNews()
+  .then(r => process.exit(r.errors.length > 0 && r.created.length === 0 ? 1 : 0))
+  .catch(e => { console.error('Fatal:', e); process.exit(1); });

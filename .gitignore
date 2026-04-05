@@ -20,5 +20,9 @@ pnpm-debug.log*
 # macOS-specific files
 .DS_Store
 
+# scraper cache — keep seen-urls.json but ignore raw dumps
+.cache/*.html
+.cache/*.json.bak
+
 # jetbrains setting folder
 .idea/
