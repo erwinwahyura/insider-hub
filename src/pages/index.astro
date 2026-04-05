@@ -2,16 +2,10 @@
 import Layout from '../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
 
-// Get all news and process
 const allNews = await getCollection('news');
 const sortedNews = allNews.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 
-// Extract all unique tickers and categories for filters
 const allTickers = [...new Set(sortedNews.flatMap(n => n.data.tickers || []))].sort();
-const allCategories = [...new Set(sortedNews.map(n => n.data.category).filter(Boolean))];
-const allRegions = [...new Set(sortedNews.map(n => n.data.region).filter(Boolean))];
-
-// Pagination
 const ITEMS_PER_PAGE = 10;
 const totalPages = Math.ceil(sortedNews.length / ITEMS_PER_PAGE);
 
@@ -21,7 +15,6 @@ function formatTimeAgo(dateStr: string) {
   const diffMs = now.getTime() - date.getTime();
   const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
   const diffMins = Math.floor(diffMs / (1000 * 60));
-  
   if (diffMins < 60) return `${diffMins}m ago`;
   if (diffHrs < 24) return `${diffHrs}h ago`;
   return `${Math.floor(diffHrs / 24)}d ago`;
@@ -47,26 +40,19 @@ function getImpactEmoji(impact: string) {
 <Layout title="Insider Hub — Macro Intelligence">
   <main style="padding: 1rem; max-width: 1400px; margin: 0 auto;">
     
-    <!-- Header -->
-    <header style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-      <div>
-        <h1 style="font-size: 1.75rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.25rem;">
-          <span style="color: var(--accent-gold);">⚡</span>
-          Insider Hub
-        </h1>
-        <p style="color: var(--text-muted); font-size: 0.875rem;">
-          Macro & Micro Intelligence • {sortedNews.length} Articles • Last Updated: {formatTimeAgo(sortedNews[0]?.data.date || new Date().toISOString())}
-        </p>
-      </div>
-      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-        <span style="font-size: 0.75rem; background: var(--surface); padding: 0.375rem 0.75rem; border-radius: 9999px; color: var(--text-muted);">
-          🔒 Private Access
-        </span>
-      </div>
+    <header style="margin-bottom: 1.5rem;">
+      <h1 style="font-size: 1.75rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.25rem;">
+        <span style="color: var(--accent-gold);">⚡</span>
+        Insider Hub
+        <span style="font-size: 0.75rem; background: var(--surface); padding: 0.375rem 0.75rem; border-radius: 9999px; color: var(--text-muted);">🔒 Private</span>
+      </h1>
+      <p style="color: var(--text-muted); font-size: 0.875rem;">
+        {sortedNews.length} Articles • Updated: {formatTimeAgo(sortedNews[0]?.data.date || new Date().toISOString())}
+      </p>
     </header>
 
-    <!-- Quick Stats -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem;">
+    <!-- Stats -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-bottom: 1.5rem;">
       <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 0.75rem; text-align: center;">
         <div style="font-size: 1.25rem; font-weight: 700; color: var(--accent-green);">{sortedNews.filter(n => n.data.impact === 'positive').length}</div>
         <div style="font-size: 0.75rem; color: var(--text-muted);">Bullish</div>
@@ -85,126 +71,93 @@ function getImpactEmoji(impact: string) {
       </div>
     </div>
 
-    <!-- Filter Tags -->
+    <!-- Filters -->
     <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.5rem;">
-      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap;">
-        <span style="font-size: 0.875rem; font-weight: 600;">🔍 Filter by Ticker:</span>
-        <button class="filter-btn active" data-filter="all" style="font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 9999px; border: 1px solid var(--border); background: var(--accent-green); color: #000; cursor: pointer;">All</button>
-        {allTickers.map(ticker => (
-          <button class="filter-btn" data-filter={ticker} style="font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 9999px; border: 1px solid var(--border); background: var(--background); color: var(--text); cursor: pointer; transition: all 0.2s;">
-            ${ticker}
-          </button>
+      <div style="margin-bottom: 0.75rem;">
+        <span style="font-size: 0.875rem; font-weight: 600; margin-right: 0.5rem;">Filter:</span>
+        <button class="filter-btn active" data-filter="all" style="font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 9999px; border: 1px solid var(--border); background: var(--accent-green); color: #000; cursor: pointer; margin-right: 0.25rem;">All</button>
+        {allTickers.slice(0, 12).map(ticker => (
+          <button class="filter-btn" data-filter={ticker} style="font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 9999px; border: 1px solid var(--border); background: var(--background); color: var(--text); cursor: pointer; margin-right: 0.25rem; margin-bottom: 0.25rem;">${ticker}</button>
         ))}
       </div>
-      <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-        <span style="font-size: 0.875rem; font-weight: 600;">Category:</span>
-        <button class="cat-btn active" data-cat="all" style="font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 9999px; border: 1px solid var(--border); background: var(--accent-green); color: #000; cursor: pointer;">All</button>
-        <button class="cat-btn" data-cat="macro" style="font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 9999px; border: 1px solid var(--border); background: var(--background); color: var(--text); cursor: pointer;">🌐 Macro</button>
-        <button class="cat-btn" data-cat="micro" style="font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 9999px; border: 1px solid var(--border); background: var(--background); color: var(--text); cursor: pointer;">📊 Micro</button>
+      <div>
+        <button class="cat-btn active" data-cat="all" style="font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 9999px; border: 1px solid var(--border); background: var(--accent-green); color: #000; cursor: pointer; margin-right: 0.25rem;">All</button>
+        <button class="cat-btn" data-cat="macro" style="font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 9999px; border: 1px solid var(--border); background: var(--background); color: var(--text); cursor: pointer; margin-right: 0.25rem;">🌐 Macro</button>
+        <button class="cat-btn" data-cat="micro" style="font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 9999px; border: 1px solid var(--border); background: var(--background); color: var(--text); cursor: pointer; margin-right: 0.25rem;">📊 Micro</button>
       </div>
     </div>
 
-    <!-- News Grid -->
-    <div id="news-container" style="display: flex; flex-direction: column; gap: 0.75rem;">
-      {sortedNews.slice(0, ITEMS_PER_PAGE).map((news, index) => (
-        <article 
+    <!-- News List -->
+    <div id="news-list" style="display: flex; flex-direction: column; gap: 0.75rem;">
+      {sortedNews.slice(0, ITEMS_PER_PAGE).map(news => (
+        <a 
+          href={`/news/${news.id}`}
           class={`news-item ${(news.data.tickers || []).join(' ')} cat-${news.data.category}`}
           data-tickers={(news.data.tickers || []).join(' ')}
           data-category={news.data.category}
-          style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s;"
+          style="display: block; background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; text-decoration: none;"
         >
-          <a href={`/news/${news.id}`} style="text-decoration: none; display: block; padding: 1rem;">
-            <div style="display: flex; gap: 0.75rem;">
-              <!-- Impact Indicator -->
-              <div style={`width: 4px; border-radius: 9999px; flex-shrink: 0; background: ${getImpactColor(news.data.impact ?? 'neutral')};`} />
-              
-              <div style="flex: 1; min-width: 0;">
-                <!-- Meta Row -->
-                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
-                  <span style="font-size: 0.75rem; color: var(--text-muted);">{formatTimeAgo(news.data.date)}</span>
-                  <span style="font-size: 0.75rem; color: var(--text-muted);">•</span>
-                  <span style="font-size: 0.75rem; color: var(--accent-blue);">{news.data.source}</span>
-                  <span style="font-size: 0.75rem; color: var(--text-muted);">•</span>
-                  <span style={`font-size: 0.7rem; padding: 0.125rem 0.5rem; border-radius: 9999px; background: var(--background); color: var(--text-muted);`}>
+          <table style="width: 100%; border: 0;">
+            <tr>
+              <td style="width: 4px; padding-right: 12px; vertical-align: top;">
+                <div style={`width: 4px; height: 50px; border-radius: 2px; background: ${getImpactColor(news.data.impact ?? 'neutral')};`}></div>
+              </td>
+              <td style="vertical-align: top; width: 100%;">
+                <div style="margin-bottom: 6px;">
+                  <span style="font-size: 12px; color: var(--text-muted);">{formatTimeAgo(news.data.date)} • {news.data.source}</span>
+                  <span style={`font-size: 11px; margin-left: 8px; padding: 2px 8px; border-radius: 10px; background: var(--background); color: var(--text-muted);"}>
                     {news.data.category === 'macro' ? '🌐' : '📊'} {news.data.category}
                   </span>
-                  {news.data.impact && (
-                    <span style={`font-size: 0.7rem; padding: 0.125rem 0.5rem; border-radius: 9999px; background: ${getImpactColor(news.data.impact)}20; color: ${getImpactColor(news.data.impact)};`}>
-                      {getImpactEmoji(news.data.impact)} {news.data.impact}
-                    </span>
-                  )}
+                  <span style={`font-size: 11px; margin-left: 4px; padding: 2px 8px; border-radius: 10px; background: ${getImpactColor(news.data.impact ?? 'neutral')}22; color: ${getImpactColor(news.data.impact ?? 'neutral')};">
+                    {getImpactEmoji(news.data.impact ?? 'neutral')} {news.data.impact}
+                  </span>
                 </div>
-                
-                <!-- Title -->
-                <h3 style="font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 0.5rem; line-height: 1.4;">
+                <h3 style="font-size: 16px; font-weight: 600; color: var(--text); margin: 0 0 8px 0; line-height: 1.4;">
                   {news.data.title}
                 </h3>
-                
-                <!-- Tickers -->
                 {(news.data.tickers || []).length > 0 && (
-                  <div style="display: flex; gap: 0.375rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
+                  <div style="margin-bottom: 8px;">
                     {(news.data.tickers || []).map(ticker => (
-                      <span 
-                        class="ticker-tag"
-                        data-ticker={ticker}
-                        style="font-size: 0.75rem; background: rgba(0, 208, 132, 0.15); color: var(--accent-green); padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-weight: 500; cursor: pointer; transition: background 0.2s;"
-                        onclick="event.preventDefault(); event.stopPropagation(); filterByTicker('{ticker}');"
-                      >
+                      <span style="display: inline-block; font-size: 12px; background: rgba(0, 208, 132, 0.15); color: var(--accent-green); padding: 3px 8px; border-radius: 4px; margin-right: 4px; font-weight: 500;">
                         ${ticker}
                       </span>
                     ))}
                   </div>
                 )}
-                
-                <!-- Summary Preview -->
-                <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                  {news.body?.slice(0, 200).replace(/[#\*]/g, '').trim()}...
+                <p style="font-size: 14px; color: var(--text-muted); line-height: 1.5; margin: 0;">
+                  {news.body?.slice(0, 150).replace(/[#\*\-\_\[\]\(\)\n]/g, ' ').trim()}...
                 </p>
-              </div>
-              
-              <!-- Arrow -->
-              <div style="display: flex; align-items: center; color: var(--text-muted);">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M9 18l6-6-6-6"/>
-                </svg>
-              </div>
-            </div>
-          </a>
-        </article>
+              </td>
+              <td style="width: 30px; vertical-align: middle; text-align: right;">
+                <span style="color: var(--text-muted); font-size: 18px;">›</span>
+              </td>
+            </tr>
+          </table>
+        </a>
       ))}
     </div>
 
     <!-- Pagination -->
     {sortedNews.length > ITEMS_PER_PAGE && (
-      <div style="display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin-top: 1.5rem; padding: 1rem;">
-        <button id="prev-btn" disabled style="padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid var(--border); background: var(--surface); color: var(--text-muted); cursor: not-allowed; font-size: 0.875rem;">
-          ← Prev
-        </button>
-        <span id="page-info" style="font-size: 0.875rem; color: var(--text-muted); padding: 0 1rem;">
-          Page 1 of {totalPages}
-        </span>
-        <button id="next-btn" style="padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid var(--border); background: var(--accent-green); color: #000; cursor: pointer; font-size: 0.875rem; font-weight: 500;">
-          Next →
-        </button>
+      <div style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 1.5rem;">
+        <button id="prev-btn" disabled style="padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text-muted); cursor: not-allowed;">← Prev</button>
+        <span id="page-info" style="font-size: 14px; color: var(--text-muted);">Page 1 of {totalPages}</span>
+        <button id="next-btn" style="padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid var(--border); background: var(--accent-green); color: #000; cursor: pointer; font-weight: 500;">Next →</button>
       </div>
     )}
 
-    <!-- Footer -->
     <footer style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); text-align: center;">
-      <p style="font-size: 0.75rem; color: var(--text-muted);">
-        Insider Hub • Auto-scraping active • Protected by Cloudflare Access
-      </p>
+      <p style="font-size: 12px; color: var(--text-muted);">Insider Hub • Auto-scraping active • Cloudflare Access Protected</p>
     </footer>
-
   </main>
 
-  <script define:vars={{ allNews: sortedNews, itemsPerPage: ITEMS_PER_PAGE }}>
+  <script define:vars={{ allNews: sortedNews, itemsPerPage: ITEMS_PER_PAGE, totalPages }}>
     let currentPage = 1;
     let filteredNews = allNews;
     let currentFilter = 'all';
     let currentCategory = 'all';
     
-    const container = document.getElementById('news-container');
+    const container = document.getElementById('news-list');
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
     const pageInfo = document.getElementById('page-info');
@@ -214,89 +167,108 @@ function getImpactEmoji(impact: string) {
       const end = start + itemsPerPage;
       const pageNews = filteredNews.slice(start, end);
       
-      container.innerHTML = pageNews.map(news => `
-        <article 
-          class="news-item"
-          style="background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s;"
-        >
-          <a href="/news/${news.id}" style="text-decoration: none; display: block; padding: 1rem;">
-            <div style="display: flex; gap: 0.75rem;">
-              <div style="width: 4px; border-radius: 9999px; flex-shrink: 0; background: ${news.data.impact === 'positive' ? '#00d084' : news.data.impact === 'negative' ? '#ff4757' : '#6b7280'};" />
-              <div style="flex: 1; min-width: 0;">
-                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
-                  <span style="font-size: 0.75rem; color: var(--text-muted);">${new Date(news.data.date).toLocaleDateString()}</span>
-                  <span style="font-size: 0.75rem; color: var(--text-muted);">•</span>
-                  <span style="font-size: 0.75rem; color: var(--accent-blue);">${news.data.source}</span>
-                  <span style="font-size: 0.75rem; color: var(--text-muted);">•</span>
-                  <span style="font-size: 0.7rem; padding: 0.125rem 0.5rem; border-radius: 9999px; background: var(--background); color: var(--text-muted);">
-                    ${news.data.category === 'macro' ? '🌐' : '📊'} ${news.data.category}
-                  </span>
-                </div>
-                <h3 style="font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 0.5rem; line-height: 1.4;">
-                  ${news.data.title}
-                </h3>
-                ${(news.data.tickers || []).length > 0 ? `
-                  <div style="display: flex; gap: 0.375rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
-                    ${(news.data.tickers || []).map(t => `
-                      <span style="font-size: 0.75rem; background: rgba(0, 208, 132, 0.15); color: var(--accent-green); padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-weight: 500;">
-                        $${t}
-                      </span>
-                    `).join('')}
+      const getImpactColor = (impact) => {
+        switch (impact) {
+          case 'positive': return '#00d084';
+          case 'negative': return '#ff4757';
+          default: return '#6b7280';
+        }
+      };
+      const getImpactEmoji = (impact) => {
+        switch (impact) {
+          case 'positive': return '🟢';
+          case 'negative': return '🔴';
+          default: return '🟡';
+        }
+      };
+      const formatDate = (dateStr) => {
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diffMs = now.getTime() - date.getTime();
+        const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+        const diffMins = Math.floor(diffMs / (1000 * 60));
+        if (diffMins < 60) return `${diffMins}m ago`;
+        if (diffHrs < 24) return `${diffHrs}h ago`;
+        return `${Math.floor(diffHrs / 24)}d ago`;
+      };
+      
+      container.innerHTML = pageNews.map(news => {
+        const impactColor = getImpactColor(news.data.impact);
+        const tickersHtml = (news.data.tickers || []).map(t => 
+          `<span style="display: inline-block; font-size: 12px; background: rgba(0, 208, 132, 0.15); color: var(--accent-green); padding: 3px 8px; border-radius: 4px; margin-right: 4px; font-weight: 500;">$${t}</span>`
+        ).join('');
+        const bodyPreview = (news.body || '').slice(0, 150).replace(/[#\*\-\_\[\]\(\)\n]/g, ' ').trim() + '...';
+        
+        return `
+          <a href="/news/${news.id}" class="news-item" style="display: block; background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; text-decoration: none;">
+            <table style="width: 100%; border: 0;">
+              <tr>
+                <td style="width: 4px; padding-right: 12px; vertical-align: top;">
+                  <div style="width: 4px; height: 50px; border-radius: 2px; background: ${impactColor};"></div>
+                </td>
+                <td style="vertical-align: top; width: 100%;">
+                  <div style="margin-bottom: 6px;">
+                    <span style="font-size: 12px; color: var(--text-muted);">${formatDate(news.data.date)} • ${news.data.source}</span>
+                    <span style="font-size: 11px; margin-left: 8px; padding: 2px 8px; border-radius: 10px; background: var(--background); color: var(--text-muted);">
+                      ${news.data.category === 'macro' ? '🌐' : '📊'} ${news.data.category}
+                    </span>
+                    <span style="font-size: 11px; margin-left: 4px; padding: 2px 8px; border-radius: 10px; background: ${impactColor}22; color: ${impactColor};">
+                      ${getImpactEmoji(news.data.impact || 'neutral')} ${news.data.impact || 'neutral'}
+                    </span>
                   </div>
-                ` : ''}
-              </div>
-            </div>
+                  <h3 style="font-size: 16px; font-weight: 600; color: var(--text); margin: 0 0 8px 0; line-height: 1.4;">${news.data.title}</h3>
+                  ${(news.data.tickers || []).length > 0 ? `<div style="margin-bottom: 8px;">${tickersHtml}</div>` : ''}
+                  <p style="font-size: 14px; color: var(--text-muted); line-height: 1.5; margin: 0;">${bodyPreview}</p>
+                </td>
+                <td style="width: 30px; vertical-align: middle; text-align: right;">
+                  <span style="color: var(--text-muted); font-size: 18px;">›</span>
+                </td>
+              </tr>
+            </table>
           </a>
-        </article>
-      `).join('');
+        `;
+      }).join('');
       
       if (pageInfo) {
-        const totalPages = Math.ceil(filteredNews.length / itemsPerPage);
-        pageInfo.textContent = `Page ${currentPage} of ${totalPages} (${filteredNews.length} articles)`;
+        const pages = Math.ceil(filteredNews.length / itemsPerPage);
+        pageInfo.textContent = `Page ${currentPage} of ${pages} (${filteredNews.length} articles)`;
         if (prevBtn) prevBtn.disabled = currentPage === 1;
-        if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+        if (nextBtn) nextBtn.disabled = currentPage >= pages;
       }
     }
     
-    function filterByTicker(ticker) {
+    window.filterByTicker = function(ticker) {
       currentFilter = ticker;
       currentPage = 1;
       if (ticker === 'all') {
         filteredNews = currentCategory === 'all' ? allNews : allNews.filter(n => n.data.category === currentCategory);
       } else {
         filteredNews = allNews.filter(n => (n.data.tickers || []).includes(ticker));
-        if (currentCategory !== 'all') {
-          filteredNews = filteredNews.filter(n => n.data.category === currentCategory);
-        }
+        if (currentCategory !== 'all') filteredNews = filteredNews.filter(n => n.data.category === currentCategory);
       }
-      updateFilterButtons();
+      updateButtons();
       renderNews();
-    }
+    };
     
-    function filterByCategory(cat) {
+    window.filterByCategory = function(cat) {
       currentCategory = cat;
       currentPage = 1;
       if (cat === 'all') {
         filteredNews = currentFilter === 'all' ? allNews : allNews.filter(n => (n.data.tickers || []).includes(currentFilter));
       } else {
         filteredNews = allNews.filter(n => n.data.category === cat);
-        if (currentFilter !== 'all') {
-          filteredNews = filteredNews.filter(n => (n.data.tickers || []).includes(currentFilter));
-        }
+        if (currentFilter !== 'all') filteredNews = filteredNews.filter(n => (n.data.tickers || []).includes(currentFilter));
       }
-      updateCategoryButtons();
+      updateButtons();
       renderNews();
-    }
+    };
     
-    function updateFilterButtons() {
+    function updateButtons() {
       document.querySelectorAll('.filter-btn').forEach(btn => {
         const isActive = btn.dataset.filter === currentFilter;
         btn.style.background = isActive ? 'var(--accent-green)' : 'var(--background)';
         btn.style.color = isActive ? '#000' : 'var(--text)';
       });
-    }
-    
-    function updateCategoryButtons() {
       document.querySelectorAll('.cat-btn').forEach(btn => {
         const isActive = btn.dataset.cat === currentCategory;
         btn.style.background = isActive ? 'var(--accent-green)' : 'var(--background)';
@@ -304,33 +276,22 @@ function getImpactEmoji(impact: string) {
       });
     }
     
-    // Event listeners
     document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => filterByTicker(btn.dataset.filter));
+      btn.addEventListener('click', () => window.filterByTicker(btn.dataset.filter));
     });
-    
     document.querySelectorAll('.cat-btn').forEach(btn => {
-      btn.addEventListener('click', () => filterByCategory(btn.dataset.cat));
+      btn.addEventListener('click', () => window.filterByCategory(btn.dataset.cat));
     });
     
     if (prevBtn) {
       prevBtn.addEventListener('click', () => {
-        if (currentPage > 1) {
-          currentPage--;
-          renderNews();
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        if (currentPage > 1) { currentPage--; renderNews(); window.scrollTo(0, 0); }
       });
     }
-    
     if (nextBtn) {
       nextBtn.addEventListener('click', () => {
-        const totalPages = Math.ceil(filteredNews.length / itemsPerPage);
-        if (currentPage < totalPages) {
-          currentPage++;
-          renderNews();
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        const pages = Math.ceil(filteredNews.length / itemsPerPage);
+        if (currentPage < pages) { currentPage++; renderNews(); window.scrollTo(0, 0); }
       });
     }
   </script>
