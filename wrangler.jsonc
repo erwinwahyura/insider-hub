@@ -12,7 +12,14 @@
   "r2_buckets": [
     {
       "binding": "R2_BUCKET",
-      "bucket_name": "data-md"
+      "bucket_name": "data-md",
+      "public_access": "read-only"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "SESSION",
+      "id": "insider-hub-session"
     }
   ]
 }
