@@ -1,0 +1,339 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Portfolio — Insider Hub">
+<div class="page">
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="topbar-left">
+        <span class="logo">Insider Hub</span>
+        <span class="logo-sub">Portfolio Dashboard</span>
+        <span class="private-badge">Private</span>
+      </div>
+      <div class="topbar-right">
+        <a href="/" class="nav-link">← Back to News</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="body">
+
+    <!-- Portfolio Overview -->
+    <section class="section">
+      <div class="section-head">
+        <h2 class="section-title">Portfolio Overview</h2>
+        <p class="section-sub">April 2026 • Om Obet Framework</p>
+      </div>
+
+      <div class="cards-row">
+        <div class="stat-card">
+          <div class="stat-label">Total Equity</div>
+          <div class="stat-value">Rp 67.4M</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Cash Available</div>
+          <div class="stat-value" style="color: var(--green)">Rp 62.0M</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Assets</div>
+          <div class="stat-value">Rp 129.4M</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Cash %</div>
+          <div class="stat-value" style="color: var(--yellow)">48%</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Core Holdings -->
+    <section class="section">
+      <div class="section-head">
+        <h2 class="section-title">Core Holdings (Priority Actions)</h2>
+      </div>
+
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Ticker</th>
+              <th>Value</th>
+              <th>Avg Buy</th>
+              <th>Current</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="priority-high">
+              <td><strong>ESSA</strong></td>
+              <td>Rp 18.7M</td>
+              <td>Rp 722</td>
+              <td>Rp 690-695</td>
+              <td><span class="badge down">-3.7% to -4.4%</span></td>
+              <td><span class="action-exit">PARTIAL EXIT 50-70%</span></td>
+            </tr>
+            <tr>
+              <td><strong>PGEO</strong></td>
+              <td>Rp 20.8M</td>
+              <td>—</td>
+              <td>~700</td>
+              <td><span class="badge neutral">HOLD</span></td>
+              <td>Monitor payout ratio (97% unsustainable)</td>
+            </tr>
+            <tr>
+              <td><strong>PTPS</strong></td>
+              <td>Rp 19.9M</td>
+              <td>—</td>
+              <td>—</td>
+              <td><span class="badge warn">NEEDS ANALYSIS</span></td>
+              <td>15% of portfolio — priority keystat</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Watchlist -->
+    <section class="section">
+      <div class="section-head">
+        <h2 class="section-title">Watchlist</h2>
+        <p class="section-sub">Targets for deployment</p>
+      </div>
+
+      <div class="cards-grid">
+        <div class="news-card">
+          <div class="news-header">
+            <span class="news-ticker up">ISSP</span>
+            <span class="badge up">BUY ✅</span>
+          </div>
+          <div class="news-title">Top Redeployment Target</div>
+          <div class="news-body">
+            <p>PER 5.95 | PBV 0.61 | PEG 0.93</p>
+            <p>Insider buying + Unit 7 capex catalyst</p>
+          </div>
+          <div class="news-footer">
+            <span class="dim">Score: 7.5/10</span>
+            <span class="up">Om Obet: LULUS</span>
+          </div>
+        </div>
+
+        <div class="news-card">
+          <div class="news-header">
+            <span class="news-ticker warn">ELSA</span>
+            <span class="badge warn">WAIT ⚠️</span>
+          </div>
+          <div class="news-title">Governance Risk</div>
+          <div class="news-body">
+            <p>BPK audit fraud findings | Management risk</p>
+            <p>PER 7.52 attractive but WAIT for clarity</p>
+          </div>
+          <div class="news-footer">
+            <span class="dim">Score: 8/10 → WAIT</span>
+            <span class="warn">Governance override</span>
+          </div>
+        </div>
+
+        <div class="news-card">
+          <div class="news-header">
+            <span class="news-ticker down">ITMG</span>
+            <span class="badge down">CYCLICAL ⚠️</span>
+          </div>
+          <div class="news-title">Geopolitik Play Only</div>
+          <div class="news-body">
+            <p>PER 6.48 | Div 13.83% | Laba -71%</p>
+            <p>Payout 118% unsustainable</p>
+          </div>
+          <div class="news-footer">
+            <span class="dim">Score: 7/10</span>
+            <span class="down">Optional play</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Action Plan -->
+    <section class="section">
+      <div class="section-head">
+        <h2 class="section-title">Active Action Plan</h2>
+      </div>
+
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Priority</th>
+              <th>Ticker</th>
+              <th>Action</th>
+              <th>Amount</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="priority-high">
+              <td>🔴 HIGH</td>
+              <td>ESSA</td>
+              <td><span class="action-exit">Partial Exit</span></td>
+              <td>Rp 9-13M</td>
+              <td>Sell 50-70% at 690-695, redeploy to ISSP</td>
+            </tr>
+            <tr class="priority-high">
+              <td>🔴 HIGH</td>
+              <td>ISSP</td>
+              <td><span class="action-buy">Entry</span></td>
+              <td>Rp 12M (20%)</td>
+              <td>Cicil 40-30-30 method at ~430s</td>
+            </tr>
+            <tr class="priority-high">
+              <td>🔴 HIGH</td>
+              <td>PTPS</td>
+              <td><span class="action-analyze">Keystat</span></td>
+              <td>—</td>
+              <td>Complete analysis — 15% of portfolio</td>
+            </tr>
+            <tr class="priority-med">
+              <td>🟡 MED</td>
+              <td>ELSA</td>
+              <td><span class="action-hold">WAIT</span></td>
+              <td>Rp 25M (40%)</td>
+              <td>Hold cash allocation until BPK clear</td>
+            </tr>
+            <tr class="priority-low">
+              <td>🟢 LOW</td>
+              <td>BSSR/AADI</td>
+              <td><span class="action-dca">DCA</span></td>
+              <td>Rp 9M (15%)</td>
+              <td>Top-up dividend DCA positions</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Framework Reminder -->
+    <section class="section">
+      <div class="section-head">
+        <h2 class="section-title">Om Obet Framework</h2>
+      </div>
+
+      <div class="cards-grid" style="grid-template-columns: repeat(3, 1fr);">
+        <div class="news-card">
+          <div class="news-title">1. Management Effectiveness</div>
+          <div class="news-body">
+            <ul class="body-list">
+              <li>ROE, ROA, ROIC trends</li>
+              <li>Insider activity (buy/sell)</li>
+              <li>Governance red flags (BPK/audit)</li>
+            </ul>
+          </div>
+        </div>
+        <div class="news-card">
+          <div class="news-title">2. Solvency</div>
+          <div class="news-body">
+            <ul class="body-list">
+              <li>D/E ratio (&lt;0.5 🟢)</li>
+              <li>Altman Z-Score (&gt;2.99 🟢)</li>
+              <li>Current ratio (&gt;1.5 🟢)</li>
+            </ul>
+          </div>
+        </div>
+        <div class="news-card">
+          <div class="news-title">3. Valuation</div>
+          <div class="news-body">
+            <ul class="body-list">
+              <li>PER (&lt;10 🟢), PBV (&lt;1 🟢)</li>
+              <li>Div Yield (&gt;5% 🟢)</li>
+              <li>PEG (&lt;1 🟢)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel note-panel" style="margin-top: 1rem;">
+        <p><strong>Hard Rule:</strong> "Would I buy this fresh today at this price?"<br>
+        If <strong>NO</strong> → Consider exiting. Governance red flags override all attractive valuations.</p>
+      </div>
+    </section>
+
+  </div>
+</div>
+</Layout>
+
+<style>
+  .nav-link {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.875rem;
+  }
+  .nav-link:hover {
+    color: var(--accent-blue);
+  }
+  .priority-high {
+    border-left: 3px solid var(--accent-red);
+  }
+  .priority-med {
+    border-left: 3px solid var(--accent-yellow);
+  }
+  .priority-low {
+    border-left: 3px solid var(--accent-green);
+  }
+  .action-exit {
+    background: var(--accent-red);
+    color: #000;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .action-buy {
+    background: var(--accent-green);
+    color: #000;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .action-hold {
+    background: var(--accent-yellow);
+    color: #000;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .action-analyze {
+    background: var(--accent-blue);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .action-dca {
+    background: var(--text-dim);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .note-panel {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+  }
+  .body-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .body-list li {
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.875rem;
+  }
+  .body-list li:last-child {
+    border-bottom: none;
+  }
+</style>
+</Layout>
