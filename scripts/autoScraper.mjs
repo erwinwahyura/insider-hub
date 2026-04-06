@@ -99,34 +99,49 @@ const RSS_QUERIES = [
   { q: 'rupiah depreciation IDR USD 16000 BI intervention', tickers: [], category: 'macro' },
   { q: 'Indonesia inflation CPI 2026 food energy price', tickers: [], category: 'macro' },
   { q: 'fuel subsidy BBM Pertamina hike policy', tickers: ['PTPS','PGEO'], category: 'macro' },
+  
+  // Asia Business — Nikkei Asia
+  { q: 'site:nikkei.com Indonesia coal nickel mining', tickers: ['ITMG','ADRO','ANTM','INCO','ESSA'], category: 'macro' },
+  { q: 'site:nikkei.com Indonesia energy Pertamina', tickers: ['PTPS','PGEO'], category: 'macro' },
+  { q: 'site:nikkei.com Indonesia banking finance', tickers: ['BBRI','BBCA'], category: 'macro' },
+  { q: 'site:nikkei.com ASEAN market trade economy', tickers: [], category: 'macro' },
+  { q: 'site:nikkei.com China economy commodity demand', tickers: ['ITMG','ADRO','ANTM','INCO','ESSA'], category: 'macro' },
 ];
 
 // Nitter (Twitter/X RSS mirror) feeds — Key accounts
-// Note: Nitter instances change frequently, may need updates
+// Note: Nitter instances change frequently, rotating through working instances
+const NITTER_INSTANCES = [
+  'https://nitter.privacydev.net',
+  'https://nitter.cz', 
+  'https://nitter.poast.org',
+  'https://nitter.mint.lgbt',
+  'https://nitter.esmailelbob.xyz'
+];
+
 const NITTER_FEEDS = [
   // Official accounts
-  { url: 'https://nitter.net/idx_bei/rss',                  name: 'IDX Official',      tickers: [],     category: 'macro' },
-  { url: 'https://nitter.net/BEI_Corporate/rss',           name: 'BEI Corporate',     tickers: [],     category: 'micro' },
-  { url: 'https://nitter.net/bank_indonesia/rss',          name: 'Bank Indonesia',    tickers: [],     category: 'macro' },
-  { url: 'https://nitter.net/kemenkeuRI/rss',              name: 'Kemenkeu',          tickers: [],     category: 'macro' },
-  { url: 'https://nitter.net/purbayasadewa/rss',         name: 'Purbaya Finance',   tickers: [],     category: 'macro' },
+  { handle: 'idx_bei',           name: 'IDX Official',      tickers: [],     category: 'macro' },
+  { handle: 'BEI_Corporate',     name: 'BEI Corporate',     tickers: [],     category: 'micro' },
+  { handle: 'bank_indonesia',    name: 'Bank Indonesia',    tickers: [],     category: 'macro' },
+  { handle: 'kemenkeuRI',        name: 'Kemenkeu',          tickers: [],     category: 'macro' },
+  { handle: 'purbayasadewa',     name: 'Purbaya Finance',   tickers: [],     category: 'macro' },
   
   // Energy/Mining/Policy
-  { url: 'https://nitter.net/Pertamina/rss',               name: 'Pertamina',         tickers: ['PTPS','PGEO'], category: 'micro' },
-  { url: 'https://nitter.net/AntamOfficial/rss',           name: 'Antam ANTM',        tickers: ['ANTM'], category: 'micro' },
-  { url: 'https://nitter.net/ESDM_RI/rss',                 name: 'ESDM Ministry',     tickers: ['ITMG','ADRO','PTPS','PGEO'], category: 'macro' },
-  { url: 'https://nitter.net/BahlilLahadalia/rss',         name: 'Bahlil ESDM',       tickers: ['ITMG','ADRO','ANTM','PTPS','PGEO'], category: 'macro' },
+  { handle: 'Pertamina',         name: 'Pertamina',         tickers: ['PTPS','PGEO'], category: 'micro' },
+  { handle: 'AntamOfficial',     name: 'Antam ANTM',        tickers: ['ANTM'], category: 'micro' },
+  { handle: 'ESDM_RI',           name: 'ESDM Ministry',     tickers: ['ITMG','ADRO','PTPS','PGEO'], category: 'macro' },
+  { handle: 'BahlilLahadalia',   name: 'Bahlil ESDM',       tickers: ['ITMG','ADRO','ANTM','PTPS','PGEO'], category: 'macro' },
   
   // Macro/Economic Research
-  { url: 'https://nitter.net/Bappenas/rss',                name: 'Bappenas',          tickers: [],     category: 'macro' },
-  { url: 'https://nitter.net/BPS_Statistics/rss',          name: 'BPS Statistics',    tickers: [],     category: 'macro' },
+  { handle: 'Bappenas',          name: 'Bappenas',          tickers: [],     category: 'macro' },
+  { handle: 'BPS_Statistics',    name: 'BPS Statistics',    tickers: [],     category: 'macro' },
 
   // Financial News & Analysts
-  { url: 'https://nitter.net/kontan/rss',                  name: 'Kontan',            tickers: [],     category: 'macro' },
-  { url: 'https://nitter.net/Bisniscom/rss',             name: 'Bisnis Indonesia',  tickers: [],     category: 'macro' },
-  { url: 'https://nitter.net/investor_id/rss',           name: 'Investor Daily',    tickers: [],     category: 'macro' },
-  { url: 'https://nitter.net/wak_research/rss',          name: 'William Analytica', tickers: [],     category: 'macro' },
-  { url: 'https://nitter.net/FirstRevi/rss',             name: 'First Metro',       tickers: [],     category: 'macro' },
+  { handle: 'kontan',            name: 'Kontan',            tickers: [],     category: 'macro' },
+  { handle: 'Bisniscom',         name: 'Bisnis Indonesia',  tickers: [],     category: 'macro' },
+  { handle: 'investor_id',       name: 'Investor Daily',    tickers: [],     category: 'macro' },
+  { handle: 'wak_research',      name: 'William Analytica', tickers: [],     category: 'macro' },
+  { handle: 'FirstRevi',         name: 'First Metro',       tickers: [],     category: 'macro' },
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -492,17 +507,35 @@ async function scrapeNews() {
   }
 
   // ── Fetch Twitter/X via Nitter RSS ───────────────────────────────────────────
+
+  // Helper to try multiple Nitter instances
+  async function fetchNitterWithFallback(handle) {
+    for (const instance of NITTER_INSTANCES) {
+      try {
+        const url = `${instance}/${handle}/rss`;
+        const res = await fetch(url, {
+          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; InsiderHubBot/1.0)' },
+          signal: AbortSignal.timeout(8000),
+        });
+        if (res.ok) return await res.text();
+      } catch (e) {
+        // Try next instance
+        continue;
+      }
+    }
+    throw new Error('All Nitter instances failed');
+  }
   console.log('\n  Fetching Twitter/X via Nitter...');
   
   for (const feed of NITTER_FEEDS) {
-    console.log(`    Feed: ${feed.name}`);
+    console.log(`    Feed: ${feed.name} (@${feed.handle})`);
     
     let xml;
     try {
-      xml = await fetchRss(feed.url);
+      xml = await fetchNitterWithFallback(feed.handle);
     } catch (e) {
-      console.warn(`      ✗ Nitter failed: ${e.message}`);
-      errors.push({ nitter: feed.name, error: e.message });
+      console.warn(`      ✗ Nitter failed (all instances): ${e.message}`);
+      errors.push({ nitter: feed.name, handle: feed.handle, error: e.message });
       continue;
     }
     
