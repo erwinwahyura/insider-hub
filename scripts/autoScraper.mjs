@@ -111,9 +111,10 @@ const RSS_QUERIES = [
 // Nitter (Twitter/X RSS mirror) feeds — Key accounts
 // Note: Nitter instances change frequently, rotating through working instances
 const NITTER_INSTANCES = [
-  'https://nitter.privacydev.net',
-  'https://nitter.cz', 
+  'https://nitter.net',
   'https://nitter.poast.org',
+  'https://nitter.privacydev.net',
+  'https://nitter.cz',
   'https://nitter.mint.lgbt',
   'https://nitter.esmailelbob.xyz'
 ];
@@ -400,6 +401,7 @@ async function scrapeNews() {
 
   const created = [];
   const errors = [];
+  const nitterErrors = [];
 
   for (const query of RSS_QUERIES) {
     const url = googleNewsRssUrl(query.q);
@@ -535,7 +537,7 @@ async function scrapeNews() {
       xml = await fetchNitterWithFallback(feed.handle);
     } catch (e) {
       console.warn(`      ✗ Nitter failed (all instances): ${e.message}`);
-      errors.push({ nitter: feed.name, handle: feed.handle, error: e.message });
+      nitterErrors.push({ nitter: feed.name, handle: feed.handle, error: e.message });
       continue;
     }
     
@@ -635,14 +637,18 @@ async function scrapeNews() {
   await writeFile(cacheFile, JSON.stringify([...seenUrls], null, 2), 'utf8');
 
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-  console.log(`\nDone in ${elapsed}s — ${created.length} new articles, ${errors.length} errors`);
+  const totalErrors = errors.length + nitterErrors.length;
+  console.log(`\nDone in ${elapsed}s — ${created.length} new articles, ${errors.length} errors, ${nitterErrors.length} nitter errors`);
   if (created.length) console.log('Created:', created);
   if (errors.length)  console.log('Errors:', errors);
+  if (nitterErrors.length) console.log('Nitter errors (non-fatal):', nitterErrors);
 
-  return { created, errors };
+  return { created, errors, nitterErrors };
 }
 
 // Run
 scrapeNews()
   .then(r => process.exit(r.errors.length > 0 && r.created.length === 0 ? 1 : 0))
   .catch(e => { console.error('Fatal:', e); process.exit(1); });
+// Note: nitterErrors are excluded from the exit code check — Nitter instance failures
+// are infrastructure issues beyond our control and should not fail the scrape job.
