@@ -27,7 +27,7 @@ const TICKER_META = {
 
 // Google News RSS queries — mix of ticker-specific and macro IDX topics
 const RSS_QUERIES = [
-  // Portfolio tickers
+  // Portfolio tickers — Mainstream News
   { q: 'ITMG "Indo Tambangraya" saham',       tickers: ['ITMG'],        category: 'micro' },
   { q: 'ADRO Adaro "Alamtri" saham',          tickers: ['ADRO'],        category: 'micro' },
   { q: 'ANTM "Aneka Tambang" nikel emas',     tickers: ['ANTM'],        category: 'micro' },
@@ -37,6 +37,23 @@ const RSS_QUERIES = [
   { q: 'BBRI "Bank Rakyat" saham kredit',     tickers: ['BBRI'],        category: 'micro' },
   { q: 'BBCA "Bank Central Asia" saham',      tickers: ['BBCA'],        category: 'micro' },
   { q: 'TLKM Telkom Indonesia',               tickers: ['TLKM'],        category: 'micro' },
+  
+  // Twitter/X Social Sentiment — Portfolio Tickers
+  { q: 'ITMG twitter OR x.com OR tweet saham batubara', tickers: ['ITMG'], category: 'micro', source_type: 'twitter' },
+  { q: 'ADRO twitter OR x.com OR tweet saham',        tickers: ['ADRO'], category: 'micro', source_type: 'twitter' },
+  { q: 'ESSA twitter OR x.com OR nickel stainless',  tickers: ['ESSA'], category: 'micro', source_type: 'twitter' },
+  { q: 'PTPS twitter OR x.com Pertamina',          tickers: ['PTPS'], category: 'micro', source_type: 'twitter' },
+  { q: 'PGEO twitter OR x.com Pertamina Geothermal', tickers: ['PGEO'], category: 'micro', source_type: 'twitter' },
+  { q: 'ANTM twitter OR x.com nikel',              tickers: ['ANTM'], category: 'micro', source_type: 'twitter' },
+  { q: 'BBRI twitter OR x.com bank saham',         tickers: ['BBRI'], category: 'micro', source_type: 'twitter' },
+  { q: 'BBCA twitter OR x.com bank saham',         tickers: ['BBCA'], category: 'micro', source_type: 'twitter' },
+  
+  // Twitter/X — Macro & Market Sentiment
+  { q: 'IHSG twitter OR x.com OR tweet "Indonesia stock"', tickers: [], category: 'macro', source_type: 'twitter' },
+  { q: 'IDX twitter OR x.com "Bursa Efek Indonesia"',    tickers: [], category: 'macro', source_type: 'twitter' },
+  { q: 'coal twitter OR x.com OR tweet Newcastle harga', tickers: ['ITMG','ADRO'], category: 'macro', source_type: 'twitter' },
+  { q: 'nickel twitter OR x.com OR tweet LME harga',     tickers: ['ANTM','INCO','ESSA'], category: 'macro', source_type: 'twitter' },
+  
   // Macro
   { q: 'IDX IHSG stock market Indonesia',     tickers: [],              category: 'macro' },
   { q: 'coal price Newcastle Indonesia export',tickers: ['ITMG','ADRO','PTBA'], category: 'macro' },
@@ -45,6 +62,22 @@ const RSS_QUERIES = [
   { q: 'Bank Indonesia BI rate rupiah',       tickers: [],              category: 'macro' },
   { q: 'Trump tariff Indonesia economy 2026', tickers: [],              category: 'macro' },
   { q: 'Indonesia GDP growth 2026',           tickers: [],              category: 'macro' },
+];
+
+// Nitter (Twitter/X RSS mirror) feeds — Key accounts
+// Note: Nitter instances change frequently, may need updates
+const NITTER_FEEDS = [
+  // Official accounts
+  { url: 'https://nitter.net/idx_bei/rss',                  name: 'IDX Official',      tickers: [],     category: 'macro' },
+  { url: 'https://nitter.net/BEI_Corporate/rss',           name: 'BEI Corporate',     tickers: [],     category: 'micro' },
+  { url: 'https://nitter.net/bank_indonesia/rss',          name: 'Bank Indonesia',    tickers: [],     category: 'macro' },
+  { url: 'https://nitter.net/kemenkeuRI/rss',              name: 'Kemenkeu',          tickers: [],     category: 'macro' },
+  
+  // Energy/Mining (PGEO, PTPS, ADRO related)
+  { url: 'https://nitter.net/Pertamina/rss',               name: 'Pertamina',         tickers: ['PTPS','PGEO'], category: 'micro' },
+  
+  // Coal/Mining (ITMG, ADRO, ANTM related)
+  { url: 'https://nitter.net/AntamOfficial/rss',           name: 'Antam ANTM',        tickers: ['ANTM'], category: 'micro' },
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -407,6 +440,113 @@ async function scrapeNews() {
 
     // Small delay between requests to be polite
     await new Promise(r => setTimeout(r, 500));
+  }
+
+  // ── Fetch Twitter/X via Nitter RSS ───────────────────────────────────────────
+  console.log('\n  Fetching Twitter/X via Nitter...');
+  
+  for (const feed of NITTER_FEEDS) {
+    console.log(`    Feed: ${feed.name}`);
+    
+    let xml;
+    try {
+      xml = await fetchRss(feed.url);
+    } catch (e) {
+      console.warn(`      ✗ Nitter failed: ${e.message}`);
+      errors.push({ nitter: feed.name, error: e.message });
+      continue;
+    }
+    
+    const items = parseRssItems(xml);
+    console.log(`      → ${items.length} tweets`);
+    
+    for (const item of items.slice(0, 3)) { // max 3 per account
+      // Skip if URL already seen
+      if (seenUrls.has(item.link)) continue;
+      seenUrls.add(item.link);
+      
+      // Skip if title already exists
+      const fp = fingerprint(item.title);
+      if (existingTitles.has(fp)) continue;
+      existingTitles.add(fp);
+      
+      const date = item.pubDate ? new Date(item.pubDate) : new Date();
+      if (isNaN(date.getTime())) continue;
+      
+      // Skip tweets older than 2 days (Twitter is fast-moving)
+      const ageMs = Date.now() - date.getTime();
+      if (ageMs > 2 * 24 * 60 * 60 * 1000) continue;
+      
+      const fullText = `${item.title} ${item.description}`;
+      
+      // Score for Twitter — lower threshold, focus on relevance
+      const { score, reasons } = scoreRelevance(fullText, feed.tickers);
+      // Boost score for official accounts
+      const boostedScore = score + (['IDX Official', 'Bank Indonesia', 'BEI Corporate'].includes(feed.name) ? 2 : 0);
+      
+      if (boostedScore < 3) {
+        console.log(`      ↷ Skip tweet (score ${boostedScore}): ${item.title.slice(0, 40)}`);
+        continue;
+      }
+      
+      const tickers = detectTickers(fullText, feed.tickers);
+      const impact = detectImpact(fullText);
+      const region = 'Indonesia';
+      const category = feed.category;
+      const source = `Twitter/X (${feed.name})`;
+      
+      const filename = `${slug(item.title, date)}.md`;
+      
+      // Twitter posts from official accounts → always high value
+      const isOfficial = ['IDX Official', 'Bank Indonesia', 'BEI Corporate', 'Kemenkeu'].includes(feed.name);
+      const isHighValue = boostedScore >= 5 || isOfficial || tickers.some(t => ['ITMG', 'ADRO', 'ESSA', 'PTPS', 'PGEO'].includes(t));
+      
+      if (isHighValue) {
+        const pendingPath = `${pendingDir}/${filename}`;
+        if (existsSync(pendingPath)) continue;
+        
+        const pendingMarkdown = buildPendingMarkdown({
+          title: item.title,
+          date,
+          category,
+          impact,
+          region,
+          tickers,
+          source,
+          url: item.link,
+          description: item.description,
+          queryTickers: feed.tickers
+        });
+        
+        await writeFile(pendingPath, pendingMarkdown);
+        created.push({ file: filename, title: item.title, score: boostedScore, pending: true, source: 'twitter' });
+        console.log(`      ✓ Pending tweet (score ${boostedScore}): ${item.title.slice(0, 40)}`);
+        continue;
+      }
+      
+      // Lower-priority tweets → direct publish
+      const filepath = `${newsDir}/${filename}`;
+      if (existsSync(filepath)) continue;
+      
+      const markdown = buildMarkdown({
+        title: item.title,
+        date,
+        category,
+        impact,
+        region,
+        tickers,
+        source,
+        url: item.link,
+        description: item.description,
+      });
+      
+      await writeFile(filepath, markdown, 'utf8');
+      created.push({ file: filename, title: item.title, score: boostedScore, source: 'twitter' });
+      console.log(`      ✓ [${boostedScore}] Tweet: ${filename}`);
+    }
+    
+    // Delay between Nitter feeds
+    await new Promise(r => setTimeout(r, 1000));
   }
 
   // Save updated URL cache
