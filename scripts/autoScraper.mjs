@@ -54,7 +54,14 @@ const RSS_QUERIES = [
   { q: 'coal twitter OR x.com OR tweet Newcastle harga', tickers: ['ITMG','ADRO'], category: 'macro', source_type: 'twitter' },
   { q: 'nickel twitter OR x.com OR tweet LME harga',     tickers: ['ANTM','INCO','ESSA'], category: 'macro', source_type: 'twitter' },
   
-  // Macro
+  // Twitter/X — Broader Economic & Policy
+  { q: 'China economy twitter OR x.com demand commodity', tickers: ['ITMG','ADRO','ANTM','INCO','ESSA'], category: 'macro', source_type: 'twitter' },
+  { q: 'Fed rate twitter OR x.com interest USD IDR',      tickers: [], category: 'macro', source_type: 'twitter' },
+  { q: 'tariff trump twitter OR x.com Indonesia trade',   tickers: [], category: 'macro', source_type: 'twitter' },
+  { q: 'inflasi twitter OR x.com OR inflation BI rate',  tickers: [], category: 'macro', source_type: 'twitter' },
+  { q: 'rupiah twitter OR x.com OR IDR USD exchange',     tickers: [], category: 'macro', source_type: 'twitter' },
+  
+  // Macro — Core Market
   { q: 'IDX IHSG stock market Indonesia',     tickers: [],              category: 'macro' },
   { q: 'coal price Newcastle Indonesia export',tickers: ['ITMG','ADRO','PTBA'], category: 'macro' },
   { q: 'nickel price LME Indonesia 2026',     tickers: ['ANTM','INCO','ESSA'], category: 'macro' },
@@ -62,6 +69,36 @@ const RSS_QUERIES = [
   { q: 'Bank Indonesia BI rate rupiah',       tickers: [],              category: 'macro' },
   { q: 'Trump tariff Indonesia economy 2026', tickers: [],              category: 'macro' },
   { q: 'Indonesia GDP growth 2026',           tickers: [],              category: 'macro' },
+  
+  // Macro — China Demand (Affects all commodities)
+  { q: 'China steel demand 2026 Indonesia coal nickel', tickers: ['ITMG','ADRO','ANTM','INCO','ESSA'], category: 'macro' },
+  { q: 'China stimulus property steel stainless', tickers: ['ITMG','ADRO','ESSA'], category: 'macro' },
+  { q: 'China PMI manufacturing commodity import', tickers: ['ITMG','ADRO','ANTM','INCO'], category: 'macro' },
+  
+  // Macro — Fed & Global Rates
+  { q: 'Fed interest rate decision 2026 impact', tickers: [], category: 'macro' },
+  { q: 'US dollar strength rupiah IDR weakness', tickers: [], category: 'macro' },
+  { q: 'Treasury yield emerging market capital flow', tickers: [], category: 'macro' },
+  
+  // Macro — Trade & Geopolitics
+  { q: 'Trump tariff trade war Indonesia export', tickers: [], category: 'macro' },
+  { q: 'US China trade deal commodity price', tickers: ['ITMG','ADRO','ANTM','INCO'], category: 'macro' },
+  { q: 'sanctions Russia energy coal alternative', tickers: ['ITMG','ADRO'], category: 'macro' },
+  
+  // Macro — Indonesia Policy
+  { q: 'Indonesia export ban mineral nickel coal policy', tickers: ['ANTM','INCO','ESSA','ITMG','ADRO'], category: 'macro' },
+  { q: 'Bahlil energy policy Indonesia mining', tickers: ['ITMG','ADRO','ANTM','PTPS','PGEO'], category: 'macro' },
+  { q: 'Indonesia renewable energy transition coal', tickers: ['ITMG','ADRO','PGEO'], category: 'macro' },
+  
+  // Macro — Regional Markets
+  { q: 'Malaysia KLCI Singapore STI Thailand SET correlation', tickers: [], category: 'macro' },
+  { q: 'ASEAN market foreign fund flow institutional', tickers: [], category: 'macro' },
+  { q: 'MSCI EM Asia Indonesia index inclusion', tickers: [], category: 'macro' },
+  
+  // Macro — Currency & Inflation
+  { q: 'rupiah depreciation IDR USD 16000 BI intervention', tickers: [], category: 'macro' },
+  { q: 'Indonesia inflation CPI 2026 food energy price', tickers: [], category: 'macro' },
+  { q: 'fuel subsidy BBM Pertamina hike policy', tickers: ['PTPS','PGEO'], category: 'macro' },
 ];
 
 // Nitter (Twitter/X RSS mirror) feeds — Key accounts
@@ -72,12 +109,24 @@ const NITTER_FEEDS = [
   { url: 'https://nitter.net/BEI_Corporate/rss',           name: 'BEI Corporate',     tickers: [],     category: 'micro' },
   { url: 'https://nitter.net/bank_indonesia/rss',          name: 'Bank Indonesia',    tickers: [],     category: 'macro' },
   { url: 'https://nitter.net/kemenkeuRI/rss',              name: 'Kemenkeu',          tickers: [],     category: 'macro' },
+  { url: 'https://nitter.net/sri_mulyani/rss',             name: 'Sri Mulyani',       tickers: [],     category: 'macro' },
   
-  // Energy/Mining (PGEO, PTPS, ADRO related)
+  // Energy/Mining/Policy
   { url: 'https://nitter.net/Pertamina/rss',               name: 'Pertamina',         tickers: ['PTPS','PGEO'], category: 'micro' },
-  
-  // Coal/Mining (ITMG, ADRO, ANTM related)
   { url: 'https://nitter.net/AntamOfficial/rss',           name: 'Antam ANTM',        tickers: ['ANTM'], category: 'micro' },
+  { url: 'https://nitter.net/ESDM_RI/rss',                 name: 'ESDM Ministry',     tickers: ['ITMG','ADRO','PTPS','PGEO'], category: 'macro' },
+  { url: 'https://nitter.net/BahlilLahadalia/rss',         name: 'Bahlil ESDM',       tickers: ['ITMG','ADRO','ANTM','PTPS','PGEO'], category: 'macro' },
+  
+  // Macro/Economic Research
+  { url: 'https://nitter.net/Bappenas/rss',                name: 'Bappenas',          tickers: [],     category: 'macro' },
+  { url: 'https://nitter.net/BPS_Statistics/rss',          name: 'BPS Statistics',    tickers: [],     category: 'macro' },
+
+  // Financial News & Analysts
+  { url: 'https://nitter.net/kontan/rss',                  name: 'Kontan',            tickers: [],     category: 'macro' },
+  { url: 'https://nitter.net/Bisniscom/rss',             name: 'Bisnis Indonesia',  tickers: [],     category: 'macro' },
+  { url: 'https://nitter.net/investor_id/rss',           name: 'Investor Daily',    tickers: [],     category: 'macro' },
+  { url: 'https://nitter.net/wak_research/rss',          name: 'William Analytica', tickers: [],     category: 'macro' },
+  { url: 'https://nitter.net/FirstRevi/rss',             name: 'First Metro',       tickers: [],     category: 'macro' },
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
