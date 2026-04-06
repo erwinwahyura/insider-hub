@@ -109,7 +109,7 @@ const NITTER_FEEDS = [
   { url: 'https://nitter.net/BEI_Corporate/rss',           name: 'BEI Corporate',     tickers: [],     category: 'micro' },
   { url: 'https://nitter.net/bank_indonesia/rss',          name: 'Bank Indonesia',    tickers: [],     category: 'macro' },
   { url: 'https://nitter.net/kemenkeuRI/rss',              name: 'Kemenkeu',          tickers: [],     category: 'macro' },
-  { url: 'https://nitter.net/sri_mulyani/rss',             name: 'Sri Mulyani',       tickers: [],     category: 'macro' },
+  { url: 'https://nitter.net/purbayasadewa/rss',         name: 'Purbaya Finance',   tickers: [],     category: 'macro' },
   
   // Energy/Mining/Policy
   { url: 'https://nitter.net/Pertamina/rss',               name: 'Pertamina',         tickers: ['PTPS','PGEO'], category: 'micro' },
