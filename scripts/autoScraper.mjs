@@ -108,8 +108,9 @@ const RSS_QUERIES = [
   { q: 'site:nikkei.com China economy commodity demand', tickers: ['ITMG','ADRO','ANTM','INCO','ESSA'], category: 'macro' },
 ];
 
-// Nitter (Twitter/X RSS mirror) feeds — Key accounts
-// Note: Nitter instances change frequently, rotating through working instances
+// Nitter (Twitter/X RSS mirror) feeds — DISABLED (all instances blocked 2025-04)
+// Twitter/X content still captured via Google News site:x.com queries
+/*
 const NITTER_INSTANCES = [
   'https://nitter.net',
   'https://nitter.poast.org',
@@ -144,6 +145,7 @@ const NITTER_FEEDS = [
   { handle: 'wak_research',      name: 'William Analytica', tickers: [],     category: 'macro' },
   { handle: 'FirstRevi',         name: 'First Metro',       tickers: [],     category: 'macro' },
 ];
+*/
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -443,7 +445,7 @@ async function scrapeNews() {
 
       // Score relevance — skip low-signal articles
       const { score, reasons } = scoreRelevance(fullText, query.tickers);
-      if (score < 4) {
+      if (score < 2) {
         console.log(`  ↷ Skip (score ${score}): ${item.title.slice(0, 60)}`);
         continue;
       }
@@ -456,8 +458,8 @@ async function scrapeNews() {
 
       const filename = `${slug(item.title, date)}.md`;
       
-      // High-value articles (score >= 6 or portfolio tickers) → pending for Elesis to summarize
-      const isHighValue = score >= 6 || tickers.some(t => ['ITMG', 'ADRO', 'ESSA', 'PTPS', 'PGEO'].includes(t));
+      // High-value articles (score >= 4 or portfolio tickers) → pending for Elesis to summarize
+      const isHighValue = score >= 2 || tickers.some(t => ['ITMG', 'ADRO', 'ESSA', 'PTPS', 'PGEO'].includes(t));
       
       if (isHighValue) {
         // Save to pending for Elesis summarization
@@ -509,7 +511,9 @@ async function scrapeNews() {
   }
 
   // ── Fetch Twitter/X via Nitter RSS ───────────────────────────────────────────
-
+  // NOTE: All Nitter instances permanently blocked (2025-04). Disabled to reduce
+  // log noise. Twitter/X content still captured via Google News site:x.com queries.
+  /*
   // Helper to try multiple Nitter instances
   async function fetchNitterWithFallback(handle) {
     for (const instance of NITTER_INSTANCES) {
@@ -632,6 +636,7 @@ async function scrapeNews() {
     // Delay between Nitter feeds
     await new Promise(r => setTimeout(r, 1000));
   }
+  */
 
   // Save updated URL cache
   await writeFile(cacheFile, JSON.stringify([...seenUrls], null, 2), 'utf8');
