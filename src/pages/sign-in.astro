@@ -1,10 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+// Clerk hosted page - most reliable for static sites
+const CLERK_DOMAIN = 'beloved-macaque-99.clerk.accounts.dev';
+const redirectUrl = 'https://stocks.erwarx.com/portfolio';
 ---
 
-<!-- Client-side Clerk SignIn will be loaded via script -->
-
 <Layout title="Sign In — Insider Hub">
+<meta http-equiv="refresh" content={`0; url=https://${CLERK_DOMAIN}/sign-in?redirect_url=${encodeURIComponent(redirectUrl)}`} />
+
 <div class="page">
   <header class="topbar">
     <div class="topbar-inner">
@@ -19,46 +23,16 @@ import Layout from '../layouts/Layout.astro';
     <div class="auth-container">
       <div class="auth-card">
         <div class="auth-header">
-          <h1 class="auth-title">Welcome Back</h1>
-          <p class="auth-subtitle">Sign in to view your personalized portfolio</p>
+          <h1 class="auth-title">Redirecting...</h1>
+          <p class="auth-subtitle">Taking you to secure sign-in</p>
         </div>
         
-        <div id="clerk-sign-in" class="clerk-container">
-          <div class="clerk-loading">Loading sign-in form...</div>
+        <div class="redirect-box">
+          <p>If not redirected automatically, click below:</p>
+          <a href={`https://${CLERK_DOMAIN}/sign-in?redirect_url=${encodeURIComponent(redirectUrl)}`} class="redirect-btn">
+            Sign In with Clerk
+          </a>
         </div>
-        
-        <script>
-          (function() {
-            const clerkPubKey = document.querySelector('meta[name="clerk-key"]')?.getAttribute('content');
-            const container = document.getElementById('clerk-sign-in');
-            
-            if (!clerkPubKey || clerkPubKey === '') {
-              container.innerHTML = '<div class="clerk-error">Authentication not configured. Please contact support.</div>';
-              return;
-            }
-            
-            // Load Clerk from CDN
-            const script = document.createElement('script');
-            script.src = 'https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js';
-            script.async = true;
-            script.onload = function() {
-              window.Clerk.load({
-                publishableKey: clerkPubKey
-              }).then(function(clerk) {
-                container.innerHTML = ''; // Clear loading message
-                clerk.mountSignIn(container, {
-                  redirectUrl: '/portfolio'
-                });
-              }).catch(function(err) {
-                container.innerHTML = '<div class="clerk-error">Failed to load authentication: ' + err.message + '</div>';
-              });
-            };
-            script.onerror = function() {
-              container.innerHTML = '<div class="clerk-error">Failed to load authentication service.</div>';
-            };
-            document.head.appendChild(script);
-          })();
-        </script>
         
         <div class="auth-footer">
           <p class="auth-text">
@@ -110,7 +84,7 @@ import Layout from '../layouts/Layout.astro';
     width: 100%; max-width: 860px;
   }
   .topbar-left { display: flex; align-items: center; gap: 0.75rem; }
-  .logo { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; color: var(--text); }
+  .logo { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; color: var(--text); text-decoration: none; }
   .logo-sub { font-size: 12px; color: var(--text-3); }
   
   .body { 
@@ -137,6 +111,7 @@ import Layout from '../layouts/Layout.astro';
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 2rem;
+    text-align: center;
   }
   
   .auth-header {
@@ -154,6 +129,34 @@ import Layout from '../layouts/Layout.astro';
   .auth-subtitle {
     font-size: 14px;
     color: var(--text-3);
+  }
+  
+  .redirect-box {
+    padding: 2rem;
+    background: var(--bg-subtle);
+    border-radius: 4px;
+    margin: 1.5rem 0;
+  }
+  
+  .redirect-box p {
+    font-size: 14px;
+    color: var(--text-2);
+    margin-bottom: 1rem;
+  }
+  
+  .redirect-btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: var(--up);
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 14px;
+  }
+  
+  .redirect-btn:hover {
+    background: #166534;
   }
   
   .auth-footer {
@@ -211,77 +214,6 @@ import Layout from '../layouts/Layout.astro';
     font-size: 20px;
   }
   
-  /* Clerk customization */
-  :global(.clerk-card) {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-  }
-  
-  :global(.clerk-title) {
-    font-size: 0 !important;
-  }
-  
-  :global(.clerk-subtitle) {
-    font-size: 0 !important;
-  }
-  
-  :global(.clerk-social-btn) {
-    border: 1px solid var(--border) !important;
-    border-radius: 4px !important;
-    font-size: 14px !important;
-  }
-  
-  :global(.clerk-label) {
-    color: var(--text-2) !important;
-    font-size: 12px !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.06em !important;
-  }
-  
-  :global(.clerk-input) {
-    border: 1px solid var(--border) !important;
-    border-radius: 4px !important;
-    padding: 0.5rem 0.75rem !important;
-    font-size: 14px !important;
-  }
-  
-  :global(.clerk-primary-btn) {
-    background: var(--up) !important;
-    border-radius: 4px !important;
-    font-size: 14px !important;
-    font-weight: 500 !important;
-  }
-  
-  :global(.clerk-link) {
-    color: var(--up) !important;
-  }
-  
-  /* Clerk form container */
-  .clerk-container {
-    min-height: 400px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .clerk-loading {
-    color: var(--text-3);
-    font-size: 14px;
-    padding: 2rem;
-    text-align: center;
-  }
-  
-  .clerk-error {
-    color: var(--down);
-    font-size: 14px;
-    padding: 2rem;
-    text-align: center;
-    background: var(--down-bg);
-    border: 1px solid var(--down);
-    border-radius: 4px;
-  }
-  
   @media (max-width: 768px) {
     .auth-container {
       grid-template-columns: 1fr;
@@ -297,3 +229,4 @@ import Layout from '../layouts/Layout.astro';
     }
   }
 </style>
+</Layout>
