@@ -1,10 +1,10 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { SignedIn, SignedOut } from '@clerk/astro/components';
-import { getCurrentUserId, addPortfolio } from '../../lib/supabase';
+import { addPortfolio, getDB } from '../../lib/db';
 
-// Check auth
-const userId = await getCurrentUserId();
+// Get auth from Clerk middleware
+const { userId } = Astro.locals.auth;
 if (!userId) {
   return Astro.redirect('/sign-in');
 }
@@ -26,21 +26,28 @@ if (Astro.request.method === 'POST') {
     
     if (!ticker || !name || !sector || lots <= 0 || avg_price <= 0) {
       error = 'Please fill in all required fields';
+    } else if (Astro.locals.runtime?.env?.DB) {
+      const db = getDB(Astro.locals.runtime.env);
+      if (db) {
+        const result = await addPortfolio(db, userId, {
+          ticker,
+          name,
+          sector,
+          lots,
+          avg_price,
+          conviction,
+          notes
+        });
+        if (result.success) {
+          success = 'Position added successfully!';
+        } else {
+          error = result.error || 'Failed to add position';
+        }
+      } else {
+        error = 'Database not available';
+      }
     } else {
-      await addPortfolio(userId, {
-        ticker,
-        name,
-        sector,
-        lots,
-        avg_price,
-        conviction,
-        notes
-      });
-      success = 'Position added successfully!';
-      // Redirect after short delay
-      setTimeout(() => {
-        return Astro.redirect('/portfolio');
-      }, 1000);
+      error = 'Database not available';
     }
   } catch (e) {
     error = e instanceof Error ? e.message : 'Failed to add position';

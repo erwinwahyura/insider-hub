@@ -7,4 +7,11 @@ export default defineConfig({
   output: 'server',
   adapter: cloudflare(),
   site: 'https://stocks.erwarx.com',
+  vite: {
+    build: {
+      rollupOptions: {
+        external: ['virtual:@clerk/astro/config']
+      }
+    }
+  }
 });
