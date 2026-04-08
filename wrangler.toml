@@ -9,7 +9,7 @@ database_id = "ff48235b-80b0-4f5d-93ce-5d24c5472c65"
 
 # Environment variables (set via Cloudflare dashboard or wrangler secret)
 [vars]
-PUBLIC_CLERK_PUBLISHABLE_KEY = ""
+PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_YmVsb3ZlZC1tYWNhcXVlLTk5LmNsZXJrLmFjY291bnRzLmRldiQ"
 
 # Secrets (use `wrangler secret put` to set)
 # CLERK_SECRET_KEY
