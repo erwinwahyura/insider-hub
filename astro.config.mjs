@@ -6,10 +6,5 @@ import cloudflare from '@astrojs/cloudflare';
 export default defineConfig({
   output: 'server',
   adapter: cloudflare(),
-  site: 'https://stocks.erwarx.com',
-  vite: {
-    ssr: {
-      noExternal: ['@clerk/astro', '@clerk/backend']
-    }
-  }
+  site: 'https://stocks.erwarx.com'
 });
