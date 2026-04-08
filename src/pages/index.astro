@@ -666,4 +666,141 @@ const commodityDisplay = [
   .bi-rate { display: flex; align-items: baseline; gap: 0.625rem; margin-bottom: 0.75rem; }
   .bi-num  { font-size: 32px; font-weight: 500; color: var(--text); line-height: 1; }
   .bi-unchanged { font-size: 11px; color: var(--text-3); border: 1px solid var(--border); padding: 1px 6px; border-radius: 2px; }
-  .bi
+
+  /* Mobile Responsive Fixes */
+  @media (max-width: 768px) {
+    .topbar { padding: 0 0.75rem; }
+    .topbar-inner { flex-wrap: wrap; }
+    .logo { font-size: 14px; }
+    .logo-sub { display: none; }
+    .private-badge { font-size: 9px; padding: 1px 4px; }
+    .topbar-nav { 
+      display: none; 
+      width: 100%; 
+      padding: 0.5rem 0;
+      gap: 0.25rem;
+    }
+    .topbar-nav.open { display: flex; flex-wrap: wrap; }
+    .nav-link { font-size: 12px; padding: 0.375rem 0.5rem; }
+    .mobile-menu-btn { display: block; }
+    
+    .body { padding: 0.75rem; max-width: 100%; }
+    .stats-row { gap: 1px; }
+    .stat { padding: 0.625rem 0.5rem; }
+    .stat-n { font-size: 18px; }
+    .stat-l { font-size: 10px; }
+    
+    .commodities { grid-template-columns: repeat(2, 1fr); }
+    .commodity { padding: 0.625rem 0.5rem; }
+    .comm-name { font-size: 12px; }
+    .comm-sub { display: none; }
+    .comm-tickers { display: none; }
+    .comm-price { font-size: 12px; }
+    .comm-delta { font-size: 11px; }
+    
+    .two-col { grid-template-columns: 1fr; gap: 0.75rem; }
+    .bi-body { flex-direction: column; gap: 1rem; }
+    .bi-num { font-size: 24px; }
+    
+    .breadth-counts { gap: 0.5rem; }
+    .bc { padding: 0.5rem; }
+    .bc-n { font-size: 18px; }
+    
+    .flow-body { flex-direction: column; }
+    .flow-main { flex-direction: row; justify-content: space-between; }
+    .flow-num { font-size: 20px; }
+    
+    .sector-row { 
+      display: grid; 
+      grid-template-columns: 1fr auto; 
+      gap: 0.5rem;
+      padding: 0.625rem;
+    }
+    .sector-left { grid-column: 1; }
+    .sector-nums { grid-column: 2; text-align: right; }
+    .sector-tickers { grid-column: 1 / -1; margin-top: 0.25rem; }
+    .sector-bars { grid-column: 1 / -1; }
+    .sector-period-labels { display: none; }
+    
+    .ihsg-header { flex-direction: column; gap: 0.75rem; }
+    .ihsg-main { width: 100%; justify-content: space-between; }
+    .ihsg-big { font-size: 28px; }
+    
+    .filters { padding: 0.75rem; }
+    .btn-group { flex-wrap: wrap; }
+    .cat-btn, .filter-btn { font-size: 11px; padding: 0.375rem 0.5rem; }
+    
+    .news-list { gap: 0.75rem; }
+    .news-card { padding: 0.875rem; }
+    .news-title { font-size: 14px; }
+    .news-body { font-size: 13px; }
+    .news-impact { flex-wrap: wrap; }
+    
+    footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+  }
+
+  @media (max-width: 480px) {
+    .commodities { grid-template-columns: 1fr; }
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); }
+    .ihsg-big { font-size: 24px; }
+    .ihsg-meta { flex-wrap: wrap; }
+    .ihsg-stat { font-size: 11px; }
+  }
+
+  /* Mobile menu button (hidden on desktop) */
+  .mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    margin-left: auto;
+  }
+  .mobile-menu-btn span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: var(--text-2);
+    margin: 3px 0;
+    border-radius: 1px;
+  }
+
+  /* Show mobile menu button on small screens */
+  @media (max-width: 768px) {
+    .mobile-menu-btn {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 32px;
+      height: 32px;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 4px;
+    }
+  }
+</style>
+
+<script is:inline>
+  // Mobile menu toggle
+  (function() {
+    const menuBtn = document.getElementById('menuBtn');
+    const mainNav = document.getElementById('mainNav');
+    
+    if (menuBtn && mainNav) {
+      menuBtn.addEventListener('click', function() {
+        menuBtn.classList.toggle('open');
+        mainNav.classList.toggle('open');
+      });
+      
+      // Close menu when clicking a link
+      mainNav.querySelectorAll('.nav-link').forEach(function(link) {
+        link.addEventListener('click', function() {
+          menuBtn.classList.remove('open');
+          mainNav.classList.remove('open');
+        });
+      });
+    }
+  })();
+</script>
