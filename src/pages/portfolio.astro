@@ -29,6 +29,7 @@ const positions = [
   { id: 3, user_id: 'demo', ticker: 'ESSA', name: 'Surya Esa Perkasa Tbk', sector: 'Ammonia/Chemical', lots: 310, avg_price: 713, conviction: 'HOLD', notes: 'Qatar play', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
 ];
 const isLoggedIn = false;
+const cash = 56000000; // Default cash amount
 
 // Merge with live prices
 const positionsWithLive = positions.map(pos => {
