@@ -1,11 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getUserPortfolios, getDB, type Portfolio } from '../lib/db';
-import { SignedIn, SignedOut, UserButton } from '@clerk/astro/components';
-
-// Get auth from Clerk middleware
-const { userId } = Astro.locals.auth;
-const isLoggedIn = !!userId;
 
 // Load stock prices (shared data) - use dynamic import for Cloudflare compatibility
 let stockData: any = null;
@@ -28,28 +22,13 @@ try {
 // Default cash amount
 const DEFAULT_CASH = 56000000;
 
-// Load user's portfolios from D1 (or use defaults if not logged in)
-let positions: Portfolio[] = [];
-let cash = DEFAULT_CASH;
-
-if (isLoggedIn && Astro.locals.runtime?.env?.DB) {
-  const db = getDB(Astro.locals.runtime.env);
-  if (db) {
-    try {
-      positions = await getUserPortfolios(db, userId);
-    } catch (e) {
-      console.error('Failed to load portfolios from D1:', e);
-      positions = [];
-    }
-  }
-} else {
-  // Demo data for non-logged in users (read-only view)
-  positions = [
-    { id: 1, user_id: 'demo', ticker: 'PTPS', name: 'PT Pulau Subur Tbk', sector: 'CPO/Plantation', lots: 1560, avg_price: 191, conviction: 'HIGH', notes: 'B50 thesis', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-    { id: 2, user_id: 'demo', ticker: 'PGEO', name: 'Pertamina Geothermal Energy', sector: 'Geothermal/Energy', lots: 245, avg_price: 1010, conviction: 'CORE', notes: 'USD revenue', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-    { id: 3, user_id: 'demo', ticker: 'ESSA', name: 'Surya Esa Perkasa Tbk', sector: 'Ammonia/Chemical', lots: 310, avg_price: 713, conviction: 'HOLD', notes: 'Qatar play', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-  ];
-}
+// Demo data for portfolio (read-only view until auth is fixed)
+const positions = [
+  { id: 1, user_id: 'demo', ticker: 'PTPS', name: 'PT Pulau Subur Tbk', sector: 'CPO/Plantation', lots: 1560, avg_price: 191, conviction: 'HIGH', notes: 'B50 thesis', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: 2, user_id: 'demo', ticker: 'PGEO', name: 'Pertamina Geothermal Energy', sector: 'Geothermal/Energy', lots: 245, avg_price: 1010, conviction: 'CORE', notes: 'USD revenue', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+  { id: 3, user_id: 'demo', ticker: 'ESSA', name: 'Surya Esa Perkasa Tbk', sector: 'Ammonia/Chemical', lots: 310, avg_price: 713, conviction: 'HOLD', notes: 'Qatar play', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+];
+const isLoggedIn = false;
 
 // Merge with live prices
 const positionsWithLive = positions.map(pos => {
@@ -136,33 +115,23 @@ const lastUpdate = stockData?.timestamp || new Date().toISOString();
         <a href="/alerts" class="nav-link">Alerts</a>
         <a href="/top-picks" class="nav-link">Top Picks</a>
         
-        <SignedIn>
-          <div class="user-menu">
-            <UserButton afterSignOutUrl="/" />
-          </div>
-        </SignedIn>
-        
-        <SignedOut>
-          <a href="/sign-in" class="nav-link sign-in">Sign In</a>
-        </SignedOut>
+        <a href="/sign-in" class="nav-link sign-in">Sign In</a>
       </nav>
     </div>
   </header>
 
   <div class="body">
     <!-- Auth Banner -->
-    <SignedOut>
-      <div class="auth-banner">
-        <div class="auth-banner-content">
-          <span class="auth-icon">👋</span>
-          <div class="auth-text">
-            <p class="auth-title">Viewing Demo Portfolio</p>
-            <p class="auth-desc">Sign in to track your own portfolio with personalized alerts and news impact.</p>
-          </div>
-          <a href="/sign-in" class="auth-btn">Sign In / Create Account</a>
+    <div class="auth-banner">
+      <div class="auth-banner-content">
+        <span class="auth-icon">👋</span>
+        <div class="auth-text">
+          <p class="auth-title">Viewing Demo Portfolio</p>
+          <p class="auth-desc">Sign in to track your own portfolio with personalized alerts and news impact.</p>
         </div>
+        <a href="/sign-in" class="auth-btn">Sign In / Create Account</a>
       </div>
-    </SignedOut>
+    </div>
 
     <!-- Summary Cards -->
     <section class="summary-grid">
@@ -231,9 +200,7 @@ const lastUpdate = stockData?.timestamp || new Date().toISOString();
         <span class="panel-title">Holdings</span>
         <span class="panel-badge">{positions.length} Position{positions.length !== 1 ? 's' : ''}</span>
         
-        <SignedIn>
-          <a href="/portfolio/add" class="add-btn">+ Add Position</a>
-        </SignedIn>
+        <a href="/portfolio/add" class="add-btn">+ Add Position</a>
         
         <span class="last-update mono dim">Updated {new Date(lastUpdate).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'})}</span>
       </div>
@@ -278,12 +245,7 @@ const lastUpdate = stockData?.timestamp || new Date().toISOString();
           <div class="empty-icon">📊</div>
           <p class="empty-title">No positions yet</p>
           <p class="empty-desc">Start building your portfolio by adding your first stock position.</p>
-          <SignedIn>
-            <a href="/portfolio/add" class="empty-btn">Add Position</a>
-          </SignedIn>
-          <SignedOut>
-            <a href="/sign-in" class="empty-btn">Sign In to Add Positions</a>
-          </SignedOut>
+          <a href="/sign-in" class="empty-btn">Sign In to Add Positions</a>
         </div>
       )}
     </section>
@@ -302,18 +264,10 @@ const lastUpdate = stockData?.timestamp || new Date().toISOString();
           <span class="action-icon">📅</span>
           <span class="action-label">Earnings Calendar</span>
         </a>
-        <SignedIn>
-          <a href="/alerts" class="action-btn">
-            <span class="action-icon">🔔</span>
-            <span class="action-label">Price Alerts</span>
-          </a>
-        </SignedIn>
-        <SignedOut>
-          <a href="/sign-in" class="action-btn">
-            <span class="action-icon">🔔</span>
-            <span class="action-label">Price Alerts</span>
-          </a>
-        </SignedOut>
+        <a href="/alerts" class="action-btn">
+          <span class="action-icon">🔔</span>
+          <span class="action-label">Price Alerts</span>
+        </a>
       </div>
     </section>
   </div>

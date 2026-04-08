@@ -1,7 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
-import { SignedIn, SignedOut, UserButton } from '@clerk/astro/components';
 
 // Fetch news
 const allNews = await getCollection('news');
@@ -124,15 +123,7 @@ const commodityDisplay = [
         <a href="/alerts" class="nav-link">Alerts</a>
         <a href="/top-picks" class="nav-link">Top Picks</a>
         
-        <SignedIn>
-          <div class="user-menu">
-            <UserButton afterSignOutUrl="/" />
-          </div>
-        </SignedIn>
-        
-        <SignedOut>
-          <a href="/sign-in" class="nav-link sign-in">Sign In</a>
-        </SignedOut>
+        <a href="/sign-in" class="nav-link sign-in">Sign In</a>
         
         <span class="nav-stats">
           <span class="mono dim">{sortedNews.length} articles</span>

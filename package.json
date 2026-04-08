@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "@astrojs/cloudflare": "^13.0.0",
-    "@clerk/astro": "^2.0.0",
     "astro": "^5.0.0",
     "gray-matter": "^4.0.3",
     "lucide-react": "^0.364.0"

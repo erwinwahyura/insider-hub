@@ -1,32 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { SignedIn, SignedOut, UserButton } from '@clerk/astro/components';
-import { getUserAlerts, getDB, type PriceAlert } from '../lib/db';
 
-// Get auth from Clerk middleware
-const { userId } = Astro.locals.auth;
-const isLoggedIn = !!userId;
-
-// Load user-specific alerts from D1
-let alerts: PriceAlert[] = [];
-
-if (isLoggedIn && Astro.locals.runtime?.env?.DB) {
-  const db = getDB(Astro.locals.runtime.env);
-  if (db) {
-    try {
-      alerts = await getUserAlerts(db, userId);
-    } catch (e) {
-      console.error('Failed to load alerts from D1:', e);
-    }
-  }
-} else {
-  // Demo alerts for non-logged in users
-  alerts = [
-    { id: 1, user_id: 'demo', ticker: 'PTPS', alert_type: 'price_below', target_price: 175, current_price: 183, message: 'PTPS buy opportunity: Price dropped to {price} (target: {target})', priority: 'high', cooldown_minutes: 60, is_active: true, created_at: new Date().toISOString() },
-    { id: 2, user_id: 'demo', ticker: 'PTPS', alert_type: 'price_below', target_price: 150, current_price: 183, message: 'PTPS alert: Price fell to {price} (below {target})', priority: 'critical', cooldown_minutes: 30, is_active: true, created_at: new Date().toISOString() },
-    { id: 3, user_id: 'demo', ticker: 'PGEO', alert_type: 'price_below', target_price: 950, current_price: 1020, message: 'PGEO add opportunity', priority: 'medium', cooldown_minutes: 120, is_active: true, created_at: new Date().toISOString() },
-  ];
-}
+// Demo alerts for non-logged in users (client-side auth disabled for Cloudflare compatibility)
+const alerts = [
+  { id: 1, user_id: 'demo', ticker: 'PTPS', alert_type: 'price_below', target_price: 175, current_price: 183, message: 'PTPS buy opportunity: Price dropped to {price} (target: {target})', priority: 'high', cooldown_minutes: 60, is_active: true, created_at: new Date().toISOString() },
+  { id: 2, user_id: 'demo', ticker: 'PTPS', alert_type: 'price_below', target_price: 150, current_price: 183, message: 'PTPS alert: Price fell to {price} (below {target})', priority: 'critical', cooldown_minutes: 30, is_active: true, created_at: new Date().toISOString() },
+  { id: 3, user_id: 'demo', ticker: 'PGEO', alert_type: 'price_below', target_price: 950, current_price: 1020, message: 'PGEO add opportunity', priority: 'medium', cooldown_minutes: 120, is_active: true, created_at: new Date().toISOString() },
+];
+const isLoggedIn = false;
 
 // Categorize alerts (is_active is 1/0 in D1 SQLite)
 const activeAlerts = alerts.filter(a => a.is_active === true || a.is_active === 1);
@@ -84,33 +65,23 @@ const lastUpdated = new Date().toISOString();
         <a href="/alerts" class="nav-link active">Alerts</a>
         <a href="/top-picks" class="nav-link">Top Picks</a>
         
-        <SignedIn>
-          <div class="user-menu">
-            <UserButton afterSignOutUrl="/" />
-          </div>
-        </SignedIn>
-        
-        <SignedOut>
-          <a href="/sign-in" class="nav-link sign-in">Sign In</a>
-        </SignedOut>
+        <a href="/sign-in" class="nav-link sign-in">Sign In</a>
       </nav>
     </div>
   </header>
 
   <div class="body">
     <!-- Auth Banner -->
-    <SignedOut>
-      <div class="auth-banner">
-        <div class="auth-banner-content">
-          <span class="auth-icon">🔔</span>
-          <div class="auth-text">
-            <p class="auth-title">Viewing Demo Alerts</p>
-            <p class="auth-desc">Sign in to create your own personalized price alerts.</p>
-          </div>
-          <a href="/sign-in" class="auth-btn">Sign In / Create Account</a>
+    <div class="auth-banner">
+      <div class="auth-banner-content">
+        <span class="auth-icon">🔔</span>
+        <div class="auth-text">
+          <p class="auth-title">Viewing Demo Alerts</p>
+          <p class="auth-desc">Sign in to create your own personalized price alerts.</p>
         </div>
+        <a href="/sign-in" class="auth-btn">Sign In / Create Account</a>
       </div>
-    </SignedOut>
+    </div>
 
     <!-- Status Card -->
     <section class="status-card">
@@ -195,12 +166,7 @@ const lastUpdated = new Date().toISOString();
         <div class="empty-icon">🔔</div>
         <p class="empty-title">No alerts yet</p>
         <p class="empty-desc">Create your first price alert to get notified when stocks hit your target prices.</p>
-        <SignedIn>
-          <a href="/alerts/add" class="empty-btn">Create Alert</a>
-        </SignedIn>
-        <SignedOut>
-          <a href="/sign-in" class="empty-btn">Sign In to Create Alerts</a>
-        </SignedOut>
+        <a href="/sign-in" class="empty-btn">Sign In to Create Alerts</a>
       </section>
     )}
 

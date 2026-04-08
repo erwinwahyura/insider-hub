@@ -1,13 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { SignIn } from '@clerk/astro/components';
-
-// Redirect to portfolio if already signed in
-const { userId } = Astro.locals.auth;
-if (userId) {
-  return Astro.redirect('/portfolio');
-}
 ---
+
+<!-- Client-side Clerk SignIn will be loaded via script -->
 
 <Layout title="Sign In — Insider Hub">
 <div class="page">
@@ -28,23 +23,27 @@ if (userId) {
           <p class="auth-subtitle">Sign in to view your personalized portfolio</p>
         </div>
         
-        <SignIn 
-          routing="path"
-          path="/sign-in"
-          redirectUrl="/portfolio"
-          appearance={{
-            elements: {
-              card: 'clerk-card',
-              headerTitle: 'clerk-title',
-              headerSubtitle: 'clerk-subtitle',
-              socialButtonsBlockButton: 'clerk-social-btn',
-              formFieldLabel: 'clerk-label',
-              formFieldInput: 'clerk-input',
-              formButtonPrimary: 'clerk-primary-btn',
-              footerActionLink: 'clerk-link',
-            }
-          }}
-        />
+        <div id="clerk-sign-in"></div>
+        
+        <script>
+          // Client-side Clerk initialization
+          const clerkPubKey = document.querySelector('meta[name="clerk-key"]')?.getAttribute('content');
+          if (clerkPubKey) {
+            const script = document.createElement('script');
+            script.src = `https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js`;
+            script.async = true;
+            script.onload = () => {
+              window.Clerk.load({
+                publishableKey: clerkPubKey
+              }).then(() => {
+                window.Clerk.mountSignIn(document.getElementById('clerk-sign-in'), {
+                  redirectUrl: '/portfolio'
+                });
+              });
+            };
+            document.head.appendChild(script);
+          }
+        </script>
         
         <div class="auth-footer">
           <p class="auth-text">
