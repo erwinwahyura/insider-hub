@@ -8,10 +8,8 @@ export default defineConfig({
   adapter: cloudflare(),
   site: 'https://stocks.erwarx.com',
   vite: {
-    build: {
-      rollupOptions: {
-        external: ['virtual:@clerk/astro/config']
-      }
+    ssr: {
+      noExternal: ['@clerk/astro', '@clerk/backend']
     }
   }
 });
