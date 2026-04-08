@@ -39,6 +39,11 @@ jobs:
         continue-on-error: true
         # Fetch live IDX stock prices for portfolio tracking
 
+      - name: Check price alerts
+        run: node scripts/alertChecker.mjs
+        continue-on-error: true
+        # Check alert thresholds and trigger notifications
+
       - name: Check for new articles
         id: check_changes
         run: |

@@ -10,8 +10,18 @@ const { title } = Astro.props;
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="description" content="Insider Hub - Macro & Micro Economic Intelligence for Indonesian Markets" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="description" content="Insider Hub - Real-time portfolio tracking, commodity prices, and earnings calendar for IDX stocks" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+		<meta name="theme-color" content="#1a6e3c" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+		<meta name="apple-mobile-web-app-title" content="Insider Hub" />
+		<meta name="format-detection" content="telephone=no" />
+		
+		<!-- PWA Manifest -->
+		<link rel="manifest" href="/manifest.json" />
+		<link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+		
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
@@ -61,5 +71,71 @@ const { title } = Astro.props;
 	</head>
 	<body>
 		<slot />
+		
+		<!-- Service Worker Registration for PWA -->
+		<script>
+			if ('serviceWorker' in navigator) {
+				window.addEventListener('load', () => {
+					navigator.serviceWorker.register('/sw.js')
+						.then((registration) => {
+							console.log('SW registered:', registration.scope);
+							
+							// Check for updates
+							registration.addEventListener('updatefound', () => {
+								const newWorker = registration.installing;
+								newWorker.addEventListener('statechange', () => {
+									if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+										// New version available
+										console.log('New version available');
+										if (confirm('New version of Insider Hub available. Reload to update?')) {
+											window.location.reload();
+										}
+									}
+								});
+							});
+						})
+						.catch((error) => {
+							console.log('SW registration failed:', error);
+						});
+				});
+				
+				// Request notification permission
+				if ('Notification' in window && Notification.permission === 'default') {
+					// Show notification prompt after user interaction
+					document.addEventListener('click', () => {
+						if (Notification.permission === 'default') {
+							Notification.requestPermission().then((permission) => {
+								if (permission === 'granted') {
+									console.log('Notification permission granted');
+									// Show welcome notification
+									new Notification('Insider Hub', {
+										body: 'Price alerts enabled! You\'ll get notified when targets are hit.',
+										icon: '/icons/icon-192x192.png'
+									});
+								}
+							});
+						}
+					}, { once: true });
+				}
+			}
+			
+			// Add to home screen prompt (for iOS/Android)
+			let deferredPrompt;
+			window.addEventListener('beforeinstallprompt', (e) => {
+				e.preventDefault();
+				deferredPrompt = e;
+				// Show install button or banner
+				console.log('PWA install available');
+			});
+			
+			// Background sync for alerts (if supported)
+			if ('serviceWorker' in navigator && 'sync' in ServiceWorkerRegistration.prototype) {
+				navigator.serviceWorker.ready.then((registration) => {
+					registration.sync.register('check-alerts').catch((err) => {
+						console.log('Background sync registration failed:', err);
+					});
+				});
+			}
+		</script>
 	</body>
 </html>

@@ -1,0 +1,124 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2026-04-08T13:30:00Z",
+  "enabled": true,
+  "channels": {
+    "webPush": false,
+    "telegram": false,
+    "console": true
+  },
+  "alerts": [
+    {
+      "id": "ptps-buy-opportunity",
+      "ticker": "PTPS",
+      "type": "price_below",
+      "target": 175,
+      "current": 183,
+      "message": "🟢 PTPS buy opportunity: Price dropped to {price} (target: {target}). Consider adding to position.",
+      "enabled": true,
+      "triggered": false,
+      "lastTriggered": null,
+      "cooldownMinutes": 60,
+      "priority": "high"
+    },
+    {
+      "id": "ptps-stop-loss",
+      "ticker": "PTPS",
+      "type": "price_below",
+      "target": 150,
+      "current": 183,
+      "message": "🔴 PTPS alert: Price fell to {price} (below {target}). Review thesis - potential stop loss zone.",
+      "enabled": true,
+      "triggered": false,
+      "lastTriggered": null,
+      "cooldownMinutes": 30,
+      "priority": "critical"
+    },
+    {
+      "id": "pgeo-add-opportunity",
+      "ticker": "PGEO",
+      "type": "price_below",
+      "target": 950,
+      "current": 1020,
+      "message": "🟢 PGEO add opportunity: Price at {price} (target zone: <{target}). Staged entry tranche.",
+      "enabled": true,
+      "triggered": false,
+      "lastTriggered": null,
+      "cooldownMinutes": 120,
+      "priority": "medium"
+    },
+    {
+      "id": "pgeo-breakout",
+      "ticker": "PGEO",
+      "type": "price_above",
+      "target": 1100,
+      "current": 1020,
+      "message": "📈 PGEO breakout: Price broke {target} at {price}. Momentum building toward analyst target 1,662.",
+      "enabled": true,
+      "triggered": false,
+      "lastTriggered": null,
+      "cooldownMinutes": 60,
+      "priority": "medium"
+    },
+    {
+      "id": "essa-recovery",
+      "ticker": "ESSA",
+      "type": "price_above",
+      "target": 750,
+      "current": 720,
+      "message": "📈 ESSA recovery: Price back to {price} (above {target}). Q1 2026 catalyst approaching.",
+      "enabled": true,
+      "triggered": false,
+      "lastTriggered": null,
+      "cooldownMinutes": 60,
+      "priority": "medium"
+    },
+    {
+      "id": "itmg-reentry",
+      "ticker": "ITMG",
+      "type": "price_below",
+      "target": 25500,
+      "current": 28200,
+      "message": "🟢 ITMG re-entry zone: Price at {price} (approaching target <{target}). Coal still strong.",
+      "enabled": true,
+      "triggered": false,
+      "lastTriggered": null,
+      "cooldownMinutes": 180,
+      "priority": "low"
+    },
+    {
+      "id": "coal-spike",
+      "ticker": "COAL",
+      "type": "commodity_above",
+      "target": 140,
+      "current": 128.50,
+      "unit": "USD/ton",
+      "message": "📈 Newcastle Coal at ${price} - above ${target}. Positive for ADRO, ITMG, PTBA.",
+      "enabled": true,
+      "triggered": false,
+      "lastTriggered": null,
+      "cooldownMinutes": 240,
+      "priority": "medium"
+    },
+    {
+      "id": "cpo-b50-support",
+      "ticker": "CPO",
+      "type": "commodity_above",
+      "target": 4000,
+      "current": 3850,
+      "unit": "RM/ton",
+      "message": "📈 CPO at RM {price} - B50 demand supporting prices. Good for PTPS, AALI, LSIP.",
+      "enabled": true,
+      "triggered": false,
+      "lastTriggered": null,
+      "cooldownMinutes": 240,
+      "priority": "medium"
+    }
+  ],
+  "portfolioSummary": {
+    "totalEquity": 131858000,
+    "totalPnl": -787000,
+    "dailyChange": null,
+    "alertsToday": 0
+  }
+}

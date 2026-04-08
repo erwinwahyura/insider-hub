@@ -1,0 +1,731 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { readFile } from 'fs/promises';
+import { existsSync } from 'fs';
+
+// Load alerts data
+const ALERTS_FILE = './src/content/data/alerts.json';
+let alertsData: any = null;
+
+if (existsSync(ALERTS_FILE)) {
+  try {
+    const raw = await readFile(ALERTS_FILE, 'utf-8');
+    alertsData = JSON.parse(raw);
+  } catch (e) {
+    console.error('Failed to load alerts:', e);
+  }
+}
+
+const alerts = alertsData?.alerts || [];
+const enabled = alertsData?.enabled || false;
+const lastUpdated = alertsData?.lastUpdated || new Date().toISOString();
+
+// Categorize alerts
+const activeAlerts = alerts.filter(a => a.enabled && !a.triggered);
+const triggeredAlerts = alerts.filter(a => a.triggered);
+const disabledAlerts = alerts.filter(a => !a.enabled);
+
+function formatPrice(alert: any) {
+  if (alert.unit) return `${alert.current} ${alert.unit}`;
+  if (alert.ticker === 'ITMG') return alert.current.toLocaleString();
+  return alert.current?.toLocaleString() || '-';
+}
+
+function formatTarget(alert: any) {
+  if (alert.unit) return `${alert.target} ${alert.unit}`;
+  if (alert.ticker === 'ITMG') return alert.target.toLocaleString();
+  return alert.target?.toLocaleString() || '-';
+}
+
+function progressToTarget(alert: any) {
+  if (!alert.current || !alert.target) return 0;
+  
+  if (alert.type === 'price_below' || alert.type === 'commodity_below') {
+    // Progress is how close we are to target from above
+    // If current < target, we're at 100%
+    if (alert.current <= alert.target) return 100;
+    const range = alert.target * 0.2; // 20% range
+    const distance = alert.current - alert.target;
+    return Math.max(0, 100 - (distance / range) * 100);
+  } else {
+    // Progress is how close we are to target from below
+    if (alert.current >= alert.target) return 100;
+    const range = alert.target * 0.2;
+    const distance = alert.target - alert.current;
+    return Math.max(0, 100 - (distance / range) * 100);
+  }
+}
+
+function priorityColor(priority: string) {
+  if (priority === 'critical') return 'critical';
+  if (priority === 'high') return 'high';
+  if (priority === 'medium') return 'medium';
+  return 'low';
+}
+---
+
+<Layout title="Price Alerts — Insider Hub">
+<div class="page">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="topbar-left">
+        <a href="/" class="logo">Insider Hub</a>
+        <span class="logo-sub">Price Alerts</span>
+      </div>
+      <nav class="topbar-nav">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/portfolio" class="nav-link">Portfolio</a>
+        <a href="/earnings" class="nav-link">Earnings</a>
+        <a href="/top-picks" class="nav-link">Top Picks</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="body">
+    <!-- Status Card -->
+    <section class="status-card">
+      <div class="status-main">
+        <div class={`status-indicator ${enabled ? 'active' : 'inactive'}`}>
+          <span class="indicator-dot"></span>
+          <span class="status-text">{enabled ? 'Alerts Active' : 'Alerts Paused'}</span>
+        </div>
+        <div class="status-stats">
+          <div class="stat">
+            <span class="stat-value">{activeAlerts.length}</span>
+            <span class="stat-label">Watching</span>
+          </div>
+          <div class="stat triggered">
+            <span class="stat-value">{triggeredAlerts.length}</span>
+            <span class="stat-label">Triggered</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">{disabledAlerts.length}</span>
+            <span class="stat-label">Paused</span>
+          </div>
+        </div>
+      </div>
+      <div class="last-check">
+        <span class="mono dim">Last check: {new Date(lastUpdated).toLocaleTimeString('id-ID')}</span>
+        <span class="mono dim">Auto-check every 30 min</span>
+      </div>
+    </section>
+
+    <!-- Active Alerts -->
+    {activeAlerts.length > 0 && (
+      <section class="alerts-section">
+        <div class="section-head">
+          <span class="section-icon">🔔</span>
+          <span class="section-title">Active Alerts</span>
+          <span class="section-count">{activeAlerts.length}</span>
+        </div>
+        <div class="alerts-list">
+          {activeAlerts.map(alert => {
+            const progress = progressToTarget(alert);
+            return (
+              <div class={`alert-card ${priorityColor(alert.priority)}`}>
+                <div class="alert-header">
+                  <div class="alert-ticker">
+                    <span class="ticker">{alert.ticker}</span>
+                    <span class={`priority-badge ${priorityColor(alert.priority)}`}>{alert.priority}</span>
+                  </div>
+                  <div class="alert-type">
+                    {alert.type === 'price_below' && '≤ Target'}
+                    {alert.type === 'price_above' && '≥ Target'}
+                    {alert.type === 'commodity_below' && '≤ Commodity'}
+                    {alert.type === 'commodity_above' && '≥ Commodity'}
+                  </div>
+                </div>
+                <div class="alert-prices">
+                  <div class="current">
+                    <span class="price-label">Current</span>
+                    <span class="price-value mono">{formatPrice(alert)}</span>
+                  </div>
+                  <div class="arrow">→</div>
+                  <div class="target">
+                    <span class="price-label">Target</span>
+                    <span class="price-value mono target">{formatTarget(alert)}</span>
+                  </div>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-track">
+                    <div 
+                      class={`progress-fill ${progress >= 100 ? 'complete' : ''}`} 
+                      style={`width: ${Math.min(progress, 100)}%`}
+                    ></div>
+                  </div>
+                  <span class="progress-text">{progress >= 100 ? 'Ready to trigger!' : `${Math.round(progress)}% to target`}</span>
+                </div>
+                <div class="alert-message">{alert.message.replace('{price}', formatPrice(alert)).replace('{target}', formatTarget(alert))}</div>
+                <div class="alert-meta">
+                  <span class="cooldown">Cooldown: {alert.cooldownMinutes} min</span>
+                  <button class="test-btn" data-alert={alert.id}>Test</button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+    )}
+
+    <!-- Triggered Alerts -->
+    {triggeredAlerts.length > 0 && (
+      <section class="alerts-section triggered">
+        <div class="section-head">
+          <span class="section-icon">🔥</span>
+          <span class="section-title">Recently Triggered</span>
+          <span class="section-count">{triggeredAlerts.length}</span>
+        </div>
+        <div class="alerts-list compact">
+          {triggeredAlerts.map(alert => (
+            <div class="alert-card compact triggered">
+              <div class="alert-row">
+                <span class="ticker">{alert.ticker}</span>
+                <span class="trigger-status">⚡ Triggered</span>
+                <span class="mono">{alert.current?.toLocaleString()}</span>
+                <span class="mono dim">Target: {alert.target?.toLocaleString()}</span>
+                {alert.lastTriggered && (
+                  <span class="time mono dim">{new Date(alert.lastTriggered).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'})}</span>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- Quick Links -->
+    <section class="actions-panel">
+      <div class="panel-head">
+        <span class="panel-title">Quick Links</span>
+      </div>
+      <div class="links-grid">
+        <a href="/portfolio" class="link-btn">
+          <span class="link-icon">📊</span>
+          <span class="link-label">View Portfolio</span>
+        </a>
+        <a href="/" class="link-btn">
+          <span class="link-icon">📰</span>
+          <span class="link-label">Latest News</span>
+        </a>
+        <a href="/earnings" class="link-btn">
+          <span class="link-icon">📅</span>
+          <span class="link-label">Earnings Calendar</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Install PWA Banner -->
+    <section class="pwa-banner" id="pwa-banner">
+      <div class="pwa-content">
+        <div class="pwa-icon">📱</div>
+        <div class="pwa-text">
+          <div class="pwa-title">Install Insider Hub</div>
+          <div class="pwa-desc">Get push notifications for price alerts. Add to home screen for quick access.</div>
+        </div>
+        <button class="pwa-btn" id="install-btn">Install</button>
+        <button class="pwa-close" id="close-pwa">×</button>
+      </div>
+    </section>
+  </div>
+
+  <footer class="footer">
+    Insider Hub · Push notifications enabled · Background sync active
+  </footer>
+</div>
+
+<script>
+  // Handle PWA install
+  let deferredPrompt;
+  const installBtn = document.getElementById('install-btn');
+  const pwaBanner = document.getElementById('pwa-banner');
+  const closePwa = document.getElementById('close-pwa');
+  
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    pwaBanner.classList.add('show');
+  });
+  
+  installBtn?.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        console.log('PWA installed');
+        pwaBanner.classList.remove('show');
+      }
+      deferredPrompt = null;
+    }
+  });
+  
+  closePwa?.addEventListener('click', () => {
+    pwaBanner.classList.remove('show');
+  });
+  
+  // Test alert buttons
+  document.querySelectorAll('.test-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const alertId = btn.dataset.alert;
+      // Show test notification
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Insider Hub Test', {
+          body: `Test alert for ${alertId}`,
+          icon: '/icons/icon-192x192.png'
+        });
+      } else {
+        alert(`Test: Alert ${alertId} would trigger a notification`);
+      }
+    });
+  });
+</script>
+</Layout>
+
+<style is:global>
+  .page { min-height: 100vh; display: flex; flex-direction: column; }
+  
+  .topbar {
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 1.5rem; height: 48px;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; background: var(--bg); z-index: 10;
+  }
+  .topbar-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; max-width: 860px;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 0.75rem; }
+  .logo { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+  .logo-sub { font-size: 12px; color: var(--text-3); }
+  .topbar-nav {
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .nav-link {
+    font-size: 12px; color: var(--text-3); text-decoration: none;
+    border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px;
+  }
+  .nav-link:hover { color: var(--text); border-color: var(--up); }
+  
+  .body { flex: 1; padding: 1.25rem 1.5rem; max-width: 860px; margin: 0 auto; width: 100%; }
+  .mono { font-family: var(--mono); }
+  .dim { color: var(--text-3); }
+  
+  /* Status Card */
+  .status-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .status-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .indicator-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+  .status-indicator.active .indicator-dot {
+    background: var(--up);
+    animation: pulse 2s infinite;
+  }
+  .status-indicator.inactive .indicator-dot {
+    background: var(--text-3);
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .status-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .status-stats {
+    display: flex;
+    gap: 1.5rem;
+  }
+  .stat {
+    text-align: center;
+  }
+  .stat-value {
+    display: block;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--text);
+    font-family: var(--mono);
+  }
+  .stat.triggered .stat-value {
+    color: var(--amber);
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-3);
+    text-transform: uppercase;
+  }
+  .last-check {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-soft);
+    font-size: 11px;
+  }
+  
+  /* Alerts Section */
+  .alerts-section {
+    margin-bottom: 1.5rem;
+  }
+  .alerts-section.triggered {
+    opacity: 0.8;
+  }
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1rem;
+  }
+  .section-icon { font-size: 16px; }
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .section-count {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--text-3);
+    background: var(--bg-subtle);
+    padding: 2px 8px;
+    border-radius: 3px;
+  }
+  
+  .alerts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .alerts-list.compact {
+    gap: 0.5rem;
+  }
+  
+  .alert-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem;
+    border-left: 3px solid var(--border);
+  }
+  .alert-card.critical { border-left-color: var(--down); }
+  .alert-card.high { border-left-color: var(--amber); }
+  .alert-card.medium { border-left-color: #3b82f6; }
+  .alert-card.low { border-left-color: var(--text-3); }
+  .alert-card.compact {
+    padding: 0.5rem 0.75rem;
+  }
+  .alert-card.triggered {
+    background: var(--up-bg);
+    border-color: rgba(26, 110, 60, 0.3);
+  }
+  
+  .alert-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+  .alert-ticker {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .ticker {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    font-family: var(--mono);
+  }
+  .priority-badge {
+    font-size: 9px;
+    padding: 1px 6px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+  }
+  .priority-badge.critical {
+    background: var(--down-bg);
+    color: var(--down);
+    border: 1px solid var(--down);
+  }
+  .priority-badge.high {
+    background: var(--amber-bg);
+    color: var(--amber);
+    border: 1px solid var(--amber);
+  }
+  .priority-badge.medium {
+    background: var(--bg-subtle);
+    color: var(--text-2);
+    border: 1px solid var(--border);
+  }
+  .priority-badge.low {
+    background: var(--bg);
+    color: var(--text-3);
+    border: 1px solid var(--border);
+  }
+  .alert-type {
+    font-size: 11px;
+    color: var(--text-3);
+  }
+  
+  .alert-prices {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+  }
+  .current, .target {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+  .price-label {
+    font-size: 10px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .price-value {
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .price-value.target {
+    color: var(--amber);
+  }
+  .arrow {
+    color: var(--text-3);
+    font-size: 14px;
+  }
+  
+  .progress-bar {
+    margin-bottom: 0.75rem;
+  }
+  .progress-track {
+    height: 6px;
+    background: var(--bg-subtle);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 0.375rem;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--amber);
+    border-radius: 3px;
+    transition: width 0.3s;
+  }
+  .progress-fill.complete {
+    background: var(--up);
+    animation: pulse 1s infinite;
+  }
+  .progress-text {
+    font-size: 11px;
+    color: var(--text-3);
+  }
+  
+  .alert-message {
+    font-size: 12px;
+    color: var(--text-2);
+    background: var(--bg-subtle);
+    padding: 0.5rem 0.75rem;
+    border-radius: 3px;
+    margin-bottom: 0.5rem;
+  }
+  
+  .alert-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--text-3);
+  }
+  .test-btn {
+    font-size: 10px;
+    padding: 2px 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--text-2);
+    cursor: pointer;
+  }
+  .test-btn:hover {
+    background: var(--bg-subtle);
+    color: var(--text);
+  }
+  
+  .alert-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 13px;
+  }
+  .trigger-status {
+    font-size: 11px;
+    color: var(--up);
+    font-weight: 500;
+  }
+  .time {
+    margin-left: auto;
+  }
+  
+  /* Actions Panel */
+  .actions-panel {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .panel-head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-subtle);
+  }
+  .panel-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .links-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+  }
+  .link-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.5rem 1rem;
+    background: var(--bg-raised);
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.15s;
+  }
+  .link-btn:hover { background: var(--bg-subtle); }
+  .link-icon { font-size: 24px; }
+  .link-label { font-size: 12px; color: var(--text-2); }
+  
+  /* PWA Banner */
+  .pwa-banner {
+    display: none;
+    background: var(--up-bg);
+    border: 1px solid rgba(26, 110, 60, 0.3);
+    border-radius: 4px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .pwa-banner.show {
+    display: block;
+  }
+  .pwa-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .pwa-icon {
+    font-size: 32px;
+  }
+  .pwa-text {
+    flex: 1;
+  }
+  .pwa-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+  .pwa-desc {
+    font-size: 12px;
+    color: var(--text-2);
+  }
+  .pwa-btn {
+    padding: 0.5rem 1rem;
+    background: var(--up);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .pwa-btn:hover {
+    background: #166534;
+  }
+  .pwa-close {
+    font-size: 20px;
+    color: var(--text-3);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+  }
+  .pwa-close:hover {
+    color: var(--text);
+  }
+  
+  /* Footer */
+  .footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-3);
+    background: var(--bg-subtle);
+  }
+  
+  /* Mobile */
+  @media (max-width: 768px) {
+    .status-main {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+    .status-stats {
+      width: 100%;
+      justify-content: space-around;
+    }
+    .alert-prices {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .arrow { transform: rotate(90deg); }
+    .alert-card.compact .alert-row {
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .time { margin-left: 0; width: 100%; text-align: right; }
+    .links-grid { grid-template-columns: 1fr; }
+    .pwa-content { flex-wrap: wrap; }
+  }
+</style>
+</Layout>
