@@ -98,15 +98,13 @@ const upcomingEvents = sortedEvents.filter(e => e.daysLeft > 7 && e.daysLeft <= 
 const futureEvents = sortedEvents.filter(e => e.daysLeft > 30);
 
 // Load stock prices for context
-const PRICES_FILE = './src/content/data/stock-prices.json';
 let stockPrices: any = {};
-if (existsSync(PRICES_FILE)) {
-  try {
-    const raw = await readFile(PRICES_FILE, 'utf-8');
-    const data = JSON.parse(raw);
-    stockPrices = data?.stocks || {};
-  } catch (e) {
-    console.error('Failed to load stock prices:', e);
+try {
+  // @ts-ignore - dynamic import
+  const pricesModule = await import('../content/data/stock-prices.json');
+  stockPrices = pricesModule?.default?.stocks || {};
+} catch (e) {
+  console.error('Failed to load stock prices:', e);
   }
 }
 ---
