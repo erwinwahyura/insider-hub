@@ -1,13 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-// Clerk hosted page - most reliable for static sites
-const CLERK_DOMAIN = 'beloved-macaque-99.clerk.accounts.dev';
+// Clerk hosted page URL - correct format
+const clerkInstance = 'beloved-macaque-99';
 const redirectUrl = 'https://stocks.erwarx.com/portfolio';
+const signInUrl = `https://${clerkInstance}.accounts.dev/sign-in?redirect_url=${encodeURIComponent(redirectUrl)}`;
 ---
 
 <Layout title="Sign In — Insider Hub">
-<meta http-equiv="refresh" content={`0; url=https://${CLERK_DOMAIN}/sign-in?redirect_url=${encodeURIComponent(redirectUrl)}`} />
+<meta http-equiv="refresh" content={`0; url=${signInUrl}`} />
 
 <div class="page">
   <header class="topbar">
@@ -29,7 +30,7 @@ const redirectUrl = 'https://stocks.erwarx.com/portfolio';
         
         <div class="redirect-box">
           <p>If not redirected automatically, click below:</p>
-          <a href={`https://${CLERK_DOMAIN}/sign-in?redirect_url=${encodeURIComponent(redirectUrl)}`} class="redirect-btn">
+          <a href={signInUrl} class="redirect-btn">
             Sign In with Clerk
           </a>
         </div>
