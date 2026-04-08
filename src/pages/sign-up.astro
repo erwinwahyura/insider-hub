@@ -23,26 +23,41 @@ import Layout from '../layouts/Layout.astro';
           <p class="auth-subtitle">Start tracking your portfolio today</p>
         </div>
         
-        <div id="clerk-sign-up"></div>
+        <div id="clerk-sign-up" class="clerk-container">
+          <div class="clerk-loading">Loading sign-up form...</div>
+        </div>
         
         <script>
-          // Client-side Clerk initialization
-          const clerkPubKey = document.querySelector('meta[name="clerk-key"]')?.getAttribute('content');
-          if (clerkPubKey) {
+          (function() {
+            const clerkPubKey = document.querySelector('meta[name="clerk-key"]')?.getAttribute('content');
+            const container = document.getElementById('clerk-sign-up');
+            
+            if (!clerkPubKey || clerkPubKey === '') {
+              container.innerHTML = '<div class="clerk-error">Authentication not configured. Please contact support.</div>';
+              return;
+            }
+            
+            // Load Clerk from CDN
             const script = document.createElement('script');
-            script.src = `https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js`;
+            script.src = 'https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js';
             script.async = true;
-            script.onload = () => {
+            script.onload = function() {
               window.Clerk.load({
                 publishableKey: clerkPubKey
-              }).then(() => {
-                window.Clerk.mountSignUp(document.getElementById('clerk-sign-up'), {
+              }).then(function(clerk) {
+                container.innerHTML = ''; // Clear loading message
+                clerk.mountSignUp(container, {
                   redirectUrl: '/portfolio'
                 });
+              }).catch(function(err) {
+                container.innerHTML = '<div class="clerk-error">Failed to load authentication: ' + err.message + '</div>';
               });
             };
+            script.onerror = function() {
+              container.innerHTML = '<div class="clerk-error">Failed to load authentication service.</div>';
+            };
             document.head.appendChild(script);
-          }
+          })();
         </script>
         
         <div class="auth-footer">
@@ -198,6 +213,31 @@ import Layout from '../layouts/Layout.astro';
   
   .feature-icon {
     font-size: 20px;
+  }
+  
+  /* Clerk form container */
+  .clerk-container {
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .clerk-loading {
+    color: var(--text-3);
+    font-size: 14px;
+    padding: 2rem;
+    text-align: center;
+  }
+  
+  .clerk-error {
+    color: var(--down);
+    font-size: 14px;
+    padding: 2rem;
+    text-align: center;
+    background: var(--down-bg);
+    border: 1px solid var(--down);
+    border-radius: 4px;
   }
   
   @media (max-width: 768px) {
