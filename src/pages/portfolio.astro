@@ -1,7 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { readFile } from 'fs/promises';
-import { existsSync } from 'fs';
 import { getUserPortfolios, getDB, type Portfolio } from '../lib/db';
 import { SignedIn, SignedOut, UserButton } from '@clerk/astro/components';
 
@@ -9,17 +7,22 @@ import { SignedIn, SignedOut, UserButton } from '@clerk/astro/components';
 const { userId } = Astro.locals.auth;
 const isLoggedIn = !!userId;
 
-// Load stock prices (shared data)
-const PRICES_FILE = './src/content/data/stock-prices.json';
+// Load stock prices (shared data) - use dynamic import for Cloudflare compatibility
 let stockData: any = null;
-
-if (existsSync(PRICES_FILE)) {
-  try {
-    const raw = await readFile(PRICES_FILE, 'utf-8');
-    stockData = JSON.parse(raw);
-  } catch (e) {
-    console.error('Failed to load stock prices:', e);
-  }
+try {
+  // @ts-ignore - dynamic import of JSON
+  const pricesModule = await import('../content/data/stock-prices.json');
+  stockData = pricesModule.default || pricesModule;
+} catch (e) {
+  console.error('Failed to load stock prices:', e);
+  // Fallback data
+  stockData = {
+    stocks: {
+      PTPS: { price: 183, changePct: -2.5 },
+      PGEO: { price: 1020, changePct: 0.8 },
+      ESSA: { price: 720, changePct: 1.2 }
+    }
+  };
 }
 
 // Default cash amount

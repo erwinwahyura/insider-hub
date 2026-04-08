@@ -1,27 +1,23 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
-import { readFile } from 'fs/promises';
-import { existsSync } from 'fs';
 import { SignedIn, SignedOut, UserButton } from '@clerk/astro/components';
 
 // Fetch news
 const allNews = await getCollection('news');
 const sortedNews = allNews.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
 
-// Fetch live commodity prices
-const COMMODITIES_FILE = './src/content/data/commodities.json';
+// Fetch live commodity prices - use dynamic import for Cloudflare compatibility
 let commoditiesData: any = null;
 let commoditiesLastUpdate = '';
 
-if (existsSync(COMMODITIES_FILE)) {
-  try {
-    const raw = await readFile(COMMODITIES_FILE, 'utf-8');
-    commoditiesData = JSON.parse(raw);
-    commoditiesLastUpdate = commoditiesData?.timestamp || '';
-  } catch (e) {
-    console.error('Failed to load commodities data:', e);
-  }
+try {
+  // @ts-ignore - dynamic import of JSON
+  const commModule = await import('../content/data/commodities.json');
+  commoditiesData = commModule.default || commModule;
+  commoditiesLastUpdate = commoditiesData?.timestamp || '';
+} catch (e) {
+  console.error('Failed to load commodities data:', e);
 }
 
 // Fallback data if file doesn't exist yet
