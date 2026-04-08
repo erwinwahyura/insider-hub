@@ -1,32 +1,35 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { SignedIn, SignedOut, UserButton } from '@clerk/astro/components';
-import { getCurrentUserId, getUserAlerts } from '../lib/supabase';
+import { getUserAlerts, getDB, type PriceAlert } from '../lib/db';
 
-// Check auth
-const userId = await getCurrentUserId();
+// Get auth from Clerk middleware
+const { userId } = Astro.locals.auth;
+const isLoggedIn = !!userId;
 
-// Load user-specific alerts from Supabase
-let alerts: any[] = [];
-let isLoggedIn = !!userId;
+// Load user-specific alerts from D1
+let alerts: PriceAlert[] = [];
 
-if (userId) {
-  try {
-    alerts = await getUserAlerts(userId);
-  } catch (e) {
-    console.error('Failed to load alerts:', e);
+if (isLoggedIn && Astro.locals.runtime?.env?.DB) {
+  const db = getDB(Astro.locals.runtime.env);
+  if (db) {
+    try {
+      alerts = await getUserAlerts(db, userId);
+    } catch (e) {
+      console.error('Failed to load alerts from D1:', e);
+    }
   }
 } else {
   // Demo alerts for non-logged in users
   alerts = [
-    { ticker: 'PTPS', alert_type: 'price_below', target_price: 175, current_price: 183, message: '🟢 PTPS buy opportunity: Price dropped to {price} (target: {target})', priority: 'high', cooldown_minutes: 60 },
-    { ticker: 'PTPS', alert_type: 'price_below', target_price: 150, current_price: 183, message: '🔴 PTPS alert: Price fell to {price} (below {target})', priority: 'critical', cooldown_minutes: 30 },
-    { ticker: 'PGEO', alert_type: 'price_below', target_price: 950, current_price: 1020, message: '🟢 PGEO add opportunity', priority: 'medium', cooldown_minutes: 120 },
+    { id: 1, user_id: 'demo', ticker: 'PTPS', alert_type: 'price_below', target_price: 175, current_price: 183, message: 'PTPS buy opportunity: Price dropped to {price} (target: {target})', priority: 'high', cooldown_minutes: 60, is_active: true, created_at: new Date().toISOString() },
+    { id: 2, user_id: 'demo', ticker: 'PTPS', alert_type: 'price_below', target_price: 150, current_price: 183, message: 'PTPS alert: Price fell to {price} (below {target})', priority: 'critical', cooldown_minutes: 30, is_active: true, created_at: new Date().toISOString() },
+    { id: 3, user_id: 'demo', ticker: 'PGEO', alert_type: 'price_below', target_price: 950, current_price: 1020, message: 'PGEO add opportunity', priority: 'medium', cooldown_minutes: 120, is_active: true, created_at: new Date().toISOString() },
   ];
 }
 
-// Categorize alerts
-const activeAlerts = alerts.filter(a => a.is_active !== false);
+// Categorize alerts (is_active is 1/0 in D1 SQLite)
+const activeAlerts = alerts.filter(a => a.is_active === true || a.is_active === 1);
 const triggeredAlerts = alerts.filter(a => a.last_triggered);
 
 function formatPrice(alert: any) {

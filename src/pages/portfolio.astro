@@ -2,11 +2,12 @@
 import Layout from '../layouts/Layout.astro';
 import { readFile } from 'fs/promises';
 import { existsSync } from 'fs';
-import { getCurrentUserId, getUserPortfolios } from '../lib/supabase';
+import { getUserPortfolios, getDB, type Portfolio } from '../lib/db';
 import { SignedIn, SignedOut, UserButton } from '@clerk/astro/components';
 
-// Check auth - middleware handles redirect but we need userId for data fetch
-const userId = await getCurrentUserId();
+// Get auth from Clerk middleware
+const { userId } = Astro.locals.auth;
+const isLoggedIn = !!userId;
 
 // Load stock prices (shared data)
 const PRICES_FILE = './src/content/data/stock-prices.json';
@@ -24,26 +25,26 @@ if (existsSync(PRICES_FILE)) {
 // Default cash amount
 const DEFAULT_CASH = 56000000;
 
-// Load user's portfolios from Supabase (or use defaults if not logged in)
-let positions: any[] = [];
+// Load user's portfolios from D1 (or use defaults if not logged in)
+let positions: Portfolio[] = [];
 let cash = DEFAULT_CASH;
 
-if (userId) {
-  try {
-    positions = await getUserPortfolios(userId);
-    // TODO: Load user preferences for cash amount
-    cash = DEFAULT_CASH; // Will come from user_preferences table
-  } catch (e) {
-    console.error('Failed to load portfolios:', e);
-    // Fallback to empty
-    positions = [];
+if (isLoggedIn && Astro.locals.runtime?.env?.DB) {
+  const db = getDB(Astro.locals.runtime.env);
+  if (db) {
+    try {
+      positions = await getUserPortfolios(db, userId);
+    } catch (e) {
+      console.error('Failed to load portfolios from D1:', e);
+      positions = [];
+    }
   }
 } else {
   // Demo data for non-logged in users (read-only view)
   positions = [
-    { ticker: 'PTPS', name: 'PT Pulau Subur Tbk', sector: 'CPO/Plantation', lots: 1560, avg_price: 191, conviction: 'HIGH' },
-    { ticker: 'PGEO', name: 'Pertamina Geothermal Energy', sector: 'Geothermal/Energy', lots: 245, avg_price: 1010, conviction: 'CORE' },
-    { ticker: 'ESSA', name: 'Surya Esa Perkasa Tbk', sector: 'Ammonia/Chemical', lots: 310, avg_price: 713, conviction: 'HOLD' },
+    { id: 1, user_id: 'demo', ticker: 'PTPS', name: 'PT Pulau Subur Tbk', sector: 'CPO/Plantation', lots: 1560, avg_price: 191, conviction: 'HIGH', notes: 'B50 thesis', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    { id: 2, user_id: 'demo', ticker: 'PGEO', name: 'Pertamina Geothermal Energy', sector: 'Geothermal/Energy', lots: 245, avg_price: 1010, conviction: 'CORE', notes: 'USD revenue', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+    { id: 3, user_id: 'demo', ticker: 'ESSA', name: 'Surya Esa Perkasa Tbk', sector: 'Ammonia/Chemical', lots: 310, avg_price: 713, conviction: 'HOLD', notes: 'Qatar play', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
   ];
 }
 
@@ -70,7 +71,15 @@ const positionsWithLive = positions.map(pos => {
       isLive: true,
     };
   }
-  return { ...pos, isLive: false };
+  return { 
+    ...pos, 
+    currentPrice: null,
+    invested: pos.lots * 100 * pos.avg_price,
+    marketValue: null,
+    pnl: null,
+    pnlPct: null,
+    isLive: false 
+  };
 });
 
 // Calculate totals
@@ -106,7 +115,6 @@ function convictionBadge(conv: string) {
 }
 
 const lastUpdate = stockData?.timestamp || new Date().toISOString();
-const isLoggedIn = !!userId;
 ---
 
 <Layout title={isLoggedIn ? "Your Portfolio — Insider Hub" : "Portfolio Demo — Insider Hub"}>

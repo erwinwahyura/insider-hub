@@ -1,0 +1,15 @@
+name = "insider-hub"
+compatibility_date = "2024-04-08"
+
+# Cloudflare D1 Database Binding
+[[d1_databases]]
+binding = "DB"
+database_name = "insider-hub-db"
+database_id = ""
+
+# Environment variables (set via Cloudflare dashboard or wrangler secret)
+[vars]
+PUBLIC_CLERK_PUBLISHABLE_KEY = ""
+
+# Secrets (use `wrangler secret put` to set)
+# CLERK_SECRET_KEY
