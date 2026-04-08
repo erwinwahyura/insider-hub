@@ -32,25 +32,33 @@ const { title } = Astro.props;
 		
 		<style is:global>
 			:root {
-				--bg:          #ffffff;
-				--bg-raised:   #f9f9f8;
-				--bg-subtle:   #f2f2f0;
-				--border:      #e2e0dc;
-				--border-soft: #ebebea;
+				--bg:          #f8fafc;
+				--bg-raised:   #ffffff;
+				--bg-subtle:   #f1f5f9;
+				--border:      #e2e8f0;
+				--border-soft: #f1f5f9;
 
-				--text:        #111110;
-				--text-2:      #5c5955;
-				--text-3:      #a09c98;
+				--text:        #0f172a;
+				--text-2:      #475569;
+				--text-3:      #94a3b8;
 
-				--up:          #1a6e3c;
-				--up-bg:       #edf7f1;
-				--down:        #b52828;
-				--down-bg:     #fdf0f0;
-				--amber:       #7a5c1e;
-				--amber-bg:    #fdf6e8;
+				--up:          #059669;
+				--up-bg:       #d1fae5;
+				--down:        #dc2626;
+				--down-bg:     #fee2e2;
+				--amber:       #d97706;
+				--amber-bg:    #fef3c7;
 
-				--sans: 'IBM Plex Sans', system-ui, sans-serif;
-				--mono: 'IBM Plex Mono', 'Courier New', monospace;
+				--accent:      #3b82f6;
+				--accent-bg:   #eff6ff;
+
+				--shadow-sm:   0 1px 2px 0 rgba(0, 0, 0, 0.05);
+				--shadow:      0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+				--shadow-md:   0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+				--shadow-lg:   0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+
+				--sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+				--mono: 'IBM Plex Mono', 'SF Mono', 'Courier New', monospace;
 			}
 
 			*, *::before, *::after {
@@ -69,6 +77,11 @@ const { title } = Astro.props;
 			body { min-height: 100vh; }
 
 			a { color: inherit; text-decoration: none; }
+
+			/* Smooth transitions */
+			* {
+				transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+			}
 		</style>
 	</head>
 	<body>
