@@ -1,271 +1,246 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { readFile } from 'fs/promises';
+import { existsSync } from 'fs';
+
+// Load stock prices
+const PRICES_FILE = './src/content/data/stock-prices.json';
+let stockData: any = null;
+
+if (existsSync(PRICES_FILE)) {
+  try {
+    const raw = await readFile(PRICES_FILE, 'utf-8');
+    stockData = JSON.parse(raw);
+  } catch (e) {
+    console.error('Failed to load stock prices:', e);
+  }
+}
+
+// Portfolio positions
+const positions = [
+  { ticker: 'PTPS', lots: 1560, avgPrice: 191, sector: 'CPO/Plantation', conviction: 'HIGH' },
+  { ticker: 'PGEO', lots: 245, avgPrice: 1010, sector: 'Geothermal/Energy', conviction: 'CORE' },
+  { ticker: 'ESSA', lots: 310, avgPrice: 713, sector: 'Ammonia/Chemical', conviction: 'HOLD' },
+];
+
+const cash = 56000000;
+
+// Merge with live prices
+const positionsWithLive = positions.map(pos => {
+  const live = stockData?.stocks?.[pos.ticker];
+  if (live && live.price) {
+    const currentPrice = live.price;
+    const invested = pos.lots * 100 * pos.avgPrice;
+    const marketValue = pos.lots * 100 * currentPrice;
+    const pnl = marketValue - invested;
+    const pnlPct = (pnl / invested) * 100;
+    
+    return {
+      ...pos,
+      currentPrice,
+      invested,
+      marketValue,
+      pnl,
+      pnlPct,
+      dayChange: live.changePct,
+      volume: live.volume,
+      lastUpdate: live.timestamp,
+      isLive: true,
+    };
+  }
+  return { ...pos, isLive: false };
+});
+
+// Calculate totals
+const totalInvested = positionsWithLive.reduce((sum, p) => sum + (p.invested || 0), 0);
+const totalMarketValue = positionsWithLive.reduce((sum, p) => sum + (p.marketValue || 0), 0);
+const totalPnl = positionsWithLive.reduce((sum, p) => sum + (p.pnl || 0), 0);
+const totalEquity = totalMarketValue + cash;
+
+// Allocation percentages
+const positionsWithAlloc = positionsWithLive.map(p => ({
+  ...p,
+  allocPct: totalMarketValue > 0 ? ((p.marketValue || 0) / totalMarketValue) * 100 : 0,
+}));
+
+function formatCurrency(n: number) {
+  if (n >= 1000000000) return `Rp ${(n / 1000000000).toFixed(1)}B`;
+  if (n >= 1000000) return `Rp ${(n / 1000000).toFixed(1)}M`;
+  return `Rp ${n.toLocaleString()}`;
+}
+
+function formatNumber(n: number) {
+  return n.toLocaleString();
+}
+
+function pnlClass(pnl: number) {
+  return pnl >= 0 ? 'up' : 'down';
+}
+
+function convictionBadge(conv: string) {
+  if (conv === 'HIGH') return 'high';
+  if (conv === 'CORE') return 'core';
+  return 'hold';
+}
+
+const lastUpdate = stockData?.timestamp || new Date().toISOString();
 ---
 
 <Layout title="Portfolio — Insider Hub">
 <div class="page">
-
   <header class="topbar">
     <div class="topbar-inner">
       <div class="topbar-left">
         <a href="/" class="logo">Insider Hub</a>
-        <span class="logo-sub">Portfolio Dashboard</span>
-        <span class="private-badge">Private</span>
+        <span class="logo-sub">Portfolio Tracker</span>
       </div>
-      <button class="mobile-menu-btn" aria-label="Menu" id="menuBtn">
-        <span></span><span></span><span></span>
-      </button>
-      <nav class="topbar-nav" id="mainNav">
-        <a href="/" class="nav-link">News</a>
+      <nav class="topbar-nav">
+        <a href="/" class="nav-link">Home</a>
         <a href="/daily-summary" class="nav-link">Summary</a>
         <a href="/top-picks" class="nav-link">Top Picks</a>
+        <span class="nav-stats">
+          <span class="mono dim">Live</span>
+          <span class="live-badge">●</span>
+        </span>
       </nav>
     </div>
   </header>
 
   <div class="body">
-
-    <!-- Portfolio Overview -->
-    <section class="section">
-      <div class="section-head">
-        <h2 class="section-title">Portfolio Overview</h2>
-        <p class="section-sub">April 2026 • Om Obet Framework</p>
-      </div>
-
-      <div class="cards-row">
-        <div class="stat-card">
-          <div class="stat-label">Total Equity</div>
-          <div class="stat-value">Rp 67.4M</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Cash Available</div>
-          <div class="stat-value" style="color: var(--up)">Rp 62.0M</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Total Assets</div>
-          <div class="stat-value">Rp 129.4M</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Cash %</div>
-          <div class="stat-value" style="color: var(--amber)">48%</div>
+    <!-- Summary Cards -->
+    <section class="summary-grid">
+      <div class="summary-card total">
+        <div class="card-label">Total Equity</div>
+        <div class="card-value mono">{formatCurrency(totalEquity)}</div>
+        <div class="card-sub">
+          <span class="mono">{formatCurrency(totalMarketValue)}</span> invested
+          <span class="dim"> + {formatCurrency(cash)} cash</span>
         </div>
       </div>
-    </section>
-
-    <!-- Core Holdings -->
-    <section class="section">
-      <div class="section-head">
-        <h2 class="section-title">Core Holdings (Priority Actions)</h2>
-      </div>
-
-      <div class="table-wrap">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Ticker</th>
-              <th>Value</th>
-              <th>Avg Buy</th>
-              <th>Current</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="priority-high">
-              <td><strong>ESSA</strong></td>
-              <td>Rp 18.7M</td>
-              <td>Rp 722</td>
-              <td>Rp 690-695</td>
-              <td><span class="badge down">-3.7% to -4.4%</span></td>
-              <td><span class="action-exit">PARTIAL EXIT 50-70%</span></td>
-            </tr>
-            <tr>
-              <td><strong>PGEO</strong></td>
-              <td>Rp 20.8M</td>
-              <td>—</td>
-              <td>~700</td>
-              <td><span class="badge neutral">HOLD</span></td>
-              <td>Monitor payout ratio (97% unsustainable)</td>
-            </tr>
-            <tr>
-              <td><strong>PTPS</strong></td>
-              <td>Rp 19.9M</td>
-              <td>—</td>
-              <td>—</td>
-              <td><span class="badge warn">NEEDS ANALYSIS</span></td>
-              <td>15% of portfolio — priority keystat</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- Watchlist -->
-    <section class="section">
-      <div class="section-head">
-        <h2 class="section-title">Watchlist</h2>
-        <p class="section-sub">Targets for deployment</p>
-      </div>
-
-      <div class="cards-grid">
-        <div class="news-card">
-          <div class="news-header">
-            <span class="news-ticker up">ISSP</span>
-            <span class="badge up">BUY ✅</span>
-          </div>
-          <div class="news-title">Top Redeployment Target</div>
-          <div class="news-body">
-            <p>PER 5.95 | PBV 0.61 | PEG 0.93</p>
-            <p>Insider buying + Unit 7 capex catalyst</p>
-          </div>
-          <div class="news-footer">
-            <span class="dim">Score: 7.5/10</span>
-            <span class="up">Om Obet: LULUS</span>
-          </div>
+      
+      <div class={`summary-card pnl ${pnlClass(totalPnl)}`}>
+        <div class="card-label">Unrealized P&L</div>
+        <div class="card-value mono">
+          {totalPnl >= 0 ? '+' : ''}{formatCurrency(totalPnl)}
         </div>
-
-        <div class="news-card">
-          <div class="news-header">
-            <span class="news-ticker warn">ELSA</span>
-            <span class="badge warn">WAIT ⚠️</span>
-          </div>
-          <div class="news-title">Governance Risk</div>
-          <div class="news-body">
-            <p>BPK audit fraud findings | Management risk</p>
-            <p>PER 7.52 attractive but WAIT for clarity</p>
-          </div>
-          <div class="news-footer">
-            <span class="dim">Score: 8/10 → WAIT</span>
-            <span class="warn">Governance override</span>
-          </div>
+        <div class="card-sub">
+          <span class="mono">{totalPnl >= 0 ? '+' : ''}{((totalPnl / totalInvested) * 100).toFixed(2)}%</span>
+          <span class="dim"> vs avg cost</span>
         </div>
-
-        <div class="news-card">
-          <div class="news-header">
-            <span class="news-ticker down">ITMG</span>
-            <span class="badge down">CYCLICAL ⚠️</span>
-          </div>
-          <div class="news-title">Geopolitik Play Only</div>
-          <div class="news-body">
-            <p>PER 6.48 | Div 13.83% | Laba -71%</p>
-            <p>Payout 118% unsustainable</p>
-          </div>
-          <div class="news-footer">
-            <span class="dim">Score: 7/10</span>
-            <span class="down">Optional play</span>
-          </div>
+      </div>
+      
+      <div class="summary-card cash">
+        <div class="card-label">Cash Available</div>
+        <div class="card-value mono">{formatCurrency(cash)}</div>
+        <div class="card-sub">
+          <span class="mono">{((cash / totalEquity) * 100).toFixed(1)}%</span>
+          <span class="dim"> of portfolio</span>
         </div>
       </div>
     </section>
 
-    <!-- Action Plan -->
-    <section class="section">
-      <div class="section-head">
-        <h2 class="section-title">Active Action Plan</h2>
+    <!-- Allocation Bar -->
+    <section class="allocation-bar">
+      <div class="alloc-label">Allocation</div>
+      <div class="alloc-stack">
+        {positionsWithAlloc.map((p, i) => (
+          <div 
+            class={`alloc-segment ${p.ticker.toLowerCase()}`} 
+            style={`width: ${p.allocPct}%`}
+            title={`${p.ticker}: ${p.allocPct.toFixed(1)}%`}
+          ></div>
+        ))}
+        <div class="alloc-segment cash" style={`width: ${(cash / totalEquity) * 100}%`}></div>
       </div>
-
-      <div class="table-wrap">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Priority</th>
-              <th>Ticker</th>
-              <th>Action</th>
-              <th>Amount</th>
-              <th>Notes</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="priority-high">
-              <td>🔴 HIGH</td>
-              <td>ESSA</td>
-              <td><span class="action-exit">Partial Exit</span></td>
-              <td>Rp 9-13M</td>
-              <td>Sell 50-70% at 690-695, redeploy to ISSP</td>
-            </tr>
-            <tr class="priority-high">
-              <td>🔴 HIGH</td>
-              <td>ISSP</td>
-              <td><span class="action-buy">Entry</span></td>
-              <td>Rp 12M (20%)</td>
-              <td>Cicil 40-30-30 method at ~430s</td>
-            </tr>
-            <tr class="priority-high">
-              <td>🔴 HIGH</td>
-              <td>PTPS</td>
-              <td><span class="action-analyze">Keystat</span></td>
-              <td>—</td>
-              <td>Complete analysis — 15% of portfolio</td>
-            </tr>
-            <tr class="priority-med">
-              <td>🟡 MED</td>
-              <td>ELSA</td>
-              <td><span class="action-hold">WAIT</span></td>
-              <td>Rp 25M (40%)</td>
-              <td>Hold cash allocation until BPK clear</td>
-            </tr>
-            <tr class="priority-low">
-              <td>🟢 LOW</td>
-              <td>BSSR/AADI</td>
-              <td><span class="action-dca">DCA</span></td>
-              <td>Rp 9M (15%)</td>
-              <td>Top-up dividend DCA positions</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="alloc-legend">
+        {positionsWithAlloc.map(p => (
+          <div class="legend-item">
+            <span class={`legend-dot ${p.ticker.toLowerCase()}`}></span>
+            <span class="legend-ticker">{p.ticker}</span>
+            <span class="legend-pct">{p.allocPct.toFixed(1)}%</span>
+          </div>
+        ))}
+        <div class="legend-item">
+          <span class="legend-dot cash"></span>
+          <span class="legend-ticker">Cash</span>
+          <span class="legend-pct">{((cash / totalEquity) * 100).toFixed(1)}%</span>
+        </div>
       </div>
     </section>
 
-    <!-- Framework Reminder -->
-    <section class="section">
-      <div class="section-head">
-        <h2 class="section-title">Om Obet Framework</h2>
+    <!-- Holdings Table -->
+    <section class="holdings-panel">
+      <div class="panel-head">
+        <span class="panel-title">Holdings</span>
+        <span class="panel-badge">{positions.length} Positions</span>
+        <span class="last-update mono dim">Updated {new Date(lastUpdate).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'})}</span>
       </div>
-
-      <div class="cards-grid" style="grid-template-columns: repeat(3, 1fr);">
-        <div class="news-card">
-          <div class="news-title">1. Management Effectiveness</div>
-          <div class="news-body">
-            <ul class="body-list">
-              <li>ROE, ROA, ROIC trends</li>
-              <li>Insider activity (buy/sell)</li>
-              <li>Governance red flags (BPK/audit)</li>
-            </ul>
-          </div>
+      
+      <div class="holdings-table">
+        <div class="table-header">
+          <span class="col-ticker">Ticker</span>
+          <span class="col-sector">Sector</span>
+          <span class="col-lots">Lots</span>
+          <span class="col-avg">Avg Price</span>
+          <span class="col-current">Current</span>
+          <span class="col-day">Day</span>
+          <span class="col-pnl">P&L</span>
+          <span class="col-value">Value</span>
+          <span class="col-alloc">Alloc</span>
         </div>
-        <div class="news-card">
-          <div class="news-title">2. Solvency</div>
-          <div class="news-body">
-            <ul class="body-list">
-              <li>D/E ratio (&lt;0.5 🟢)</li>
-              <li>Altman Z-Score (&gt;2.99 🟢)</li>
-              <li>Current ratio (&gt;1.5 🟢)</li>
-            </ul>
+        
+        {positionsWithAlloc.map(p => (
+          <div class="table-row">
+            <div class="col-ticker">
+              <span class="ticker-name">{p.ticker}</span>
+              <span class={`conviction-badge ${convictionBadge(p.conviction)}`}>{p.conviction}</span>
+            </div>
+            <span class="col-sector dim">{p.sector}</span>
+            <span class="col-lots mono">{formatNumber(p.lots)}</span>
+            <span class="col-avg mono">{p.avgPrice.toLocaleString()}</span>
+            <span class="col-current mono">{p.currentPrice?.toLocaleString() || '-'}</span>
+            <span class={`col-day mono ${pnlClass(p.dayChange || 0)}`}>
+              {p.dayChange !== undefined ? `${p.dayChange >= 0 ? '+' : ''}${p.dayChange.toFixed(2)}%` : '-'}
+            </span>
+            <span class={`col-pnl mono ${pnlClass(p.pnl || 0)}`}>
+              {p.pnl !== undefined ? `${p.pnl >= 0 ? '+' : ''}${formatCurrency(p.pnl)}` : '-'}
+            </span>
+            <span class="col-value mono">{p.marketValue ? formatCurrency(p.marketValue) : '-'}</span>
+            <span class="col-alloc mono">{p.allocPct.toFixed(1)}%</span>
           </div>
-        </div>
-        <div class="news-card">
-          <div class="news-title">3. Valuation</div>
-          <div class="news-body">
-            <ul class="body-list">
-              <li>PER (&lt;10 🟢), PBV (&lt;1 🟢)</li>
-              <li>Div Yield (&gt;5% 🟢)</li>
-              <li>PEG (&lt;1 🟢)</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div class="note-panel">
-        <p><strong>Hard Rule:</strong> "Would I buy this fresh today at this price?"<br>
-        If <strong>NO</strong> → Consider exiting. Governance red flags override all attractive valuations.</p>
+        ))}
       </div>
     </section>
 
+    <!-- Quick Actions -->
+    <section class="actions-panel">
+      <div class="panel-head">
+        <span class="panel-title">Quick Actions</span>
+      </div>
+      <div class="actions-grid">
+        <a href="/" class="action-btn">
+          <span class="action-icon">📈</span>
+          <span class="action-label">View News</span>
+        </a>
+        <a href="/earnings" class="action-btn">
+          <span class="action-icon">📅</span>
+          <span class="action-label">Earnings Calendar</span>
+        </a>
+        <a href="/top-picks" class="action-btn">
+          <span class="action-icon">⭐</span>
+          <span class="action-label">Top Picks</span>
+        </a>
+      </div>
+    </section>
   </div>
-</div>
 
-<style>
-  /* Layout */
+  <footer class="footer">
+    Insider Hub · Live portfolio tracking · Updated every 30 min
+  </footer>
+</div>
+</Layout>
+
+<style is:global>
   .page { min-height: 100vh; display: flex; flex-direction: column; }
   
   /* Topbar */
@@ -280,256 +255,271 @@ import Layout from '../layouts/Layout.astro';
     width: 100%; max-width: 860px;
   }
   .topbar-left { display: flex; align-items: center; gap: 0.75rem; }
-  .topbar-right { display: flex; align-items: center; gap: 1rem; }
   .logo { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
   .logo-sub { font-size: 12px; color: var(--text-3); }
-  .private-badge {
-    font-size: 10px; font-weight: 500; color: var(--text-3);
-    border: 1px solid var(--border); padding: 1px 6px; border-radius: 3px;
-    text-transform: uppercase; letter-spacing: 0.05em;
-  }
-  .dim { font-size: 12px; color: var(--text-3); }
-  .mono { font-family: var(--mono); }
   .topbar-nav {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+    display: flex; align-items: center; gap: 1rem;
   }
-
-  /* Mobile Menu Button */
-  .mobile-menu-btn {
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 32px;
-    height: 32px;
-    background: var(--bg-raised);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    cursor: pointer;
-    padding: 4px;
-    gap: 3px;
-    margin-left: auto;
-  }
-  .mobile-menu-btn span {
-    display: block;
-    width: 14px;
-    height: 2px;
-    background: var(--text-2);
-    border-radius: 1px;
-    transition: all 0.2s;
-  }
-  .mobile-menu-btn.open span:nth-child(1) { transform: rotate(45deg) translate(3px, 3px); }
-  .mobile-menu-btn.open span:nth-child(2) { opacity: 0; }
-  .mobile-menu-btn.open span:nth-child(3) { transform: rotate(-45deg) translate(4px, -4px); }
-
   .nav-link {
     font-size: 12px; color: var(--text-3); text-decoration: none;
     border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px;
-    transition: all 0.15s;
   }
-  .nav-link:hover { color: var(--text); border-color: var(--up); background: var(--up-bg); }
+  .nav-link:hover { color: var(--text); border-color: var(--up); }
+  .nav-stats {
+    display: flex; align-items: center; gap: 0.5rem;
+    margin-left: 0.75rem; padding-left: 0.75rem;
+    border-left: 1px solid var(--border);
+  }
+  .live-badge {
+    color: var(--up);
+    font-size: 11px;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .mono { font-family: var(--mono); }
+  .dim { color: var(--text-3); }
+  .up { color: var(--up); }
+  .down { color: var(--down); }
 
   /* Body */
   .body { flex: 1; padding: 1.25rem 1.5rem; max-width: 860px; margin: 0 auto; width: 100%; }
 
-  /* Section */
-  .section { margin-bottom: 1.5rem; }
-  .section-head { margin-bottom: 0.75rem; }
-  .section-title { font-size: 14px; font-weight: 600; color: var(--text); margin: 0 0 0.25rem; }
-  .section-sub { font-size: 12px; color: var(--text-3); margin: 0; }
-
-  /* Cards Grid */
-  .cards-grid {
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem;
+  /* Summary Grid */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
   }
-  @media (min-width: 860px) { .cards-grid { grid-template-columns: repeat(3, 1fr); } }
+  .summary-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    padding: 1rem;
+    border-radius: 4px;
+    border-top: 3px solid var(--border);
+  }
+  .summary-card.total { border-top-color: #2563eb; }
+  .summary-card.pnl.up { border-top-color: var(--up); }
+  .summary-card.pnl.down { border-top-color: var(--down); }
+  .summary-card.cash { border-top-color: var(--amber); }
+  .card-label {
+    font-size: 11px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.5rem;
+  }
+  .card-value {
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+  .card-sub {
+    font-size: 12px;
+    color: var(--text-2);
+  }
+
+  /* Allocation Bar */
+  .allocation-bar {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 4px;
+  }
+  .alloc-label {
+    font-size: 11px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.75rem;
+  }
+  .alloc-stack {
+    display: flex;
+    height: 24px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+  }
+  .alloc-segment {
+    height: 100%;
+    transition: opacity 0.2s;
+  }
+  .alloc-segment:hover { opacity: 0.8; }
+  .alloc-segment.ptps { background: #22c55e; }
+  .alloc-segment.pgeo { background: #3b82f6; }
+  .alloc-segment.essa { background: #f59e0b; }
+  .alloc-segment.cash { background: var(--border); }
+  .alloc-legend {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 12px;
+  }
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+  }
+  .legend-dot.ptps { background: #22c55e; }
+  .legend-dot.pgeo { background: #3b82f6; }
+  .legend-dot.essa { background: #f59e0b; }
+  .legend-dot.cash { background: var(--text-3); }
+  .legend-ticker { font-weight: 500; color: var(--text); }
+  .legend-pct { color: var(--text-3); }
+
+  /* Holdings Panel */
+  .holdings-panel {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .panel-head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-subtle);
+  }
+  .panel-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .panel-badge {
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 2px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text-3);
+  }
+  .last-update {
+    margin-left: auto;
+    font-size: 11px;
+  }
   
-  .cards-row {
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem;
+  .holdings-table {
+    display: flex;
+    flex-direction: column;
   }
-  @media (min-width: 640px) { .cards-row { grid-template-columns: repeat(4, 1fr); } }
-
-  /* Stat Card */
-  .stat-card {
-    background: var(--bg-raised); border: 1px solid var(--border); border-radius: 6px;
-    padding: 0.75rem; text-align: center;
+  .table-header {
+    display: grid;
+    grid-template-columns: 100px 140px 60px 80px 80px 60px 100px 90px 50px;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--bg-subtle);
+    font-size: 10px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--border);
   }
-  .stat-label { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
-  .stat-value { font-size: 16px; font-weight: 600; color: var(--text); }
-
-  /* News Card */
-  .news-card {
-    display: flex; flex-direction: column; gap: 0.5rem;
-    background: var(--bg-raised); border: 1px solid var(--border); border-radius: 6px;
-    padding: 0.75rem; transition: all 0.15s;
+  .table-row {
+    display: grid;
+    grid-template-columns: 100px 140px 60px 80px 80px 60px 100px 90px 50px;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border-soft);
+    align-items: center;
+    font-size: 12px;
   }
-  .news-card:hover { border-color: var(--border-soft); transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-  .news-header { display: flex; align-items: center; gap: 0.5rem; }
-  .news-ticker {
-    font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 4px;
-    background: var(--bg-subtle); color: var(--text-2);
+  .table-row:hover { background: var(--bg-subtle); }
+  .col-ticker {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
   }
-  .news-ticker.up { background: var(--up-bg); color: var(--up); }
-  .news-ticker.down { background: var(--down-bg); color: var(--down); }
-  .news-ticker.warn { background: var(--amber-bg); color: var(--amber); }
-  .news-title { font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.4; }
-  .news-body { font-size: 12px; color: var(--text-2); line-height: 1.5; }
-  .news-body p { margin: 0 0 0.25rem; }
-  .news-footer {
-    display: flex; align-items: center; justify-content: space-between;
-    font-size: 11px; margin-top: auto; padding-top: 0.25rem;
+  .ticker-name {
+    font-weight: 600;
+    color: var(--text);
   }
-
-  /* Badge */
-  .badge {
-    font-size: 10px; font-weight: 500; padding: 2px 6px; border-radius: 4px;
-    background: var(--bg-subtle); color: var(--text-3);
+  .conviction-badge {
+    font-size: 9px;
+    padding: 1px 4px;
+    border-radius: 2px;
+    width: fit-content;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
   }
-  .badge.up { background: var(--up-bg); color: var(--up); }
-  .badge.down { background: var(--down-bg); color: var(--down); }
-  .badge.warn { background: var(--amber-bg); color: var(--amber); }
-  .badge.neutral { background: var(--bg-subtle); color: var(--text-2); }
-
-  /* Colors */
-  .up { color: var(--up); font-weight: 500; }
-  .down { color: var(--down); font-weight: 500; }
-  .warn { color: var(--amber); font-weight: 500; }
-
-  /* Table */
-  .table-wrap { overflow-x: auto; }
-  .data-table {
-    width: 100%; border-collapse: collapse; font-size: 12px;
-    background: var(--bg-raised); border: 1px solid var(--border); border-radius: 6px;
+  .conviction-badge.high {
+    background: rgba(34, 197, 94, 0.15);
+    color: #16a34a;
+    border: 1px solid rgba(34, 197, 94, 0.3);
   }
-  .data-table thead { background: var(--bg-subtle); }
-  .data-table th {
-    text-align: left; padding: 0.5rem 0.75rem; font-weight: 500; color: var(--text-2);
-    border-bottom: 1px solid var(--border); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+  .conviction-badge.core {
+    background: rgba(59, 130, 246, 0.15);
+    color: #2563eb;
+    border: 1px solid rgba(59, 130, 246, 0.3);
   }
-  .data-table td { padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border-soft); color: var(--text); }
-  .data-table tbody tr:hover { background: var(--bg-subtle); }
-  .data-table tbody tr:last-child td { border-bottom: none; }
-
-  /* Priority indicators */
-  .priority-high { border-left: 3px solid var(--down); }
-  .priority-med { border-left: 3px solid var(--amber); }
-  .priority-low { border-left: 3px solid var(--up); }
-
-  /* Action buttons */
-  .action-exit {
-    display: inline-block; background: var(--down); color: #fff;
-    padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600;
-  }
-  .action-buy {
-    display: inline-block; background: var(--up); color: #fff;
-    padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600;
-  }
-  .action-hold {
-    display: inline-block; background: var(--amber); color: #fff;
-    padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600;
-  }
-  .action-analyze {
-    display: inline-block; background: var(--text-2); color: #fff;
-    padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600;
-  }
-  .action-dca {
-    display: inline-block; background: var(--text-3); color: #fff;
-    padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600;
+  .conviction-badge.hold {
+    background: rgba(245, 158, 11, 0.15);
+    color: #d97706;
+    border: 1px solid rgba(245, 158, 11, 0.3);
   }
 
-  /* Note panel */
-  .note-panel {
-    background: var(--amber-bg); border: 1px solid var(--amber-bg);
-    border-radius: 6px; padding: 0.75rem; margin-top: 1rem;
+  /* Actions Panel */
+  .actions-panel {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
   }
-  .note-panel p { margin: 0; font-size: 12px; color: var(--amber); line-height: 1.5; }
+  .actions-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+  }
+  .action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.5rem 1rem;
+    background: var(--bg-raised);
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.15s;
+  }
+  .action-btn:hover { background: var(--bg-subtle); }
+  .action-icon { font-size: 24px; }
+  .action-label { font-size: 12px; color: var(--text-2); }
 
-  /* Body list */
-  .body-list { list-style: none; padding: 0; margin: 0; }
-  .body-list li { padding: 4px 0; border-bottom: 1px solid var(--border-soft); font-size: 12px; color: var(--text-2); }
-  .body-list li:last-child { border-bottom: none; }
-
-  /* Responsive */
-  @media (max-width: 860px) {
-    .cards-grid { grid-template-columns: repeat(2, 1fr); }
+  /* Footer */
+  .footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-3);
+    background: var(--bg-subtle);
   }
 
+  /* Mobile */
   @media (max-width: 768px) {
-    .topbar { height: auto; }
-    .topbar-inner { 
-      flex-wrap: wrap; 
-      padding: 0.5rem 0.75rem;
-      position: relative;
+    .summary-grid { grid-template-columns: 1fr; }
+    .table-header,
+    .table-row {
+      grid-template-columns: 80px 80px 50px 70px 60px 50px;
     }
-    .mobile-menu-btn { display: flex; }
-    .topbar-nav { 
-      display: none; 
-      width: 100%; 
-      flex-direction: column;
-      gap: 0.25rem;
-      padding-top: 0.5rem;
-      margin-top: 0.5rem;
-      border-top: 1px solid var(--border);
-    }
-    .topbar-nav.open { display: flex; }
-    .nav-link { 
-      font-size: 13px; 
-      padding: 0.5rem 0.25rem;
-      border: none;
-      border-radius: 0;
-      border-bottom: 1px solid var(--border-soft);
-    }
-    .nav-link:last-of-type { border-bottom: none; }
-  }
-
-  @media (max-width: 640px) {
-    .topbar { padding: 0 0.75rem; }
-    .topbar-inner { padding: 0.5rem; }
-    .logo-sub { display: none; }
-    
-    .body { padding: 0.75rem; }
-    
-    .cards-grid { grid-template-columns: 1fr; }
-    .cards-row { grid-template-columns: repeat(2, 1fr); }
-    .stat-value { font-size: 14px; }
-    
-    .data-table { font-size: 10px; }
-    .data-table th, .data-table td { padding: 0.375rem 0.25rem; }
-    .data-table th { font-size: 9px; }
-    
-    .news-card { padding: 0.625rem; }
-    .news-title { font-size: 12px; }
-    .news-body { font-size: 11px; }
-    .news-body p { margin: 0 0 0.15rem; }
-    
-    .action-exit, .action-buy, .action-hold, .action-analyze, .action-dca { font-size: 9px; padding: 2px 6px; }
-    
-    .priority-high, .priority-med, .priority-low { border-left-width: 2px; }
-    
-    .note-panel p { font-size: 11px; }
-    .body-list li { font-size: 11px; padding: 3px 0; }
-    
-    .private-badge { display: none; }
-  }
-
-  @media (max-width: 480px) {
-    .cards-row { grid-template-columns: 1fr; }
-    .stat-card { text-align: left; display: flex; justify-content: space-between; align-items: center; }
-    .stat-label { margin-bottom: 0; }
-    
-    .data-table { display: block; overflow-x: auto; white-space: nowrap; }
+    .col-sector, .col-alloc { display: none; }
+    .actions-grid { grid-template-columns: 1fr; }
   }
 </style>
-
-<script>
-  // Mobile menu toggle
-  const menuBtn = document.getElementById('menuBtn');
-  const mainNav = document.getElementById('mainNav');
-  menuBtn?.addEventListener('click', () => {
-    menuBtn.classList.toggle('open');
-    mainNav?.classList.toggle('open');
-  });
-</script>
-</Layout>

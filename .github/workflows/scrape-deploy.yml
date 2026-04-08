@@ -34,6 +34,11 @@ jobs:
         continue-on-error: true
         # Fetch live prices for Coal, Nickel, CPO, Gold, IDR/USD
 
+      - name: Run stock price scraper
+        run: node scripts/stockPriceScraper.mjs
+        continue-on-error: true
+        # Fetch live IDX stock prices for portfolio tracking
+
       - name: Check for new articles
         id: check_changes
         run: |

@@ -1,0 +1,620 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { readFile } from 'fs/promises';
+import { existsSync } from 'fs';
+
+// Earnings calendar data
+const EARNINGS_EVENTS = [
+  {
+    ticker: 'PGEO',
+    name: 'Pertamina Geothermal Energy',
+    date: '2026-04-24',
+    type: 'Q1 2026 Earnings',
+    importance: 'HIGH',
+    expected: '+33% YoY net income growth',
+    catalyst: 'Earnings acceleration + Danantara partnership',
+    watchFor: ['Geothermal capacity expansion', 'USD revenue tailwind', 'Green hydrogen updates'],
+    daysLeft: getDaysLeft('2026-04-24'),
+  },
+  {
+    ticker: 'WBSA',
+    name: 'BSA Logistics (IPO)',
+    date: '2026-04-10',
+    type: 'IPO Listing',
+    importance: 'MEDIUM',
+    expected: 'ARA play - jual di ARA 1',
+    catalyst: 'Sinar Mas group IPO at Rp 150-170',
+    watchFor: ['First day pop', 'ARA limit'],
+    daysLeft: getDaysLeft('2026-04-10'),
+  },
+  {
+    ticker: 'ADRO',
+    name: 'Adaro Energy Indonesia',
+    date: '2026-05-05',
+    type: 'Q1 2026 Earnings',
+    importance: 'MEDIUM',
+    expected: 'Aluminium contribution + coal resilience',
+    catalyst: 'Diversification story validation',
+    watchFor: ['Aluminium smelter progress', 'Coal ASP vs Newcastle'],
+    daysLeft: getDaysLeft('2026-05-05'),
+  },
+  {
+    ticker: 'ITMG',
+    name: 'Indo Tambangraya Megah',
+    date: '2026-05-07',
+    type: 'Q1 2026 Earnings',
+    importance: 'HIGH',
+    expected: 'Coal recovery on Newcastle prices',
+    catalyst: 'Re-entry signal if results strong + price corrects',
+    watchFor: ['Sales volume recovery', 'Cost control', 'Dividend sustainability'],
+    daysLeft: getDaysLeft('2026-05-07'),
+  },
+  {
+    ticker: 'PTPS',
+    name: 'PT Pulau Subur Tbk',
+    date: '2026-05-31',
+    type: 'Q1 2026 Earnings',
+    importance: 'CRITICAL',
+    expected: 'PKS progress + CAPEX impact',
+    catalyst: 'CATALYST: PKS operational H2 2026',
+    watchFor: ['Utang usaha 1 entitas (related party?)', 'CALK 15c depresiasi biologis', 'PKS AMDAL progress'],
+    daysLeft: getDaysLeft('2026-05-31'),
+  },
+  {
+    ticker: 'ESSA',
+    name: 'Surya Esa Perkasa Tbk',
+    date: '2026-05-31',
+    type: 'Q1 2026 Earnings',
+    importance: 'MEDIUM',
+    expected: 'Ammonia/LPG performance post-Qatar force majeure',
+    catalyst: 'Qatar impact lag + China demand',
+    watchFor: ['Ammonia price realization', 'Gas cost pressure', 'Growth recovery'],
+    daysLeft: getDaysLeft('2026-05-31'),
+  },
+];
+
+function getDaysLeft(dateStr: string) {
+  const target = new Date(dateStr);
+  const now = new Date();
+  const diff = Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  return diff;
+}
+
+function formatDate(dateStr: string) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function importanceColor(importance: string) {
+  if (importance === 'CRITICAL') return 'critical';
+  if (importance === 'HIGH') return 'high';
+  if (importance === 'MEDIUM') return 'medium';
+  return 'low';
+}
+
+const sortedEvents = EARNINGS_EVENTS.sort((a, b) => a.daysLeft - b.daysLeft);
+
+// Group by urgency
+const urgentEvents = sortedEvents.filter(e => e.daysLeft <= 7 && e.daysLeft >= 0);
+const upcomingEvents = sortedEvents.filter(e => e.daysLeft > 7 && e.daysLeft <= 30);
+const futureEvents = sortedEvents.filter(e => e.daysLeft > 30);
+
+// Load stock prices for context
+const PRICES_FILE = './src/content/data/stock-prices.json';
+let stockPrices: any = {};
+if (existsSync(PRICES_FILE)) {
+  try {
+    const raw = await readFile(PRICES_FILE, 'utf-8');
+    const data = JSON.parse(raw);
+    stockPrices = data?.stocks || {};
+  } catch (e) {
+    console.error('Failed to load stock prices:', e);
+  }
+}
+---
+
+<Layout title="Earnings Calendar — Insider Hub">
+<div class="page">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="topbar-left">
+        <a href="/" class="logo">Insider Hub</a>
+        <span class="logo-sub">Earnings Calendar</span>
+      </div>
+      <nav class="topbar-nav">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/portfolio" class="nav-link">Portfolio</a>
+        <a href="/top-picks" class="nav-link">Top Picks</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="body">
+    <!-- Summary Stats -->
+    <section class="calendar-stats">
+      <div class="stat-card urgent">
+        <div class="stat-n">{urgentEvents.length}</div>
+        <div class="stat-l">This Week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-n">{upcomingEvents.length}</div>
+        <div class="stat-l">This Month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-n">{futureEvents.length}</div>
+        <div class="stat-l">Future</div>
+      </div>
+      <div class="stat-card portfolio">
+        <div class="stat-n">{sortedEvents.filter(e => stockPrices[e.ticker]?.position).length}</div>
+        <div class="stat-l">Your Positions</div>
+      </div>
+    </section>
+
+    <!-- Urgent Alerts -->
+    {urgentEvents.length > 0 && (
+      <section class="urgent-section">
+        <div class="section-head">
+          <span class="alert-icon">🔥</span>
+          <span class="section-title">This Week</span>
+        </div>
+        <div class="events-list">
+          {urgentEvents.map(event => (
+            <div class={`event-card urgent ${importanceColor(event.importance)}`}>
+              <div class="event-left">
+                <div class="ticker-row">
+                  <span class="ticker">{event.ticker}</span>
+                  <span class={`importance ${importanceColor(event.importance)}`}>{event.importance}</span>
+                </div>
+                <div class="event-name">{event.name}</div>
+                <div class="event-type">{event.type}</div>
+              </div>
+              <div class="event-right">
+                <div class="countdown">
+                  <span class="days">{event.daysLeft}</span>
+                  <span class="days-label">days</span>
+                </div>
+                <div class="date">{formatDate(event.date)}</div>
+              </div>
+              <div class="event-details">
+                <div class="detail-row">
+                  <span class="label">Expected:</span>
+                  <span class="value">{event.expected}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">Catalyst:</span>
+                  <span class="value highlight">{event.catalyst}</span>
+                </div>
+                <div class="watch-section">
+                  <span class="watch-label">Watch for:</span>
+                  <div class="watch-tags">
+                    {event.watchFor.map(tag => <span class="watch-tag">{tag}</span>)}
+                  </div>
+                </div>
+                {stockPrices[event.ticker]?.position && (
+                  <div class="position-alert">
+                    <span class="pos-icon">💼</span>
+                    <span class="pos-text">You have {stockPrices[event.ticker].position.lots} lots @ avg {stockPrices[event.ticker].position.avgPrice}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- Upcoming Events -->
+    {upcomingEvents.length > 0 && (
+      <section class="upcoming-section">
+        <div class="section-head">
+          <span class="section-title">This Month</span>
+        </div>
+        <div class="events-table">
+          <div class="table-header">
+            <span class="col-date">Date</span>
+            <span class="col-ticker">Ticker</span>
+            <span class="col-type">Type</span>
+            <span class="col-days">Days</span>
+          </div>
+          {upcomingEvents.map(event => (
+            <div class={`table-row ${stockPrices[event.ticker]?.position ? 'has-position' : ''}`}>
+              <span class="col-date mono">{formatDate(event.date)}</span>
+              <div class="col-ticker">
+                <span class="ticker">{event.ticker}</span>
+                <span class={`importance small ${importanceColor(event.importance)}`}>{event.importance}</span>
+                {stockPrices[event.ticker]?.position && <span class="portfolio-badge">💼</span>}
+              </div>
+              <span class="col-type dim">{event.type}</span>
+              <span class="col-days mono">{event.daysLeft}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- Future Events -->
+    {futureEvents.length > 0 && (
+      <section class="future-section">
+        <div class="section-head">
+          <span class="section-title">Later This Quarter</span>
+        </div>
+        <div class="mini-calendar">
+          {futureEvents.map(event => (
+            <div class={`mini-event ${stockPrices[event.ticker]?.position ? 'portfolio' : ''}`}>
+              <span class="mini-date">{formatDate(event.date)}</span>
+              <span class="mini-ticker">{event.ticker}</span>
+              <span class="mini-type">{event.type}</span>
+              {stockPrices[event.ticker]?.position && <span class="mini-badge">💼</span>}
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- Quick Links -->
+    <section class="actions-panel">
+      <div class="panel-head">
+        <span class="panel-title">Quick Links</span>
+      </div>
+      <div class="links-grid">
+        <a href="/portfolio" class="link-btn">
+          <span class="link-icon">📊</span>
+          <span class="link-label">View Portfolio</span>
+        </a>
+        <a href="/" class="link-btn">
+          <span class="link-icon">📰</span>
+          <span class="link-label">Latest News</span>
+        </a>
+        <a href="/top-picks" class="link-btn">
+          <span class="link-icon">⭐</span>
+          <span class="link-label">Top Picks</span>
+        </a>
+      </div>
+    </section>
+  </div>
+
+  <footer class="footer">
+    Insider Hub · Earnings calendar updated daily · Manual verification required
+  </footer>
+</div>
+</Layout>
+
+<style is:global>
+  .page { min-height: 100vh; display: flex; flex-direction: column; }
+  
+  /* Topbar */
+  .topbar {
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 1.5rem; height: 48px;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; background: var(--bg); z-index: 10;
+  }
+  .topbar-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; max-width: 860px;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 0.75rem; }
+  .logo { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+  .logo-sub { font-size: 12px; color: var(--text-3); }
+  .topbar-nav {
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .nav-link {
+    font-size: 12px; color: var(--text-3); text-decoration: none;
+    border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px;
+  }
+  .nav-link:hover { color: var(--text); border-color: var(--up); }
+
+  /* Body */
+  .body { flex: 1; padding: 1.25rem 1.5rem; max-width: 860px; margin: 0 auto; width: 100%; }
+  .mono { font-family: var(--mono); }
+  .dim { color: var(--text-3); }
+  .up { color: var(--up); }
+  .down { color: var(--down); }
+
+  /* Stats */
+  .calendar-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .stat-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    padding: 1rem;
+    text-align: center;
+    border-radius: 4px;
+    border-top: 3px solid var(--border);
+  }
+  .stat-card.urgent { border-top-color: var(--down); }
+  .stat-card.portfolio { border-top-color: var(--up); }
+  .stat-n { font-size: 28px; font-weight: 500; color: var(--text); line-height: 1; }
+  .stat-l { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.25rem; }
+
+  /* Section Head */
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1rem;
+  }
+  .alert-icon { font-size: 16px; }
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* Urgent Section */
+  .urgent-section {
+    margin-bottom: 2rem;
+  }
+  .events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .event-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    border-left: 3px solid var(--border);
+  }
+  .event-card.urgent.critical { border-left-color: var(--down); background: var(--down-bg); }
+  .event-card.urgent.high { border-left-color: var(--amber); background: var(--amber-bg); }
+  .event-card.urgent.medium { border-left-color: #3b82f6; }
+
+  .event-left { display: flex; flex-direction: column; gap: 0.25rem; }
+  .ticker-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .ticker {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    font-family: var(--mono);
+  }
+  .importance {
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+  }
+  .importance.critical { background: var(--down-bg); color: var(--down); border: 1px solid var(--down); }
+  .importance.high { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber); }
+  .importance.medium { background: var(--bg-subtle); color: var(--text-2); border: 1px solid var(--border); }
+  .importance.small { font-size: 9px; padding: 1px 4px; }
+  .event-name { font-size: 13px; color: var(--text-2); }
+  .event-type { font-size: 11px; color: var(--text-3); }
+
+  .event-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+  }
+  .countdown {
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+  }
+  .days {
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--text);
+    font-family: var(--mono);
+    line-height: 1;
+  }
+  .days-label {
+    font-size: 11px;
+    color: var(--text-3);
+    text-transform: uppercase;
+  }
+  .date {
+    font-size: 11px;
+    color: var(--text-3);
+  }
+
+  .event-details {
+    grid-column: 1 / -1;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-soft);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .detail-row {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 12px;
+  }
+  .detail-row .label {
+    color: var(--text-3);
+    font-weight: 500;
+  }
+  .detail-row .value {
+    color: var(--text);
+  }
+  .detail-row .value.highlight {
+    color: var(--amber);
+    font-weight: 500;
+  }
+  .watch-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-top: 0.25rem;
+  }
+  .watch-label {
+    font-size: 11px;
+    color: var(--text-3);
+  }
+  .watch-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+  }
+  .watch-tag {
+    font-size: 10px;
+    padding: 2px 8px;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--text-2);
+  }
+  .position-alert {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--up-bg);
+    border: 1px solid rgba(26,110,60,0.2);
+    border-radius: 3px;
+    font-size: 12px;
+  }
+  .pos-icon { font-size: 14px; }
+  .pos-text { color: var(--up); font-weight: 500; }
+
+  /* Upcoming Section */
+  .upcoming-section {
+    margin-bottom: 2rem;
+  }
+  .events-table {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .table-header {
+    display: grid;
+    grid-template-columns: 100px 100px 1fr 60px;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--bg-subtle);
+    font-size: 10px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--border);
+  }
+  .table-row {
+    display: grid;
+    grid-template-columns: 100px 100px 1fr 60px;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border-soft);
+    align-items: center;
+    font-size: 13px;
+  }
+  .table-row:hover { background: var(--bg-subtle); }
+  .table-row.has-position { background: rgba(26,110,60,0.05); }
+  .table-row.has-position:hover { background: rgba(26,110,60,0.1); }
+  .portfolio-badge { font-size: 12px; margin-left: 0.25rem; }
+
+  /* Future Section */
+  .future-section {
+    margin-bottom: 2rem;
+  }
+  .mini-calendar {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+  .mini-event {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    padding: 0.75rem;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .mini-event.portfolio {
+    border-left: 3px solid var(--up);
+  }
+  .mini-date { font-size: 11px; color: var(--text-3); }
+  .mini-ticker { font-size: 14px; font-weight: 600; color: var(--text); font-family: var(--mono); }
+  .mini-type { font-size: 11px; color: var(--text-2); }
+  .mini-badge { font-size: 12px; }
+
+  /* Actions */
+  .actions-panel {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .panel-head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-subtle);
+  }
+  .panel-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .links-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+  }
+  .link-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.5rem 1rem;
+    background: var(--bg-raised);
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.15s;
+  }
+  .link-btn:hover { background: var(--bg-subtle); }
+  .link-icon { font-size: 24px; }
+  .link-label { font-size: 12px; color: var(--text-2); }
+
+  /* Footer */
+  .footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-3);
+    background: var(--bg-subtle);
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .calendar-stats { grid-template-columns: repeat(2, 1fr); }
+    .table-header,
+    .table-row {
+      grid-template-columns: 80px 80px 1fr 50px;
+    }
+    .links-grid { grid-template-columns: 1fr; }
+    .mini-calendar { grid-template-columns: 1fr; }
+    .event-card { grid-template-columns: 1fr; }
+    .event-right { align-items: flex-start; }
+  }
+</style>

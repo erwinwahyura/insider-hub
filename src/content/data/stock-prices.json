@@ -1,0 +1,178 @@
+{
+  "timestamp": "2026-04-08T13:25:00Z",
+  "nextUpdate": "2026-04-08T13:55:00Z",
+  "stocks": {
+    "PTPS": {
+      "ticker": "PTPS",
+      "name": "PT Pulau Subur Tbk",
+      "sector": "CPO/Plantation",
+      "price": 183,
+      "change": -8,
+      "changePct": -4.19,
+      "volume": 5280000,
+      "source": "fallback",
+      "timestamp": "2026-04-08T13:25:00Z",
+      "position": {
+        "lots": 1560,
+        "avgPrice": 191,
+        "currentPrice": 183,
+        "pnlPerShare": -8,
+        "totalPnl": -1248000,
+        "pnlPct": -4.19,
+        "marketValue": 28548000
+      }
+    },
+    "PGEO": {
+      "ticker": "PGEO",
+      "name": "Pertamina Geothermal Energy",
+      "sector": "Geothermal/Energy",
+      "price": 1020,
+      "change": 10,
+      "changePct": 0.99,
+      "volume": 15230000,
+      "source": "fallback",
+      "timestamp": "2026-04-08T13:25:00Z",
+      "position": {
+        "lots": 245,
+        "avgPrice": 1010,
+        "currentPrice": 1020,
+        "pnlPerShare": 10,
+        "totalPnl": 245000,
+        "pnlPct": 0.99,
+        "marketValue": 24990000
+      }
+    },
+    "ESSA": {
+      "ticker": "ESSA",
+      "name": "Surya Esa Perkasa Tbk",
+      "sector": "Ammonia/Chemical",
+      "price": 720,
+      "change": 7,
+      "changePct": 0.98,
+      "volume": 8320000,
+      "source": "fallback",
+      "timestamp": "2026-04-08T13:25:00Z",
+      "position": {
+        "lots": 310,
+        "avgPrice": 713,
+        "currentPrice": 720,
+        "pnlPerShare": 7,
+        "totalPnl": 217000,
+        "pnlPct": 0.98,
+        "marketValue": 22320000
+      }
+    },
+    "ITMG": {
+      "ticker": "ITMG",
+      "name": "Indo Tambangraya Megah",
+      "sector": "Coal",
+      "price": 28200,
+      "change": 100,
+      "changePct": 0.36,
+      "volume": 2580000,
+      "source": "fallback",
+      "timestamp": "2026-04-08T13:25:00Z"
+    },
+    "ADRO": {
+      "ticker": "ADRO",
+      "name": "Adaro Energy Indonesia",
+      "sector": "Coal/Aluminum",
+      "price": 2580,
+      "change": 20,
+      "changePct": 0.78,
+      "volume": 31200000,
+      "source": "fallback",
+      "timestamp": "2026-04-08T13:25:00Z"
+    },
+    "AALI": {
+      "ticker": "AALI",
+      "name": "Astra Agro Lestari",
+      "sector": "CPO",
+      "price": 5200,
+      "change": -50,
+      "changePct": -0.95,
+      "volume": 1250000,
+      "source": "fallback",
+      "timestamp": "2026-04-08T13:25:00Z"
+    },
+    "LSIP": {
+      "ticker": "LSIP",
+      "name": "Lippo Sumatera Plantation",
+      "sector": "CPO",
+      "price": 680,
+      "change": 5,
+      "changePct": 0.74,
+      "volume": 850000,
+      "source": "fallback",
+      "timestamp": "2026-04-08T13:25:00Z"
+    },
+    "ANTM": {
+      "ticker": "ANTM",
+      "name": "Aneka Tambang Tbk",
+      "sector": "Nickel/Gold",
+      "price": 1950,
+      "change": 25,
+      "changePct": 1.30,
+      "volume": 46800000,
+      "source": "fallback",
+      "timestamp": "2026-04-08T13:25:00Z"
+    },
+    "INCO": {
+      "ticker": "INCO",
+      "name": "Vale Indonesia",
+      "sector": "Nickel",
+      "price": 4120,
+      "change": 30,
+      "changePct": 0.73,
+      "volume": 8200000,
+      "source": "fallback",
+      "timestamp": "2026-04-08T13:25:00Z"
+    },
+    "BBRI": {
+      "ticker": "BBRI",
+      "name": "Bank Rakyat Indonesia",
+      "sector": "Banking",
+      "price": 3820,
+      "change": -20,
+      "changePct": -0.52,
+      "volume": 125000000,
+      "source": "fallback",
+      "timestamp": "2026-04-08T13:25:00Z"
+    },
+    "BBCA": {
+      "ticker": "BBCA",
+      "name": "Bank Central Asia",
+      "sector": "Banking",
+      "price": 8975,
+      "change": 50,
+      "changePct": 0.56,
+      "volume": 45800000,
+      "source": "fallback",
+      "timestamp": "2026-04-08T13:25:00Z"
+    },
+    "TLKM": {
+      "ticker": "TLKM",
+      "name": "Telkom Indonesia",
+      "sector": "Telecom",
+      "price": 3860,
+      "change": 10,
+      "changePct": 0.26,
+      "volume": 26800000,
+      "source": "fallback",
+      "timestamp": "2026-04-08T13:25:00Z"
+    }
+  },
+  "portfolio": {
+    "totalInvested": 69580000,
+    "totalMarketValue": 75858000,
+    "totalUnrealizedPnl": -787000,
+    "totalReturnPct": -1.13,
+    "cash": 56000000,
+    "totalEquity": 131858000
+  },
+  "meta": {
+    "source": "mixed-yahoo-fallback",
+    "isMarketOpen": false,
+    "positionsWithData": 3
+  }
+}

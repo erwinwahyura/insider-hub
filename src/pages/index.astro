@@ -120,9 +120,11 @@ const commodityDisplay = [
         <span></span><span></span><span></span>
       </button>
       <nav class="topbar-nav" id="mainNav">
+        <a href="/" class="nav-link">Home</a>
         <a href="/daily-summary" class="nav-link">Summary</a>
-        <a href="/top-picks" class="nav-link">Top Picks</a>
         <a href="/portfolio" class="nav-link">Portfolio</a>
+        <a href="/earnings" class="nav-link">Earnings</a>
+        <a href="/top-picks" class="nav-link">Top Picks</a>
         <span class="nav-stats">
           <span class="mono dim">{sortedNews.length} articles</span>
           <span class="dim">Updated {formatDate(sortedNews[0]?.data.date || new Date().toISOString())}</span>
