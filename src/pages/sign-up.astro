@@ -1,13 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { SignUp } from '@clerk/astro/components';
-
-// Redirect to portfolio if already signed in
-const { userId } = Astro.locals.auth;
-if (userId) {
-  return Astro.redirect('/portfolio');
-}
 ---
+
+<!-- Client-side Clerk SignUp will be loaded via script -->
 
 <Layout title="Sign Up — Insider Hub">
 <div class="page">
@@ -28,23 +23,27 @@ if (userId) {
           <p class="auth-subtitle">Start tracking your portfolio today</p>
         </div>
         
-        <SignUp 
-          routing="path"
-          path="/sign-up"
-          redirectUrl="/portfolio"
-          appearance={{
-            elements: {
-              card: 'clerk-card',
-              headerTitle: 'clerk-title',
-              headerSubtitle: 'clerk-subtitle',
-              socialButtonsBlockButton: 'clerk-social-btn',
-              formFieldLabel: 'clerk-label',
-              formFieldInput: 'clerk-input',
-              formButtonPrimary: 'clerk-primary-btn',
-              footerActionLink: 'clerk-link',
-            }
-          }}
-        />
+        <div id="clerk-sign-up"></div>
+        
+        <script>
+          // Client-side Clerk initialization
+          const clerkPubKey = document.querySelector('meta[name="clerk-key"]')?.getAttribute('content');
+          if (clerkPubKey) {
+            const script = document.createElement('script');
+            script.src = `https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js`;
+            script.async = true;
+            script.onload = () => {
+              window.Clerk.load({
+                publishableKey: clerkPubKey
+              }).then(() => {
+                window.Clerk.mountSignUp(document.getElementById('clerk-sign-up'), {
+                  redirectUrl: '/portfolio'
+                });
+              });
+            };
+            document.head.appendChild(script);
+          }
+        </script>
         
         <div class="auth-footer">
           <p class="auth-text">
@@ -199,52 +198,6 @@ if (userId) {
   
   .feature-icon {
     font-size: 20px;
-  }
-  
-  /* Clerk customization */
-  :global(.clerk-card) {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-  }
-  
-  :global(.clerk-title) {
-    font-size: 0 !important;
-  }
-  
-  :global(.clerk-subtitle) {
-    font-size: 0 !important;
-  }
-  
-  :global(.clerk-social-btn) {
-    border: 1px solid var(--border) !important;
-    border-radius: 4px !important;
-    font-size: 14px !important;
-  }
-  
-  :global(.clerk-label) {
-    color: var(--text-2) !important;
-    font-size: 12px !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.06em !important;
-  }
-  
-  :global(.clerk-input) {
-    border: 1px solid var(--border) !important;
-    border-radius: 4px !important;
-    padding: 0.5rem 0.75rem !important;
-    font-size: 14px !important;
-  }
-  
-  :global(.clerk-primary-btn) {
-    background: var(--up) !important;
-    border-radius: 4px !important;
-    font-size: 14px !important;
-    font-weight: 500 !important;
-  }
-  
-  :global(.clerk-link) {
-    color: var(--up) !important;
   }
   
   @media (max-width: 768px) {
