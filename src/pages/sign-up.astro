@@ -1,10 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-// Clerk hosted page URL - correct format
-const clerkInstance = 'beloved-macaque-99';
+// Clerk hosted page URL - uses Clerk's universal sign-up page
 const redirectUrl = 'https://stocks.erwarx.com/portfolio';
-const signUpUrl = `https://${clerkInstance}.accounts.dev/sign-up?redirect_url=${encodeURIComponent(redirectUrl)}`;
+const signUpUrl = `https://accounts.clerk.com/sign-up?redirect_url=${encodeURIComponent(redirectUrl)}`;
 ---
 
 <Layout title="Sign Up — Insider Hub">
