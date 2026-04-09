@@ -459,7 +459,7 @@ async function scrapeNews() {
       const filename = `${slug(item.title, date)}.md`;
       
       // High-value articles (score >= 4 or portfolio tickers) → pending for Elesis to summarize
-      const isHighValue = score >= 2 || tickers.some(t => ['ITMG', 'ADRO', 'ESSA', 'PTPS', 'PGEO'].includes(t));
+      const isHighValue = score >= 1 || tickers.some(t => ['ITMG', 'ADRO', 'ESSA', 'PTPS', 'PGEO'].includes(t));
       
       if (isHighValue) {
         // Save to pending for Elesis summarization
