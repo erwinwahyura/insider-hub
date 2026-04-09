@@ -3,27 +3,28 @@ title: "Vietnam's FTSE upgrade locked in for September after market reforms"
 date: "2026-04-08T00:15:00.000Z"
 category: macro
 impact: positive
-region: Asia
-tickers: []
+region: ASEAN
+tickers: ["IHSG"]
 source: "The Business Times"
-url: "https://news.google.com/rss/articles/CBMisgFBVV95cUxNU3BjYzVvME5mRC1UNmVibHB0d2tVTUY3RlNqcGk5ek95eVpnc3MxZW5QRHA2SVBzZTZzVkR4UURpdGRNWG9SdklqT1MwN2Fkbm5WQjRWMmFUMURnTjR2TlAtQTBVTHplUjRGR05xdWV0V2F0a3daR3pwRV84T2JRMzVrM1JXZGV6QWI4NjM4NWpRUEI3N2JiMEE1OThvWUt2OWZTWkF6eDNIMVI1RUpxenV3?oc=5"
+url: "https://www.businesstimes.com.sg/international/asean/vietnams-ftse-upgrade-locked-september-after-market-reforms"
+status: "published"
+published: true
 ---
 
 ## Summary
-Vietnam's upgrade to FTSE emerging market status has been formally locked in for September 2026 implementation following successful market reform initiatives that addressed foreign ownership limits, liquidity requirements, and settlement infrastructure improvements.
+FTSE Russell confirmed Vietnam's reclassification from Frontier to Secondary Emerging Market status effective September 21, 2026, following nearly a decade on the watch list and successful market reforms including the Global Broker model.
 
 ## Key Points
-• Vietnam's FTSE EM upgrade officially confirmed for September 2026 implementation
-• Market reforms addressed key barriers: foreign ownership limits, liquidity, settlement systems
-• Formal confirmation follows earlier preliminary announcement, reducing implementation risk
-• September timeline allows portfolio managers to plan ahead for index inclusion flows
-• Vietnam joins established ASEAN EM markets including Indonesia, Thailand, Malaysia
-• Market reform completion validates Vietnam's capital market development trajectory
+• **Upgrade confirmed**: FTSE Russell affirmed the upgrade after March 2026 interim assessment; Vietnam has been on watch list for nearly 10 years
+• **Market reforms**: Global Broker model (Circular 08/2026/TT-BTC) and non-prefunding framework enhancements satisfied foreign investor access requirements
+• **Effective date**: September 21, 2026 — passive EM funds will begin including Vietnamese equities
 
 ## Portfolio Impact
-🟢 **IHSG / IDX**: Positive for ASEAN region sentiment. Vietnam's successful EM transition validates regional market development and may increase global capital allocation to ASEAN bloc. Indonesia benefits from regional credibility boost as established EM market with deeper liquidity.
+🟢 **IHSG/IDX (Broad market)**: **Positive** — Vietnam EM upgrade validates ASEAN market reform momentum. Sets precedent for Indonesia's own market access improvements. Regional sentiment boost likely.
 
-**Position Check**: Third Vietnam FTSE article today confirms consistent positive ASEAN macro theme. No direct impact on your commodity/energy positions (ITMG, PTPS, ESSA, PGEO), but positive regional sentiment supports overall market environment for Indonesian equities.
+🟡 **Passive flow watch**: $1-2B passive EM inflows expected into Vietnam; may marginally divert near-term ASEAN flows but validates long-term regional institutionalization.
+
+🟢 **Regional trend**: After Vietnam (Sep 2026), eyes turn to IDX potential upgrades. Indonesia already FTSE EM but could benefit from Vietnam's success story bringing more ASEAN EM capital.
 
 ---
-*Summarized by Elesis 💻 | Source: The Business Times*
+*Summarized by Elesis 💻 | Source: [The Business Times](https://www.businesstimes.com.sg/international/asean/vietnams-ftse-upgrade-locked-september-after-market-reforms)*
