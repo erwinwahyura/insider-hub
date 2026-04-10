@@ -63,13 +63,15 @@ title: Portfolio History
       {% set minEquity = history.snapshots | min('totalEquity') %}
       {% set maxEquity = history.snapshots | max('totalEquity') %}
       {% set range = maxEquity - minEquity %}
-      {% set range = range == 0 ? 1 : range %}
+      {% if range == 0 %}{% set range = 1 %}{% endif %}
       
       <div style="display:flex;align-items:flex-end;height:200px;gap:2px;border-bottom:2px solid var(--border);padding-bottom:4px;">
         {% for snapshot in history.snapshots.slice(-50) %}
           {% set rawHeight = ((snapshot.totalEquity - minEquity) / range) * 100 %}
-          {% set height = rawHeight %}{% if rawHeight < 10 %}{% set height = 10 %}{% endif %}
-          {% set barColor = 'up' %}{% if snapshot.totalReturnPct < 0 %}{% set barColor = 'down' %}{% endif %}
+          {% set height = rawHeight %}
+          {% if rawHeight < 10 %}{% set height = 10 %}{% endif %}
+          {% set barColor = 'up' %}
+          {% if snapshot.totalReturnPct < 0 %}{% set barColor = 'down' %}{% endif %}
           <div style="flex:1;background:var(--{{ barColor }});height:{{ height }}%;min-height:4px;border-radius:2px 2px 0 0;opacity:0.8;" title="{{ snapshot.timestamp | dateFormat }}: {{ snapshot.totalEquity | formatRp }}"></div>
         {% endfor %}
       </div>
