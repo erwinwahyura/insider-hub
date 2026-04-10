@@ -1,12 +1,12 @@
-name: Hourly Scrape + Deploy
+name: Build & Deploy
 
 on:
-  schedule:
-    - cron: '0 * * * *'  # Every hour UTC
-  workflow_dispatch:      # Manual trigger
+  push:
+    branches: [main]  # Auto-deploy on every commit
+  workflow_dispatch:  # Manual trigger
 
 jobs:
-  scrape-and-deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,57 +22,14 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Run scraper
-        run: node scripts/autoScraper.mjs
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Store scrape results, no R2 access from GitHub (only from CF Workers)
-          # Articles saved locally then committed
-
-      - name: Run commodity price scraper
-        run: node scripts/commodityPriceScraper.mjs
-        continue-on-error: true
-        # Fetch live prices for Coal, Nickel, CPO, Gold, IDR/USD
-
-      - name: Run stock price scraper
-        run: node scripts/stockPriceScraper.mjs
-        continue-on-error: true
-        # Fetch live IDX stock prices for portfolio tracking
-
-      - name: Check price alerts
-        run: node scripts/alertChecker.mjs
-        continue-on-error: true
-        # Check alert thresholds and trigger notifications
-
-      - name: Check for new articles
-        id: check_changes
-        run: |
-          if git diff --quiet src/content/news/ src/content/data/; then
-            echo "has_changes=false" >> $GITHUB_OUTPUT
-          else
-            echo "has_changes=true" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Commit new articles
-        if: steps.check_changes.outputs.has_changes == 'true'
-        run: |
-          git config user.name 'Elesis Bot'
-          git config user.email 'bot@insider-hub.local'
-          git add src/content/news/ src/content/data/ .cache/seen-urls.json
-          git commit -m "🤖 Auto-scrape: $(date -u +%Y-%m-%d-%H%M)
-          
-          - News articles summarized
-          - Commodity prices updated
-          - Coal/Nickel/CPO/Gold/IDR rates
-          - Committed by GitHub Actions"
-          git push origin main
+      # Note: Data scraping is now handled by OpenClaw heartbeat
+      # (GitHub Actions IPs are blocked by Yahoo Finance/commodity APIs)
+      # This workflow only builds & deploys when data is committed by Elesis
 
       - name: Build site
-        if: steps.check_changes.outputs.has_changes == 'true'
         run: npm run build
 
       - name: Deploy to Cloudflare Pages
-        if: steps.check_changes.outputs.has_changes == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
