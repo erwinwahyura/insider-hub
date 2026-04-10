@@ -1,59 +1,44 @@
 {
-  "timestamp": "2026-04-08T12:40:00Z",
+  "timestamp": "2026-04-10T00:20:07.268Z",
   "commodities": {
     "coal": {
-      "price": 128.50,
-      "change": 2.40,
+      "price": 128.5,
+      "change": 2.4,
       "changePct": 1.9,
-      "source": "manual-fallback",
-      "unit": "USD/ton",
-      "name": "Coal (Newcastle)",
-      "tickers": ["ADRO", "ITMG", "PTBA"],
-      "timestamp": "2026-04-08T12:40:00Z"
+      "source": "manual",
+      "timestamp": "2026-04-10T00:20:07.244Z"
     },
     "nickel": {
       "price": 16200,
       "change": -80,
       "changePct": -0.5,
-      "source": "manual-fallback",
-      "unit": "USD/tonne",
-      "name": "Nickel (LME)",
-      "tickers": ["ANTM", "INCO", "ESSA"],
-      "timestamp": "2026-04-08T12:40:00Z"
+      "source": "manual",
+      "timestamp": "2026-04-10T00:20:07.225Z"
     },
     "cpo": {
       "price": 3850,
       "change": 30,
       "changePct": 0.8,
-      "source": "manual-fallback",
-      "unit": "RM/ton",
-      "name": "Palm Oil (CPO)",
-      "tickers": ["AALI", "LSIP", "TAPG"],
-      "timestamp": "2026-04-08T12:40:00Z"
+      "source": "manual",
+      "timestamp": "2026-04-10T00:20:07.163Z"
     },
     "gold": {
       "price": 2318,
       "change": 14,
       "changePct": 0.6,
-      "source": "manual-fallback",
-      "unit": "USD/oz",
-      "name": "Gold (Spot)",
-      "tickers": ["ANTM"],
-      "timestamp": "2026-04-08T12:40:00Z"
+      "source": "manual",
+      "timestamp": "2026-04-10T00:20:07.268Z"
     },
     "idr_usd": {
-      "price": 15842,
-      "change": -45,
-      "changePct": -0.3,
-      "source": "manual-fallback",
-      "unit": "IDR/USD",
-      "name": "IDR/USD",
-      "tickers": ["PGEO", "ESSA", "All"],
-      "timestamp": "2026-04-08T12:40:00Z"
+      "price": 17083.38,
+      "change": 0,
+      "changePct": 0,
+      "source": "exchangerate-api",
+      "timestamp": "2026-04-10T00:20:07.242Z"
     }
   },
   "meta": {
-    "nextUpdate": "2026-04-08T13:10:00Z",
-    "dataSource": "manual-fallback-pending-live-scrape"
+    "nextUpdate": "2026-04-10T00:50:07.268Z",
+    "dataSource": "mixed-api-rss-manual"
   }
 }
