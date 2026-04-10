@@ -49,6 +49,16 @@ module.exports = function(eleventyConfig) {
     }
   });
   
+  // Global data: portfolio history
+  eleventyConfig.addGlobalData("portfolioHistory", () => {
+    try {
+      const raw = fs.readFileSync('./src/content/data/portfolio-history.json', 'utf-8');
+      return JSON.parse(raw);
+    } catch (e) {
+      return { snapshots: [], metadata: {} };
+    }
+  });
+  
   // Read all news articles
   eleventyConfig.addGlobalData("news", () => {
     const newsDir = './src/content/news';
@@ -91,6 +101,17 @@ module.exports = function(eleventyConfig) {
   });
   
   eleventyConfig.addFilter("json", (obj) => JSON.stringify(obj, null, 2));
+  
+  // Array min/max helpers
+  eleventyConfig.addFilter("min", (arr, key) => {
+    if (!arr || arr.length === 0) return 0;
+    return Math.min(...arr.map(item => item[key] || 0));
+  });
+  
+  eleventyConfig.addFilter("max", (arr, key) => {
+    if (!arr || arr.length === 0) return 0;
+    return Math.max(...arr.map(item => item[key] || 0));
+  });
   
   return {
     dir: {

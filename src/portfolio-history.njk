@@ -1,0 +1,109 @@
+---
+layout: layouts/base.njk
+title: Portfolio History
+---
+
+{% set history = portfolioHistory %}
+
+<h1>Portfolio History</h1>
+
+{% if history.snapshots and history.snapshots.length > 0 %}
+  {% set latest = history.snapshots[history.snapshots.length - 1] %}
+  {% set first = history.snapshots[0] %}
+  {% set dayChange = 0 %}
+  {% set weekChange = 0 %}
+  
+  {% if history.snapshots.length > 1 %}
+    {% set prev = history.snapshots[history.snapshots.length - 2] %}
+    {% set dayChange = latest.totalReturnPct - prev.totalReturnPct %}
+  {% endif %}
+  
+  {% if history.snapshots.length > 20 %}
+    {% set weekAgo = history.snapshots[history.snapshots.length - 20] %}
+    {% set weekChange = latest.totalReturnPct - weekAgo.totalReturnPct %}
+  {% endif %}
+
+  <!-- Summary Stats -->
+  <div class="panel">
+    <div class="panel-head">
+      <span class="panel-title">Performance Summary</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;padding:1rem;">
+      <div>
+        <div class="dim">Total Equity</div>
+        <div class="mono" style="font-size:24px;font-weight:600;">{{ latest.totalEquity | formatRp }}</div>
+      </div>
+      <div>
+        <div class="dim">Unrealized P&L</div>
+        <div class="mono {% if latest.totalUnrealizedPnl > 0 %}up{% else %}down{% endif %}" style="font-size:24px;font-weight:600;">
+          {{ latest.totalUnrealizedPnl | formatRp }} ({{ latest.totalReturnPct.toFixed(2) }}%)
+        </div>
+      </div>
+      <div>
+        <div class="dim">24h Change</div>
+        <div class="mono {% if dayChange > 0 %}up{% else %}down{% endif %}" style="font-size:18px;font-weight:600;">
+          {{ dayChange > 0 ? '+' : '' }}{{ dayChange.toFixed(2) }}%
+        </div>
+      </div>
+      <div>
+        <div class="dim">7 Day Change</div>
+        <div class="mono {% if weekChange > 0 %}up{% else %}down{% endif %}" style="font-size:18px;font-weight:600;">
+          {{ weekChange > 0 ? '+' : '' }}{{ weekChange.toFixed(2) }}%
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Simple Chart -->
+  <div class="panel">
+    <div class="panel-head">
+      <span class="panel-title">Equity Trend ({{ history.snapshots.length }} snapshots)</span>
+    </div>
+    <div style="padding:1rem;">
+      {% set minEquity = history.snapshots | min('totalEquity') %}
+      {% set maxEquity = history.snapshots | max('totalEquity') %}
+      {% set range = maxEquity - minEquity %}
+      {% set range = range == 0 ? 1 : range %}
+      
+      <div style="display:flex;align-items:flex-end;height:200px;gap:2px;border-bottom:2px solid var(--border);padding-bottom:4px;">
+        {% for snapshot in history.snapshots.slice(-50) %}
+          {% set height = ((snapshot.totalEquity - minEquity) / range) * 100 %}
+          {% set height = height < 10 ? 10 : height %}
+          <div style="flex:1;background:var(--{{ snapshot.totalReturnPct >= 0 ? 'up' : 'down' }});height:{{ height }}%;min-height:4px;border-radius:2px 2px 0 0;opacity:0.8;" title="{{ snapshot.timestamp | dateFormat }}: {{ snapshot.totalEquity | formatRp }}"></div>
+        {% endfor %}
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:0.5rem;font-size:11px;color:var(--text-3);">
+        <span>{{ first.timestamp | dateFormat }}</span>
+        <span>{{ latest.timestamp | dateFormat }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Position Performance -->
+  <h2>Position History</h2>
+  {% for ticker, data in latest.positions %}
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+        <span style="font-weight:600;">{{ ticker }}</span>
+        <span class="mono {% if data.pnl > 0 %}up{% else %}down{% endif %}">{{ data.pnl | formatRp }} ({{ data.pnlPct.toFixed(2) }}%)</span>
+      </div>
+      <div style="display:flex;gap:1rem;font-size:13px;">
+        <span class="dim">Current: {{ data.price }}</span>
+        <span class="dim">Value: {{ data.marketValue | formatRp }}</span>
+      </div>
+    </div>
+  {% endfor %}
+
+  <!-- Metadata -->
+  <div class="dim" style="font-size:11px;margin-top:1rem;">
+    First snapshot: {{ history.metadata.firstSnapshot | dateFormat }} | 
+    Latest: {{ history.metadata.lastSnapshot | dateFormat }} |
+    Total snapshots: {{ history.metadata.count }}
+  </div>
+
+{% else %}
+  <div class="card" style="text-align:center;padding:2rem;">
+    <p>No portfolio history yet.</p>
+    <p class="dim" style="font-size:13px;margin-top:0.5rem;">History is recorded every 5 minutes during market hours.</p>
+  </div>
+{% endif %}
