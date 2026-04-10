@@ -1,13 +1,12 @@
 ---
 title: "Nickel Prices at $18,000 Amid Global Oversupply — US Boosts Domestic Supply Chain"
-date: 2026-04-06T17:59:24.000Z
+date: "2026-04-06T17:59:24.000Z"
 category: macro
 impact: negative
 region: Global
 tickers: ["ANTM","INCO","ESSA"]
 source: "CarbonCredits.com"
 url: "https://news.google.com/rss/articles/CBMiswFBVV95cUxOZlhFbURzYXQ2Y2x4SmZsQ1p2YWRKbmk4X3hUZlpmWTlDUFAwN1E5RDRrMjhFTDNRUE91eDVrX0FUcXpQRmhUTzduR3NPZkZJUFlXTVM3TWN1MElkRERtZTRQeG01SXJPaUJHOVhNNmRLYzhHdHlLMU9kbVBLQ2NaMUNsM2Y0T0hrNk0wN2FMcWt1UTlfSFVjaVRVOVlKY3BLR1p2VnpEZGpEemlkY0g1VzFTdw?oc=5"
-published: "2026-04-06"
 ---
 
 ## Summary
