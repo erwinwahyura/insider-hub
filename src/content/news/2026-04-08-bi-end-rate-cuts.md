@@ -1,6 +1,6 @@
 ---
 title: "Bank Indonesia Signals End of Rate Cuts as Global Tensions Surge"
-date: 2026-04-08T23:41:22.000Z
+date: "2026-04-08T23:41:22.000Z"
 category: macro
 impact: neutral
 region: Indonesia

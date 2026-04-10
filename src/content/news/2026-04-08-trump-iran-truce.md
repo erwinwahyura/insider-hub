@@ -1,6 +1,6 @@
 ---
 title: "US-Iran Truce: Trump Suspends Strikes for Two Weeks, Talks Set in Islamabad"
-date: 2026-04-08T09:45:57.000Z
+date: "2026-04-08T09:45:57.000Z"
 category: macro
 impact: positive
 region: Global
