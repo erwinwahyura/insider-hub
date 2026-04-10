@@ -42,13 +42,13 @@ title: Portfolio History
       <div>
         <div class="dim">24h Change</div>
         <div class="mono {% if dayChange > 0 %}up{% else %}down{% endif %}" style="font-size:18px;font-weight:600;">
-          {{ dayChange > 0 ? '+' : '' }}{{ dayChange.toFixed(2) }}%
+          {% if dayChange > 0 %}+{% endif %}{{ dayChange.toFixed(2) }}%
         </div>
       </div>
       <div>
         <div class="dim">7 Day Change</div>
         <div class="mono {% if weekChange > 0 %}up{% else %}down{% endif %}" style="font-size:18px;font-weight:600;">
-          {{ weekChange > 0 ? '+' : '' }}{{ weekChange.toFixed(2) }}%
+          {% if weekChange > 0 %}+{% endif %}{{ weekChange.toFixed(2) }}%
         </div>
       </div>
     </div>
@@ -67,9 +67,10 @@ title: Portfolio History
       
       <div style="display:flex;align-items:flex-end;height:200px;gap:2px;border-bottom:2px solid var(--border);padding-bottom:4px;">
         {% for snapshot in history.snapshots.slice(-50) %}
-          {% set height = ((snapshot.totalEquity - minEquity) / range) * 100 %}
-          {% set height = height < 10 ? 10 : height %}
-          <div style="flex:1;background:var(--{{ snapshot.totalReturnPct >= 0 ? 'up' : 'down' }});height:{{ height }}%;min-height:4px;border-radius:2px 2px 0 0;opacity:0.8;" title="{{ snapshot.timestamp | dateFormat }}: {{ snapshot.totalEquity | formatRp }}"></div>
+          {% set rawHeight = ((snapshot.totalEquity - minEquity) / range) * 100 %}
+          {% set height = rawHeight %}{% if rawHeight < 10 %}{% set height = 10 %}{% endif %}
+          {% set barColor = 'up' %}{% if snapshot.totalReturnPct < 0 %}{% set barColor = 'down' %}{% endif %}
+          <div style="flex:1;background:var(--{{ barColor }});height:{{ height }}%;min-height:4px;border-radius:2px 2px 0 0;opacity:0.8;" title="{{ snapshot.timestamp | dateFormat }}: {{ snapshot.totalEquity | formatRp }}"></div>
         {% endfor %}
       </div>
       <div style="display:flex;justify-content:space-between;margin-top:0.5rem;font-size:11px;color:var(--text-3);">
