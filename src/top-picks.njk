@@ -1,0 +1,69 @@
+---
+layout: layouts/base.njk
+title: Top Picks
+---
+
+<h1>Top Picks</h1>
+
+<div class="card" style="border-left:3px solid var(--up);">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+    <div>
+      <span style="font-size:16px;font-weight:600;">PTPS</span>
+      <span class="badge badge-up" style="margin-left:0.5rem;">HIGH CONVICTION</span>
+    </div>
+    <span class="up" style="font-weight:600;">{{ stocks.stocks.PTPS.price }}</span>
+  </div>
+  <div style="font-size:13px;color:var(--text-2);margin-bottom:0.5rem;">
+    PT Pulau Subur Tbk — CPO/Perkebunan
+  </div>
+  <div style="font-size:12px;">
+    <div><strong>Thesis:</strong> B50 biodiesel mandate (16jt ton demand) + PKS operational H2 2026</div>
+    <div class="dim" style="margin-top:0.25rem;">
+      Entry: 175 | Conviction: HIGH | Position: 1,560 lots @ avg 191
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+    <div>
+      <span style="font-size:16px;font-weight:600;">PGEO</span>
+      <span class="badge badge-neutral" style="margin-left:0.5rem;">HOLD</span>
+    </div>
+    <span style="font-weight:600;">{{ stocks.stocks.PGEO.price }}</span>
+  </div>
+  <div style="font-size:13px;color:var(--text-2);margin-bottom:0.5rem;">
+    Pertamina Geothermal Energy
+  </div>
+  <div style="font-size:12px;">
+    <div>Earnings: Apr 24 (+33% YoY expected)</div>
+    <div class="dim" style="margin-top:0.25rem;">
+      Position: 245 lots @ avg 1,010
+    </div>
+  </div>
+</div>
+
+<div class="card" style="border-left:3px solid var(--down);">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+    <div>
+      <span style="font-size:16px;font-weight:600;">ESSA</span>
+      <span class="badge badge-down" style="margin-left:0.5rem;">REDUCE</span>
+    </div>
+    <span class="down" style="font-weight:600;">{{ stocks.stocks.ESSA.price }}</span>
+  </div>
+  <div style="font-size:13px;color:var(--text-2);margin-bottom:0.5rem;">
+    Surya Esa Perkasa Tbk — Ammonia/Chemical
+  </div>
+  <div style="font-size:12px;">
+    <div>Underperforming. Consider 50-70% exit to redeploy.</div>
+    <div class="dim" style="margin-top:0.25rem;">
+      Position: 310 lots @ avg 713
+    </div>
+  </div>
+</div>
+
+<h2>Watch List</h2>
+<div class="dim" style="font-size:13px;">
+  <div>ISSP — Best value in construction at PER 5.95</div>
+  <div>ELSA — BPK governance risk, wait</div>
+</div>

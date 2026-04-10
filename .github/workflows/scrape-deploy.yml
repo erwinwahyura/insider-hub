@@ -2,31 +2,24 @@ name: Build & Deploy
 
 on:
   push:
-    branches: [main]  # Auto-deploy on every commit
-  workflow_dispatch:  # Manual trigger
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '20'
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: npm install
 
-      # Note: Data scraping is now handled by OpenClaw heartbeat
-      # (GitHub Actions IPs are blocked by Yahoo Finance/commodity APIs)
-      # This workflow only builds & deploys when data is committed by Elesis
-
-      - name: Build site
+      - name: Build site (11ty)
         run: npm run build
 
       - name: Deploy to Cloudflare Pages
@@ -34,4 +27,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=insider-hub
+          command: pages deploy _site --project-name=insider-hub

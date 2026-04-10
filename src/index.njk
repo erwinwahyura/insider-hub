@@ -1,0 +1,102 @@
+---
+layout: layouts/base.njk
+title: Home
+---
+
+{% set bullishCount = 0 %}
+{% set bearishCount = 0 %}
+{% set macroCount = 0 %}
+{% for item in news %}
+  {% if item.impact == 'positive' %}{% set bullishCount = bullishCount + 1 %}{% endif %}
+  {% if item.impact == 'negative' %}{% set bearishCount = bearishCount + 1 %}{% endif %}
+  {% if item.category == 'macro' %}{% set macroCount = macroCount + 1 %}{% endif %}
+{% endfor %}
+
+<!-- Stats -->
+<div class="stats-row">
+  <div class="stat">
+    <span class="stat-n mono up">{{ bullishCount }}</span>
+    <span class="stat-l">Bullish</span>
+  </div>
+  <div class="stat">
+    <span class="stat-n mono down">{{ bearishCount }}</span>
+    <span class="stat-l">Bearish</span>
+  </div>
+  <div class="stat">
+    <span class="stat-n mono amber">{{ macroCount }}</span>
+    <span class="stat-l">Macro</span>
+  </div>
+  <div class="stat">
+    <span class="stat-n mono">{{ news.length }}</span>
+    <span class="stat-l">Articles</span>
+  </div>
+  <div class="stat">
+    <span class="stat-n mono dim">{{ news[0].date | dateFormat }}</span>
+    <span class="stat-l">Updated</span>
+  </div>
+</div>
+
+<!-- Commodities -->
+<div class="commodities">
+  {% set comms = [
+    {key: 'coal', name: 'Coal', sub: 'Newcastle', unit: '$'},
+    {key: 'nickel', name: 'Nickel', sub: 'LME', unit: '$'},
+    {key: 'cpo', name: 'Palm Oil', sub: 'CPO', unit: 'RM '},
+    {key: 'gold', name: 'Gold', sub: 'Spot', unit: '$'},
+    {key: 'idr_usd', name: 'IDR/USD', sub: '', unit: ''}
+  ] %}
+  
+  {% for c in comms %}
+    {% set data = commodities.commodities[c.key] %}
+    {% set direction = 'neutral' %}
+    {% if data.changePct > 0 %}{% set direction = 'up' %}{% endif %}
+    {% if data.changePct < 0 %}{% set direction = 'down' %}{% endif %}
+    
+    <div class="commodity {{ direction }}">
+      <span class="comm-name">{{ c.name }} {% if c.sub %}<span style="font-size:11px;color:var(--text-3);font-weight:400;">{{ c.sub }}</span>{% endif %}</span>
+      <div class="comm-right">
+        <span class="comm-price mono">{{ c.unit }}{{ data.price.toLocaleString() }}</span>
+        <span class="comm-delta mono {{ direction }}">
+          {% if data.changePct > 0 %}▲{% endif %}
+          {% if data.changePct < 0 %}▼{% endif %}
+          {{ data.changePct.toFixed(2) }}%
+        </span>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<!-- News List -->
+<h2>Latest News</h2>
+<div class="news-list">
+  {% for item in news.slice(0, 10) %}
+    {% set impact = 'neutral' %}
+    {% if item.impact == 'positive' %}{% set impact = 'up' %}{% endif %}
+    {% if item.impact == 'negative' %}{% set impact = 'down' %}{% endif %}
+    
+    <a href="/news/{{ item.id }}" class="news-card">
+      <div class="news-bar {{ impact }}"></div>
+      <div class="news-content">
+        <div class="news-meta">
+          <span>{{ item.date | dateFormat }}</span>
+          <span>{{ item.source }}</span>
+          <span class="impact-tag {{ impact }}">
+            {% if item.impact == 'positive' %}▲{% endif %}
+            {% if item.impact == 'negative' %}▼{% endif %}
+            {% if item.impact == 'neutral' %}→{% endif %}
+            {{ item.impact }}
+          </span>
+          <span class="badge badge-neutral">{{ item.category }}</span>
+        </div>
+        <div class="news-title">{{ item.title }}</div>
+        {% if item.tickers and item.tickers.length > 0 %}
+          <div class="news-chips">
+            {% for ticker in item.tickers %}
+              <span class="chip">{{ ticker }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </a>
+  {% endfor %}
+</div>

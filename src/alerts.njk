@@ -1,0 +1,40 @@
+---
+layout: layouts/base.njk
+title: Price Alerts
+---
+
+<h1>Price Alerts</h1>
+
+<div class="panel">
+  <div class="panel-head">
+    <span class="panel-title">Active Alerts ({{ alerts.alerts.length }})</span>
+  </div>
+  
+  {% for alert in alerts.alerts %}
+    {% if alert.enabled %}
+      <div class="card" style="margin-bottom:0.5rem;padding:0.75rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <span style="font-weight:600;">{{ alert.ticker }}</span>
+            <span class="dim" style="font-size:12px;">{{ alert.id }}</span>
+          </div>
+          <span class="badge {% if alert.priority == 'high' %}badge-down{% elif alert.priority == 'critical' %}badge-down{% else %}badge-neutral{% endif %}">
+            {{ alert.priority }}
+          </span>
+        </div>
+        
+        <div style="margin-top:0.5rem;font-size:13px;">
+          <div>{{ alert.message }}</div>
+          <div class="dim" style="margin-top:0.25rem;">
+            Current: {{ alert.current }} | Target: {{ alert.target }}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>
+
+<h2>Alert History</h2>
+<div class="dim" style="font-size:13px;">
+  Last triggered: {{ alerts.lastUpdated | dateFormat }}
+</div>

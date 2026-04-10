@@ -1,0 +1,63 @@
+---
+layout: layouts/base.njk
+title: Portfolio
+---
+
+<h1>Portfolio</h1>
+
+<div class="panel">
+  <div class="panel-head">
+    <span class="panel-title">Summary</span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;">
+    <div>
+      <div class="dim">Total Equity</div>
+      <div class="mono" style="font-size:24px;font-weight:600;">{{ stocks.portfolio.totalEquity | formatRp }}</div>
+    </div>
+    <div>
+      <div class="dim">Unrealized P&L</div>
+      <div class="mono {% if stocks.portfolio.totalUnrealizedPnl > 0 %}up{% else %}down{% endif %}" style="font-size:24px;font-weight:600;">
+        {{ stocks.portfolio.totalUnrealizedPnl | formatRp }}
+        ({{ stocks.portfolio.totalReturnPct.toFixed(2) }}%)
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2>Holdings</h2>
+{% for ticker, stock in stocks.stocks %}
+  {% if stock.position %}
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+        <div>
+          <span style="font-size:16px;font-weight:600;">{{ ticker }}</span>
+          <span class="dim" style="font-size:12px;">{{ stock.name }}</span>
+        </div>
+        <span class="badge {% if stock.position.pnlPct > 0 %}badge-up{% else %}badge-down{% endif %}">
+          {{ stock.position.pnlPct.toFixed(2) }}%
+        </span>
+      </div>
+      
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.5rem;font-size:13px;">
+        <div>
+          <span class="dim">Lots:</span>
+          <span class="mono">{{ stock.position.lots }}</span>
+        </div>
+        <div>
+          <span class="dim">Avg:</span>
+          <span class="mono">{{ stock.position.avgPrice }}</span>
+        </div>
+        <div>
+          <span class="dim">Current:</span>
+          <span class="mono">{{ stock.price }}</span>
+        </div>
+        <div>
+          <span class="dim">P&L:</span>
+          <span class="mono {% if stock.position.totalPnl > 0 %}up{% else %}down{% endif %}">
+            {{ stock.position.totalPnl | formatRp }}
+          </span>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endfor %}

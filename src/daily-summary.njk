@@ -1,0 +1,83 @@
+---
+layout: layouts/base.njk
+title: Daily Summary
+---
+
+<h1>Daily Summary</h1>
+
+{% set todayCount = 0 %}
+{% set bullishToday = 0 %}
+{% set bearishToday = 0 %}
+{% for item in news %}
+  {% set itemDate = item.date | dateFormat %}
+  {% if 'm ago' in itemDate or 'h ago' in itemDate %}
+    {% set todayCount = todayCount + 1 %}
+    {% if item.impact == 'positive' %}{% set bullishToday = bullishToday + 1 %}{% endif %}
+    {% if item.impact == 'negative' %}{% set bearishToday = bearishToday + 1 %}{% endif %}
+  {% endif %}
+{% endfor %}
+
+<div class="panel">
+  <div class="panel-head">
+    <span class="panel-title">Today</span>
+  </div>
+  <div style="display:flex;gap:1rem;font-size:13px;">
+    <span>{{ todayCount }} articles</span>
+    <span class="up">{{ bullishToday }} bullish</span>
+    <span class="down">{{ bearishToday }} bearish</span>
+  </div>
+</div>
+
+<h2>Market Insights</h2>
+<div class="card">
+  <div style="font-size:14px;font-weight:600;margin-bottom:0.5rem;">Foreign Flows Negative</div>
+  <div style="font-size:13px;color:var(--text-2);">
+    YTD net sell Rp 18.7T. Capital outflow pressure continues.
+  </div>
+  <div class="dim" style="margin-top:0.5rem;font-size:12px;">
+    Impact: Risk-off sentiment, focus on domestic-centric names
+  </div>
+</div>
+
+<div class="card">
+  <div style="font-size:14px;font-weight:600;margin-bottom:0.5rem;">Coal Prices Stabilizing</div>
+  <div style="font-size:13px;color:var(--text-2);">
+    Newcastle coal holding at $128-130. China post-LNY demand supporting.
+  </div>
+  <div class="dim" style="margin-top:0.5rem;font-size:12px;">
+    ADRO, ITMG, PTBA — hold for dividend
+  </div>
+</div>
+
+<div class="card">
+  <div style="font-size:14px;font-weight:600;margin-bottom:0.5rem;">Nickel Weakness</div>
+  <div style="font-size:13px;color:var(--text-2);">
+    LME nickel $16,200, down 0.5%. EV demand soft.
+  </div>
+  <div class="dim" style="margin-top:0.5rem;font-size:12px;">
+    ANTM, INCO, ESSA — margin pressure
+  </div>
+</div>
+
+<h2>Priority Actions</h2>
+<div style="display:grid;gap:0.5rem;">
+  <div class="card" style="border-left:3px solid var(--down);">
+    <div style="display:flex;justify-content:space-between;">
+      <span style="font-weight:600;">ESSA</span>
+      <span class="badge badge-down">EXIT 50-70%</span>
+    </div>
+    <div class="dim" style="font-size:12px;margin-top:0.25rem;">
+      Underwater, better redeployment to ISSP
+    </div>
+  </div>
+  
+  <div class="card" style="border-left:3px solid var(--up);">
+    <div style="display:flex;justify-content:space-between;">
+      <span style="font-weight:600;">PTPS</span>
+      <span class="badge badge-up">BUY @ 175</span>
+    </div>
+    <div class="dim" style="font-size:12px;margin-top:0.25rem;">
+      Watch for Q1 2026 CALK 15(c) thesis validation
+    </div>
+  </div>
+</div>

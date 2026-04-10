@@ -1,0 +1,20 @@
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-left">
+      <a href="/" class="logo">Insider Hub</a>
+      <span class="logo-sub">Indonesia Market Intelligence</span>
+      <span class="private-badge">Private</span>
+    </div>
+    <button class="mobile-menu-btn" aria-label="Menu" id="menuBtn">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="topbar-nav" id="mainNav">
+      <a href="/" class="nav-link {% if page.url == '/' %}active{% endif %}">Home</a>
+      <a href="/daily-summary" class="nav-link {% if page.url == '/daily-summary/' %}active{% endif %}">Summary</a>
+      <a href="/portfolio" class="nav-link {% if page.url == '/portfolio/' %}active{% endif %}">Portfolio</a>
+      <a href="/earnings" class="nav-link {% if page.url == '/earnings/' %}active{% endif %}">Earnings</a>
+      <a href="/alerts" class="nav-link {% if page.url == '/alerts/' %}active{% endif %}">Alerts</a>
+      <a href="/top-picks" class="nav-link {% if page.url == '/top-picks/' %}active{% endif %}">Top Picks</a>
+    </nav>
+  </div>
+</header>
