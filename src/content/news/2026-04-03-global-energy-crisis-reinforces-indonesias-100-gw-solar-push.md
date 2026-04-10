@@ -8,7 +8,6 @@ tickers: ["ITMG","ADRO","PGEO"]
 source: "Eco-Business"
 url: "https://www.eco-business.com/news/global-energy-crisis-reinforces-indonesias-100-gw-solar-push-but-hurdles-persist/"
 status: "published"
-published: true
 ---
 
 ## Summary

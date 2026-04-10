@@ -8,7 +8,6 @@ tickers: ["PGEO"]
 source: "Yeni Safak"
 url: "https://en.yenisafak.com/economy/turkiyes-risk-premiums-drop-after-us-iran-truce-3716835"
 status: "published"
-published: true
 ---
 
 ## Summary

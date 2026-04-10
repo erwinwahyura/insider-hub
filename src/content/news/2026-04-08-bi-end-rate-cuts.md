@@ -7,7 +7,6 @@ region: Indonesia
 tickers: []
 source: "Polri"
 url: "https://news.google.com/rss/articles/CBMinAFBVV95cUxNeFVuTE5KMGxGdUFySzQ5bWw4Vk95ajBpRlJTMEgzZjFrV2ctVGJ5QTByVDZLSGxoOEJQXzVZZXNWS0FjWU91OUxYcmNHazA0WnlEM0JkOVpBRTE1RjFVb0haeTVPSVgxNkc1RWZ3MUtFNjJVS1d5bVN3SWFCNUk3UkVnLTl0ck9zZ3VkN3pHRl9qcjFQVUZGcm9idno?oc=5"
-published: "2026-04-08"
 ---
 
 ## Summary

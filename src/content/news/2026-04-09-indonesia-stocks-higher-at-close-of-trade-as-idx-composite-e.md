@@ -8,7 +8,6 @@ tickers: ["IHSG"]
 source: "Trading Economics"
 url: "https://tradingeconomics.com/indonesia/stock-market"
 status: "published"
-published: true
 ---
 
 ## Summary

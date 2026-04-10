@@ -8,7 +8,6 @@ tickers: ["IHSG"]
 source: "The Business Times"
 url: "https://www.businesstimes.com.sg/international/asean/vietnams-ftse-upgrade-locked-september-after-market-reforms"
 status: "published"
-published: true
 ---
 
 ## Summary

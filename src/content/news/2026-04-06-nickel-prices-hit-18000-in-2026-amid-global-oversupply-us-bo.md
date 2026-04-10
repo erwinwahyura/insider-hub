@@ -8,7 +8,6 @@ tickers: ["ANTM","INCO","ESSA"]
 source: "CarbonCredits.com"
 url: "https://carboncredits.com/nickel-prices-hit-18000-in-2026-amid-global-oversupply-us-boosts-domestic-supply-chain/"
 status: "published"
-published: true
 ---
 
 ## Summary

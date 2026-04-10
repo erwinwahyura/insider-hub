@@ -7,7 +7,6 @@ region: Global
 tickers: ["PGEO","MEDC","ADRO"]
 source: "Yeni Safak"
 url: "https://news.google.com/rss/articles/CBMikgFBVV95cUxOR2RqaUtHQ1RSLWhueERMdUdhcnpuczVyTjNvdWNIdXpCOEdEVlNzX3EzaThGVWFXbTB5ZFFMZUlUQmJRY1IwZUNqSkJPaldneUkxXzlMSzhEcG9LUmk1RGgxaGprR21NQ0ZGbmxIV2daNzRlZjVfaFNsTUswTlh0TG1FUUJibV9fOWxicEdWQndMZw?oc=5"
-published: "2026-04-08"
 ---
 
 ## Summary
