@@ -12,6 +12,26 @@ const { title } = Astro.props;
 		<meta charset="UTF-8" />
 		<meta name="description" content="Insider Hub - Real-time portfolio tracking, commodity prices, and earnings calendar for IDX stocks" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+		<!-- Auto-refresh: 5 min during market hours, 30 min after -->
+		<meta http-equiv="refresh" content="1800" id="auto-refresh" />
+		<script is:inline>
+			// Dynamic refresh rate based on market hours
+			(function() {
+				const now = new Date();
+				const wibHour = (now.getUTCHours() + 7) % 24;
+				const wibDay = now.getUTCDay();
+				
+				// IDX hours: 09:00-12:00 & 13:30-16:00 WIB, Mon-Fri
+				const isWeekday = wibDay >= 1 && wibDay <= 5;
+				const isMorningSession = wibHour >= 9 && wibHour < 12;
+				const isAfternoonSession = wibHour >= 13 && wibHour < 16;
+				
+				if (isWeekday && (isMorningSession || isAfternoonSession)) {
+					// Market open: refresh every 5 min (300 sec)
+					document.getElementById('auto-refresh').content = '300';
+				}
+			})();
+		</script>
 		<meta name="theme-color" content="#1a6e3c" />
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="default" />
