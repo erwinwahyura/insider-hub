@@ -5,59 +5,106 @@ title: Portfolio
 
 <h1>Portfolio</h1>
 
-<div class="panel">
+<div id="portfolio-loading" class="panel">
   <div class="panel-head">
-    <span class="panel-title">Summary</span>
+    <span class="panel-title">Loading...</span>
   </div>
-  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;">
-    <div>
-      <div class="dim">Total Equity</div>
-      <div class="mono" style="font-size:24px;font-weight:600;">{{ stocks.portfolio.totalEquity | formatRp }}</div>
+  <p style="padding:2rem;text-align:center;color:#666;">Fetching your portfolio data...</p>
+</div>
+
+<div id="portfolio-content" style="display:none">
+  <div class="panel">
+    <div class="panel-head">
+      <span class="panel-title">Summary</span>
     </div>
-    <div>
-      <div class="dim">Unrealized P&L</div>
-      <div class="mono {% if stocks.portfolio.totalUnrealizedPnl > 0 %}up{% else %}down{% endif %}" style="font-size:24px;font-weight:600;">
-        {{ stocks.portfolio.totalUnrealizedPnl | formatRp }}
-        ({{ stocks.portfolio.totalReturnPct.toFixed(2) }}%)
-      </div>
+    <div id="portfolio-summary" style="display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;">
+      <!-- Populated by JS -->
     </div>
+  </div>
+
+  <h2>Holdings</h2>
+  <div id="holdings-list">
+    <!-- Populated by JS -->
   </div>
 </div>
 
-<h2>Holdings</h2>
-{% for ticker, stock in stocks.stocks %}
-  {% if stock.position %}
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
-        <div>
-          <span style="font-size:16px;font-weight:600;">{{ ticker }}</span>
-          <span class="dim" style="font-size:12px;">{{ stock.name }}</span>
-        </div>
-        <span class="badge {% if stock.position.pnlPct > 0 %}badge-up{% else %}badge-down{% endif %}">
-          {{ stock.position.pnlPct.toFixed(2) }}%
-        </span>
+<div id="auth-error" class="panel" style="display:none">
+  <div class="panel-head">
+    <span class="panel-title">Authentication Required</span>
+  </div>
+  <p style="padding:2rem;text-align:center;">
+    Please <a href="/login/?redirect=/portfolio/">sign in</a> to view your portfolio.
+  </p>
+</div>
+
+<script>
+(async () => {
+  try {
+    // Fetch portfolio from API
+    const res = await fetch('/api/portfolio', { credentials: 'same-origin' });
+    
+    if (!res.ok) {
+      if (res.status === 401) {
+        document.getElementById('portfolio-loading').style.display = 'none';
+        document.getElementById('auth-error').style.display = 'block';
+        return;
+      }
+      throw new Error('Failed to load portfolio');
+    }
+    
+    const data = await res.json();
+    
+    // Hide loading, show content
+    document.getElementById('portfolio-loading').style.display = 'none';
+    document.getElementById('portfolio-content').style.display = 'block';
+    
+    // Render summary
+    document.getElementById('portfolio-summary').innerHTML = `
+      <div>
+        <div class="dim">User</div>
+        <div class="mono" style="font-size:18px;font-weight:600;">${data.user}</div>
       </div>
-      
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.5rem;font-size:13px;">
-        <div>
-          <span class="dim">Lots:</span>
-          <span class="mono">{{ stock.position.lots }}</span>
-        </div>
-        <div>
-          <span class="dim">Avg:</span>
-          <span class="mono">{{ stock.position.avgPrice }}</span>
-        </div>
-        <div>
-          <span class="dim">Current:</span>
-          <span class="mono">{{ stock.price }}</span>
-        </div>
-        <div>
-          <span class="dim">P&L:</span>
-          <span class="mono {% if stock.position.totalPnl > 0 %}up{% else %}down{% endif %}">
-            {{ stock.position.totalPnl | formatRp }}
-          </span>
-        </div>
+      <div>
+        <div class="dim">Positions</div>
+        <div class="mono" style="font-size:18px;font-weight:600;">${data.positions?.length || 0}</div>
       </div>
-    </div>
-  {% endif %}
-{% endfor %}
+    `;
+    
+    // Render holdings
+    const holdingsHtml = (data.positions || []).map(p => `
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+          <div>
+            <span style="font-size:16px;font-weight:600;">${p.ticker}</span>
+            <span class="dim" style="font-size:12px;">${p.sector || 'Stock'}</span>
+          </div>
+          <span class="badge">${p.lots} lots</span>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.5rem;font-size:13px;">
+          <div>
+            <span class="dim">Avg Price:</span>
+            <span class="mono">${p.avg_price}</span>
+          </div>
+          <div>
+            <span class="dim">Invested:</span>
+            <span class="mono">Rp ${(p.lots * p.avg_price * 100).toLocaleString()}</span>
+          </div>
+        </div>
+        ${p.notes ? `<div style="margin-top:0.5rem;font-size:12px;color:#666;">${p.notes}</div>` : ''}
+      </div>
+    `).join('');
+    
+    document.getElementById('holdings-list').innerHTML = holdingsHtml || '<p style="color:#666;">No positions yet.</p>';
+    
+  } catch (err) {
+    console.error('Portfolio load error:', err);
+    document.getElementById('portfolio-loading').innerHTML = `
+      <div class="panel-head"><span class="panel-title">Error</span></div>
+      <p style="padding:2rem;text-align:center;color:#d32f2f;">
+        Failed to load portfolio. <a href="/login/">Try signing in</a>.
+      </p>
+    `;
+  }
+})();
+</script>

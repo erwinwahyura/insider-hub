@@ -16,6 +16,23 @@
       <a href="/earnings" class="nav-link {% if page.url == '/earnings/' %}active{% endif %}">Earnings</a>
       <a href="/alerts" class="nav-link {% if page.url == '/alerts/' %}active{% endif %}">Alerts</a>
       <a href="/top-picks" class="nav-link {% if page.url == '/top-picks/' %}active{% endif %}">Top Picks</a>
+      <button id="logoutBtn" class="nav-link logout-btn" style="display:none">Logout</button>
     </nav>
+    
+    <script>
+    // Check auth and show logout
+    (async () => {
+      const res = await fetch('/api/me', { credentials: 'same-origin' });
+      if (res.ok) {
+        const btn = document.getElementById('logoutBtn');
+        if (btn) btn.style.display = 'inline-block';
+      }
+    })();
+    
+    document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
+      window.location.href = '/login/';
+    });
+    </script>
   </div>
 </header>

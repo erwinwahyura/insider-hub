@@ -1,0 +1,15 @@
+name = "insider-hub"
+compatibility_date = "2026-04-16"
+
+# D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "insider-hub-db"
+database_id = "YOUR_DATABASE_ID_HERE"
+
+# Environment
+[env.production]
+vars = { ENVIRONMENT = "production" }
+
+[env.staging]
+vars = { ENVIRONMENT = "staging" }
