@@ -26,12 +26,12 @@ const PORTFOLIO_STOCKS = [
 const DATA_DIR = 'src/content/data';
 const OUTPUT_FILE = `${DATA_DIR}/stock-prices.json`;
 
-// User's actual positions (from memory)
+// User's actual positions (from Stockbit - updated 2026-04-16)
 const USER_POSITIONS = {
-  PTPS: { lots: 1560, avgPrice: 191 },
-  PGEO: { lots: 245, avgPrice: 1010 },
-  ESSA: { lots: 310, avgPrice: 713 },
-  ITMG: { lots: 100, avgPrice: 28100 }, // placeholder
+  PTPS: { lots: 2832, avgPrice: 190.17 },
+  PGEO: { lots: 370, avgPrice: 1036.34 },
+  ESSA: { lots: 445, avgPrice: 791.18 },
+  ITMG: { lots: 1, avgPrice: 28167 }, // ~2.8M invested / 100 shares
 };
 
 // Fetch from IDX API (if available) or scrape from Yahoo/TradingView
