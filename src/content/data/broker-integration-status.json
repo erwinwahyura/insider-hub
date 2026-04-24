@@ -1,0 +1,250 @@
+{
+  "timestamp": "2026-04-24T12:24:28.076Z",
+  "sources": {
+    "brokers": [
+      {
+        "source": "mirae",
+        "name": "Mirae Asset Sekuritas",
+        "status": "credentials_required",
+        "data": null,
+        "error": "API credentials not configured"
+      },
+      {
+        "source": "nhkorindo",
+        "name": "NH Korindo Sekuritas",
+        "status": "credentials_required",
+        "data": null,
+        "error": "API credentials not configured"
+      },
+      {
+        "source": "phillip",
+        "name": "Phillip Sekuritas Indonesia",
+        "status": "credentials_required",
+        "data": null,
+        "error": "API credentials not configured"
+      },
+      {
+        "source": "indopremier",
+        "name": "Indo Premier Sekuritas",
+        "status": "credentials_required",
+        "data": null,
+        "error": "API credentials not configured"
+      }
+    ],
+    "idxWebsite": {
+      "status": "browser_unavailable",
+      "plan": {
+        "method": "browser_automation",
+        "urls": [
+          {
+            "url": "https://www.idx.co.id/en/market-data/trading-summary/foreign-ownership",
+            "selector": ".foreign-ownership-table",
+            "extract": [
+              "ticker",
+              "foreign_buy",
+              "foreign_sell",
+              "net_flow",
+              "ownership_pct"
+            ]
+          },
+          {
+            "url": "https://www.idx.co.id/en/market-data/trading-summary/broker-summary",
+            "selector": ".broker-summary-table",
+            "extract": [
+              "broker_code",
+              "buy_value",
+              "sell_value",
+              "net_value"
+            ]
+          },
+          {
+            "url": "https://www.idx.co.id/en/market-data/trading-summary/block-trades",
+            "selector": ".block-trade-table",
+            "extract": [
+              "ticker",
+              "price",
+              "volume",
+              "value",
+              "buyer_broker",
+              "seller_broker"
+            ]
+          }
+        ],
+        "challenges": [
+          "Cloudflare protection on idx.co.id",
+          "Dynamic content loading (JavaScript)",
+          "Session/cookie management",
+          "Rate limiting (aggressive)"
+        ],
+        "solutions": [
+          "Use residential proxy rotation",
+          "Headless browser with stealth plugins",
+          "Cookie persistence across sessions",
+          "Respectful crawling (1 req/5 sec)"
+        ]
+      },
+      "note": "Browser automation not available in current environment"
+    },
+    "alternatives": [
+      {
+        "source": "stockbit_social",
+        "method": "scrape_stockbit_feeds",
+        "reliability": "medium",
+        "delay": "15-30 min"
+      },
+      {
+        "source": "twitter_x_sentiment",
+        "method": "nitter_api_or_scrape",
+        "reliability": "low",
+        "delay": "realtime"
+      },
+      {
+        "source": "telegram_channels",
+        "method": "bot_monitoring",
+        "channels": [
+          "IDX_Broker_Updates",
+          "Saham_ID_Flow"
+        ],
+        "reliability": "medium",
+        "delay": "5-15 min"
+      },
+      {
+        "source": "rss_news",
+        "method": "google_news_bloomberg_reuters",
+        "reliability": "high",
+        "delay": "30-60 min"
+      }
+    ]
+  },
+  "dataQuality": {
+    "overall": "low",
+    "brokerCoverage": 0,
+    "freshness": "delayed",
+    "completeness": "partial"
+  },
+  "foreignFlow": {
+    "PTPS": {
+      "netFlow": 0,
+      "buyValue": 0,
+      "sellValue": 0,
+      "sourceCount": 0,
+      "confidence": "low",
+      "sources": []
+    },
+    "PGEO": {
+      "netFlow": 0,
+      "buyValue": 0,
+      "sellValue": 0,
+      "sourceCount": 0,
+      "confidence": "low",
+      "sources": []
+    },
+    "ESSA": {
+      "netFlow": 0,
+      "buyValue": 0,
+      "sellValue": 0,
+      "sourceCount": 0,
+      "confidence": "low",
+      "sources": []
+    },
+    "ITMG": {
+      "netFlow": 0,
+      "buyValue": 0,
+      "sellValue": 0,
+      "sourceCount": 0,
+      "confidence": "low",
+      "sources": []
+    },
+    "ADRO": {
+      "netFlow": 0,
+      "buyValue": 0,
+      "sellValue": 0,
+      "sourceCount": 0,
+      "confidence": "low",
+      "sources": []
+    },
+    "AALI": {
+      "netFlow": 0,
+      "buyValue": 0,
+      "sellValue": 0,
+      "sourceCount": 0,
+      "confidence": "low",
+      "sources": []
+    },
+    "LSIP": {
+      "netFlow": 0,
+      "buyValue": 0,
+      "sellValue": 0,
+      "sourceCount": 0,
+      "confidence": "low",
+      "sources": []
+    },
+    "ANTM": {
+      "netFlow": 0,
+      "buyValue": 0,
+      "sellValue": 0,
+      "sourceCount": 0,
+      "confidence": "low",
+      "sources": []
+    },
+    "INCO": {
+      "netFlow": 0,
+      "buyValue": 0,
+      "sellValue": 0,
+      "sourceCount": 0,
+      "confidence": "low",
+      "sources": []
+    },
+    "BBRI": {
+      "netFlow": 0,
+      "buyValue": 0,
+      "sellValue": 0,
+      "sourceCount": 0,
+      "confidence": "low",
+      "sources": []
+    },
+    "BBCA": {
+      "netFlow": 0,
+      "buyValue": 0,
+      "sellValue": 0,
+      "sourceCount": 0,
+      "confidence": "low",
+      "sources": []
+    },
+    "TLKM": {
+      "netFlow": 0,
+      "buyValue": 0,
+      "sellValue": 0,
+      "sourceCount": 0,
+      "confidence": "low",
+      "sources": []
+    }
+  },
+  "blockTrades": [],
+  "recommendations": [
+    {
+      "priority": "high",
+      "action": "configure_broker_api_credentials",
+      "description": "Set up API access with Mirae, NH Korindo, or Phillip Sekuritas",
+      "impact": "Real-time foreign flow data"
+    },
+    {
+      "priority": "high",
+      "action": "implement_browser_automation",
+      "description": "Deploy headless browser for IDX website scraping",
+      "impact": "Fallback data source when APIs unavailable"
+    },
+    {
+      "priority": "medium",
+      "action": "set_up_proxy_rotation",
+      "description": "Residential proxy service to bypass Cloudflare",
+      "impact": "Reliable IDX website access"
+    },
+    {
+      "priority": "medium",
+      "action": "integrate_telegram_monitoring",
+      "description": "Monitor broker update channels via Telegram bot",
+      "impact": "Alternative real-time flow alerts"
+    }
+  ]
+}
