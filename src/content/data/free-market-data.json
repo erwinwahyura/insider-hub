@@ -1,0 +1,328 @@
+{
+  "timestamp": "2026-04-24T12:27:58.574Z",
+  "sources": [
+    {
+      "name": "Yahoo Finance",
+      "status": "active",
+      "count": 12
+    },
+    {
+      "name": "KSEI",
+      "status": "manual_monthly"
+    }
+  ],
+  "stocks": {
+    "PTPS": {
+      "ticker": "PTPS",
+      "price": 181,
+      "change": null,
+      "changePct": null,
+      "volume": 12187800,
+      "dayHigh": 186,
+      "dayLow": 175,
+      "source": "yahoo_finance",
+      "timestamp": "2026-04-24T12:27:58.734Z"
+    },
+    "PGEO": {
+      "ticker": "PGEO",
+      "price": 1000,
+      "change": null,
+      "changePct": null,
+      "volume": 33712300,
+      "dayHigh": 1035,
+      "dayLow": 985,
+      "source": "yahoo_finance",
+      "timestamp": "2026-04-24T12:27:59.328Z"
+    },
+    "ESSA": {
+      "ticker": "ESSA",
+      "price": 945,
+      "change": null,
+      "changePct": null,
+      "volume": 425686100,
+      "dayHigh": 985,
+      "dayLow": 895,
+      "source": "yahoo_finance",
+      "timestamp": "2026-04-24T12:28:00.112Z"
+    },
+    "ITMG": {
+      "ticker": "ITMG",
+      "price": 26400,
+      "change": null,
+      "changePct": null,
+      "volume": 2039600,
+      "dayHigh": 26850,
+      "dayLow": 26325,
+      "source": "yahoo_finance",
+      "timestamp": "2026-04-24T12:28:00.719Z"
+    },
+    "ADRO": {
+      "ticker": "ADRO",
+      "price": 2510,
+      "change": null,
+      "changePct": null,
+      "volume": 72536300,
+      "dayHigh": 2530,
+      "dayLow": 2490,
+      "source": "yahoo_finance",
+      "timestamp": "2026-04-24T12:28:01.353Z"
+    },
+    "AALI": {
+      "ticker": "AALI",
+      "price": 8100,
+      "change": null,
+      "changePct": null,
+      "volume": 3124800,
+      "dayHigh": 8175,
+      "dayLow": 7975,
+      "source": "yahoo_finance",
+      "timestamp": "2026-04-24T12:28:02.012Z"
+    },
+    "LSIP": {
+      "ticker": "LSIP",
+      "price": 1670,
+      "change": null,
+      "changePct": null,
+      "volume": 20655100,
+      "dayHigh": 1720,
+      "dayLow": 1645,
+      "source": "yahoo_finance",
+      "timestamp": "2026-04-24T12:28:02.605Z"
+    },
+    "ANTM": {
+      "ticker": "ANTM",
+      "price": 4050,
+      "change": null,
+      "changePct": null,
+      "volume": 79334000,
+      "dayHigh": 4080,
+      "dayLow": 3960,
+      "source": "yahoo_finance",
+      "timestamp": "2026-04-24T12:28:03.186Z"
+    },
+    "INCO": {
+      "ticker": "INCO",
+      "price": 6700,
+      "change": null,
+      "changePct": null,
+      "volume": 20275200,
+      "dayHigh": 6850,
+      "dayLow": 6650,
+      "source": "yahoo_finance",
+      "timestamp": "2026-04-24T12:28:03.862Z"
+    },
+    "BBRI": {
+      "ticker": "BBRI",
+      "price": 3070,
+      "change": null,
+      "changePct": null,
+      "volume": 428089200,
+      "dayHigh": 3150,
+      "dayLow": 3060,
+      "source": "yahoo_finance",
+      "timestamp": "2026-04-24T12:28:04.457Z"
+    },
+    "BBCA": {
+      "ticker": "BBCA",
+      "price": 6050,
+      "change": null,
+      "changePct": null,
+      "volume": 435004800,
+      "dayHigh": 6425,
+      "dayLow": 6050,
+      "source": "yahoo_finance",
+      "timestamp": "2026-04-24T12:28:05.047Z"
+    },
+    "TLKM": {
+      "ticker": "TLKM",
+      "price": 2810,
+      "change": null,
+      "changePct": null,
+      "volume": 254588000,
+      "dayHigh": 2940,
+      "dayLow": 2750,
+      "source": "yahoo_finance",
+      "timestamp": "2026-04-24T12:28:05.643Z"
+    }
+  },
+  "market": {},
+  "limitations": [
+    "Real foreign flow per ticker requires broker API or paid data",
+    "Block trade data not available via free sources",
+    "Broker activity limited to top 10 via IDX mobile",
+    "KSEI data is monthly, not daily"
+  ],
+  "foreignFlow": {
+    "PTPS": {
+      "estimatedNetFlow": 0,
+      "confidence": "low",
+      "basis": "Volume ratio 1.25x, Price NaN%",
+      "disclaimer": "ESTIMATED — Real foreign flow requires broker API or IDX data"
+    },
+    "PGEO": {
+      "estimatedNetFlow": 0,
+      "confidence": "low",
+      "basis": "Volume ratio 1.25x, Price NaN%",
+      "disclaimer": "ESTIMATED — Real foreign flow requires broker API or IDX data"
+    },
+    "ESSA": {
+      "estimatedNetFlow": 0,
+      "confidence": "low",
+      "basis": "Volume ratio 1.25x, Price NaN%",
+      "disclaimer": "ESTIMATED — Real foreign flow requires broker API or IDX data"
+    },
+    "ITMG": {
+      "estimatedNetFlow": 0,
+      "confidence": "low",
+      "basis": "Volume ratio 1.25x, Price NaN%",
+      "disclaimer": "ESTIMATED — Real foreign flow requires broker API or IDX data"
+    },
+    "ADRO": {
+      "estimatedNetFlow": 0,
+      "confidence": "low",
+      "basis": "Volume ratio 1.25x, Price NaN%",
+      "disclaimer": "ESTIMATED — Real foreign flow requires broker API or IDX data"
+    },
+    "AALI": {
+      "estimatedNetFlow": 0,
+      "confidence": "low",
+      "basis": "Volume ratio 1.25x, Price NaN%",
+      "disclaimer": "ESTIMATED — Real foreign flow requires broker API or IDX data"
+    },
+    "LSIP": {
+      "estimatedNetFlow": 0,
+      "confidence": "low",
+      "basis": "Volume ratio 1.25x, Price NaN%",
+      "disclaimer": "ESTIMATED — Real foreign flow requires broker API or IDX data"
+    },
+    "ANTM": {
+      "estimatedNetFlow": 0,
+      "confidence": "low",
+      "basis": "Volume ratio 1.25x, Price NaN%",
+      "disclaimer": "ESTIMATED — Real foreign flow requires broker API or IDX data"
+    },
+    "INCO": {
+      "estimatedNetFlow": 0,
+      "confidence": "low",
+      "basis": "Volume ratio 1.25x, Price NaN%",
+      "disclaimer": "ESTIMATED — Real foreign flow requires broker API or IDX data"
+    },
+    "BBRI": {
+      "estimatedNetFlow": 0,
+      "confidence": "low",
+      "basis": "Volume ratio 1.25x, Price NaN%",
+      "disclaimer": "ESTIMATED — Real foreign flow requires broker API or IDX data"
+    },
+    "BBCA": {
+      "estimatedNetFlow": 0,
+      "confidence": "low",
+      "basis": "Volume ratio 1.25x, Price NaN%",
+      "disclaimer": "ESTIMATED — Real foreign flow requires broker API or IDX data"
+    },
+    "TLKM": {
+      "estimatedNetFlow": 0,
+      "confidence": "low",
+      "basis": "Volume ratio 1.25x, Price NaN%",
+      "disclaimer": "ESTIMATED — Real foreign flow requires broker API or IDX data"
+    }
+  },
+  "foreignFlowDisclaimer": "ESTIMATED based on volume/price patterns — NOT real foreign flow data",
+  "smartMoney": {
+    "PTPS": {
+      "pattern": "NEUTRAL",
+      "confidence": "LOW",
+      "signal": null,
+      "volume": 12187800,
+      "priceChange": null,
+      "interpretation": "No clear institutional pattern detected"
+    },
+    "PGEO": {
+      "pattern": "NEUTRAL",
+      "confidence": "LOW",
+      "signal": null,
+      "volume": 33712300,
+      "priceChange": null,
+      "interpretation": "No clear institutional pattern detected"
+    },
+    "ESSA": {
+      "pattern": "NEUTRAL",
+      "confidence": "LOW",
+      "signal": null,
+      "volume": 425686100,
+      "priceChange": null,
+      "interpretation": "No clear institutional pattern detected"
+    },
+    "ITMG": {
+      "pattern": "NEUTRAL",
+      "confidence": "LOW",
+      "signal": null,
+      "volume": 2039600,
+      "priceChange": null,
+      "interpretation": "No clear institutional pattern detected"
+    },
+    "ADRO": {
+      "pattern": "NEUTRAL",
+      "confidence": "LOW",
+      "signal": null,
+      "volume": 72536300,
+      "priceChange": null,
+      "interpretation": "No clear institutional pattern detected"
+    },
+    "AALI": {
+      "pattern": "NEUTRAL",
+      "confidence": "LOW",
+      "signal": null,
+      "volume": 3124800,
+      "priceChange": null,
+      "interpretation": "No clear institutional pattern detected"
+    },
+    "LSIP": {
+      "pattern": "NEUTRAL",
+      "confidence": "LOW",
+      "signal": null,
+      "volume": 20655100,
+      "priceChange": null,
+      "interpretation": "No clear institutional pattern detected"
+    },
+    "ANTM": {
+      "pattern": "NEUTRAL",
+      "confidence": "LOW",
+      "signal": null,
+      "volume": 79334000,
+      "priceChange": null,
+      "interpretation": "No clear institutional pattern detected"
+    },
+    "INCO": {
+      "pattern": "NEUTRAL",
+      "confidence": "LOW",
+      "signal": null,
+      "volume": 20275200,
+      "priceChange": null,
+      "interpretation": "No clear institutional pattern detected"
+    },
+    "BBRI": {
+      "pattern": "NEUTRAL",
+      "confidence": "LOW",
+      "signal": null,
+      "volume": 428089200,
+      "priceChange": null,
+      "interpretation": "No clear institutional pattern detected"
+    },
+    "BBCA": {
+      "pattern": "NEUTRAL",
+      "confidence": "LOW",
+      "signal": null,
+      "volume": 435004800,
+      "priceChange": null,
+      "interpretation": "No clear institutional pattern detected"
+    },
+    "TLKM": {
+      "pattern": "NEUTRAL",
+      "confidence": "LOW",
+      "signal": null,
+      "volume": 254588000,
+      "priceChange": null,
+      "interpretation": "No clear institutional pattern detected"
+    }
+  }
+}
