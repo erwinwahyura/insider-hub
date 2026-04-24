@@ -13,12 +13,96 @@
 
 ---
 
-## 1. Broker API Integration (PRIMARY)
+## 1. Local Broker Feeds (PRIMARY — INDONESIA FOCUS)
 
-### Mirae Asset Sekuritas
+### Indo Premier Sekuritas (MOST ACCESSIBLE)
+```bash
+# Contact: api@indopremier.com
+# Phone: 021-5080-1888
+# API Docs: https://api.indopremier.com/v2
+# Cost: FREE for account holders
+
+Required Credentials:
+- API Key (from online trading platform)
+- User ID (trading account number)
+- Password (trading PIN)
+
+Endpoints:
+GET /api/v2/foreign-flow?date={YYYY-MM-DD}
+GET /api/v2/broker-summary?broker_code={CODE}
+GET /api/v2/top-gainers?date={YYYY-MM-DD}
+GET /api/v2/block-trades?min_value=10000000000
+
+Rate Limit: 80 req/min
+Data Delay: 5-15 minutes (near real-time)
+```
+
+### Sinarmas Sekuritas
+```bash
+# Contact: callcenter@sinarmassekuritas.co.id
+# Phone: 021-250-6000
+# Web: https://www.sinarmassekuritas.co.id
+# Cost: FREE for account holders
+
+Required Credentials:
+- Online trading account
+- API access request (email support)
+
+Endpoints:
+GET /api/v1/market/foreign-net
+GET /api/v1/market/broker-activity
+GET /api/v1/market/large-trades
+
+Rate Limit: 60 req/min
+Data Delay: 10-20 minutes
+```
+
+### Panin Sekuritas
+```bash
+# Contact: customercare@panin.co.id
+# Phone: 021-5793-8888
+# Web: https://www.paninsekuritas.co.id
+# Cost: FREE for account holders
+
+Required Credentials:
+- Panin API Key (request via online trading)
+- Client Code
+
+Endpoints:
+GET /api/market/foreign-flow
+GET /api/market/top-brokers
+GET /api/market/block-transactions
+
+Rate Limit: 50 req/min
+Data Delay: 10-20 minutes
+```
+
+### Phillip Sekuritas Indonesia
+```bash
+# Contact: support@phillip.co.id
+# Phone: 021-5799-8888
+# API Docs: https://developer.phillip.co.id
+# Cost: FREE for account holders
+
+Required Credentials:
+- Access Token (from POEMS platform)
+- Refresh Token
+
+Endpoints:
+GET /market/foreign-net?tickers={COMMA_SEPARATED}
+GET /market/institutional-flow?sector={SECTOR}
+GET /market/block-trades
+
+Rate Limit: 120 req/min
+Data Delay: 5-15 minutes
+```
+
+### Mirae Asset Sekuritas (INSTITUTIONAL FOCUS)
 ```bash
 # Contact: institutional@miraeasset.co.id
+# Phone: 021-2988-5888
 # API Docs: https://developer.miraeasset.co.id
+# Cost: FREE for active traders (min Rp 100M/month volume)
 
 Required Credentials:
 - Client ID
@@ -31,12 +115,15 @@ GET /v1/market/block-trades?min_value=10000000000
 GET /v1/market/top-brokers?date={YYYY-MM-DD}
 
 Rate Limit: 100 req/min
+Data Delay: Real-time (institutional feed)
 ```
 
-### NH Korindo Sekuritas
+### NH Korindo Sekuritas (INSTITUTIONAL)
 ```bash
 # Contact: api@nhkorindo.co.id
+# Phone: 021-2988-9999
 # API Docs: https://api.nhkorindo.co.id/docs
+# Cost: FREE for institutional clients
 
 Required Credentials:
 - API Key
@@ -47,6 +134,7 @@ GET /api/foreign-ownership?ticker={TICKER}
 GET /api/large-transactions?date={YYYY-MM-DD}
 
 Rate Limit: 60 req/min
+Data Delay: Real-time
 ```
 
 ### Phillip Sekuritas Indonesia

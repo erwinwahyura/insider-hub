@@ -1,0 +1,138 @@
+{
+  "timestamp": "2026-04-24T12:26:30.309Z",
+  "brokers": {
+    "indopremier": {
+      "name": "Indo Premier Sekuritas",
+      "shortName": "IPOT",
+      "priority": 1,
+      "accessibility": "HIGH",
+      "cost": "FREE",
+      "credentialsAvailable": false,
+      "apiStatus": "CREDENTIALS_REQUIRED",
+      "dataQuality": {
+        "foreignFlow": "EXCELLENT",
+        "brokerActivity": "GOOD",
+        "blockTrades": "GOOD",
+        "realtime": "NEAR_REALTIME"
+      },
+      "contact": {
+        "phone": "021-5080-1888",
+        "email": "api@indopremier.com",
+        "website": "https://www.indopremier.com"
+      },
+      "requirements": "Active trading account (min Rp 10M)"
+    },
+    "sinarmas": {
+      "name": "Sinarmas Sekuritas",
+      "shortName": "SIMAS",
+      "priority": 2,
+      "accessibility": "HIGH",
+      "cost": "FREE",
+      "credentialsAvailable": false,
+      "apiStatus": "CREDENTIALS_REQUIRED",
+      "dataQuality": {
+        "foreignFlow": "GOOD",
+        "brokerActivity": "EXCELLENT",
+        "blockTrades": "MODERATE",
+        "realtime": "DELAYED"
+      },
+      "contact": {
+        "phone": "021-250-6000",
+        "email": "callcenter@sinarmassekuritas.co.id",
+        "website": "https://www.sinarmassekuritas.co.id"
+      },
+      "requirements": "Online trading account"
+    },
+    "panin": {
+      "name": "Panin Sekuritas",
+      "shortName": "PANIN",
+      "priority": 3,
+      "accessibility": "MEDIUM",
+      "cost": "FREE",
+      "credentialsAvailable": false,
+      "apiStatus": "CREDENTIALS_REQUIRED",
+      "dataQuality": {
+        "foreignFlow": "GOOD",
+        "brokerActivity": "GOOD",
+        "blockTrades": "GOOD",
+        "realtime": "DELAYED"
+      },
+      "contact": {
+        "phone": "021-5793-8888",
+        "email": "customercare@panin.co.id",
+        "website": "https://www.paninsekuritas.co.id"
+      },
+      "requirements": "API access request required"
+    },
+    "phillip": {
+      "name": "Phillip Sekuritas Indonesia",
+      "shortName": "POEMS",
+      "priority": 4,
+      "accessibility": "HIGH",
+      "cost": "FREE",
+      "credentialsAvailable": false,
+      "apiStatus": "CREDENTIALS_REQUIRED",
+      "dataQuality": {
+        "foreignFlow": "EXCELLENT",
+        "brokerActivity": "EXCELLENT",
+        "blockTrades": "EXCELLENT",
+        "realtime": "NEAR_REALTIME"
+      },
+      "contact": {
+        "phone": "021-5799-8888",
+        "email": "support@phillip.co.id",
+        "website": "https://www.phillip.co.id"
+      },
+      "requirements": "POEMS trading account"
+    }
+  },
+  "recommendations": [
+    {
+      "priority": 1,
+      "action": "SETUP_INDOPREMIER",
+      "broker": "indopremier",
+      "reason": "Highest accessibility, FREE, excellent foreign flow data",
+      "steps": [
+        "Open account at https://www.indopremier.com (min Rp 10M)",
+        "Login to IPOT online trading",
+        "Navigate to Settings → API Access",
+        "Generate API Key",
+        "Add to .env.local.broker: INDOPREMIER_API_KEY=your_key"
+      ],
+      "timeline": "1-2 business days",
+      "cost": "FREE"
+    },
+    {
+      "priority": 2,
+      "action": "SETUP_PHILLIP",
+      "broker": "phillip",
+      "reason": "Best rate limit (120/min), excellent all-around data",
+      "steps": [
+        "Open POEMS account at https://www.phillip.co.id",
+        "Contact support@phillip.co.id for API access",
+        "Receive Access Token + Refresh Token",
+        "Add to .env.local.broker: PHILLIP_ACCESS_TOKEN=your_token"
+      ],
+      "timeline": "2-3 business days",
+      "cost": "FREE"
+    },
+    {
+      "priority": 3,
+      "action": "SETUP_SINARMAS",
+      "broker": "sinarmas",
+      "reason": "Good broker activity data, FREE",
+      "steps": [
+        "Open account at https://www.sinarmassekuritas.co.id",
+        "Email callcenter@sinarmassekuritas.co.id for API access",
+        "Receive OAuth2 credentials",
+        "Add to .env.local.broker: SINARMAS_CLIENT_ID=your_id"
+      ],
+      "timeline": "3-5 business days",
+      "cost": "FREE"
+    }
+  ],
+  "nextSteps": [
+    "Open Indo Premier account (fastest setup)",
+    "Request API credentials"
+  ]
+}
