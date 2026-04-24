@@ -1,6 +1,10 @@
 name = "insider-hub"
 compatibility_date = "2026-04-16"
 
+# Static site assets
+[assets]
+directory = "./_site"
+
 # D1 Database (existing)
 [[d1_databases]]
 binding = "DB"
