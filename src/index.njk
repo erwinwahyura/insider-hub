@@ -13,32 +13,35 @@ title: Home
 {% endfor %}
 
 <!-- Smart Money Summary -->
+{% set smSummary = smartMoney.summary if smartMoney else {} %}
+{% set ffSummary = foreignFlow.summary if foreignFlow else {} %}
+{% set btData = blockTrades if blockTrades else {} %}
 <div class="smart-money-summary">
   <div class="sm-header">
     <span class="sm-title">🎯 Smart Money Today</span>
-    <span class="sm-time">{{ smartMoney.timestamp | dateFormat }}</span>
+    <span class="sm-time">{{ smartMoney.timestamp | dateFormat if smartMoney else 'N/A' }}</span>
   </div>
   <div class="sm-stats">
     <div class="sm-stat buy">
-      <span class="sm-num">{{ smartMoney.summary.accumulationCount }}</span>
+      <span class="sm-num">{{ smSummary.accumulationCount if smSummary.accumulationCount else 0 }}</span>
       <span class="sm-label">Accumulating</span>
     </div>
     <div class="sm-stat sell">
-      <span class="sm-num">{{ smartMoney.summary.distributionCount }}</span>
+      <span class="sm-num">{{ smSummary.distributionCount if smSummary.distributionCount else 0 }}</span>
       <span class="sm-label">Distributing</span>
     </div>
     <div class="sm-stat">
-      <span class="sm-num">{{ foreignFlow.summary.topBuyers.length }}</span>
+      <span class="sm-num">{{ ffSummary.topBuyers | length if ffSummary.topBuyers else 0 }}</span>
       <span class="sm-label">Foreign Buy</span>
     </div>
     <div class="sm-stat">
-      <span class="sm-num">{{ blockTrades.count }}</span>
+      <span class="sm-num">{{ btData.count if btData.count else 0 }}</span>
       <span class="sm-label">Block Trades</span>
     </div>
   </div>
-  {% if smartMoney.summary.topSignals.length > 0 %}
+  {% if smSummary.topSignals and smSummary.topSignals.length > 0 %}
   <div class="sm-signals">
-    {% for signal in smartMoney.summary.topSignals.slice(0, 3) %}
+    {% for signal in smSummary.topSignals.slice(0, 3) %}
     <div class="sm-signal {{ signal.signal | lower }}">
       <span class="sm-ticker">{{ signal.ticker }}</span>
       <span class="sm-pattern">{{ signal.pattern | replace('_', ' ') }}</span>
@@ -50,16 +53,18 @@ title: Home
 </div>
 
 <!-- Foreign Flow -->
+{% set ffTickers = foreignFlow.tickers if foreignFlow else {} %}
+{% set ffNetFlow = foreignFlow.summary.netFlow if foreignFlow and foreignFlow.summary else 0 %}
 <div class="foreign-flow">
   <div class="ff-header">
     <span class="ff-title">🌏 Foreign Flow (IDR)</span>
-    <span class="ff-net {% if foreignFlow.summary.netFlow > 0 %}up{% else %}down{% endif %}">
-      {% if foreignFlow.summary.netFlow > 0 %}+{% endif %}{{ (foreignFlow.summary.netFlow / 1000000000).toFixed(1) }}B
+    <span class="ff-net {% if ffNetFlow > 0 %}up{% else %}down{% endif %}">
+      {% if ffNetFlow > 0 %}+{% endif %}{{ (ffNetFlow / 1000000000).toFixed(1) }}B
     </span>
   </div>
   <div class="ff-bars">
     {% for ticker in ['ESSA', 'BBCA', 'BBRI', 'PGEO', 'PTPS', 'ITMG'] %}
-    {% set flow = foreignFlow.tickers[ticker] %}
+    {% set flow = ffTickers[ticker] if ffTickers else none %}
     {% if flow %}
     <div class="ff-row">
       <span class="ff-ticker">{{ ticker }}</span>
@@ -78,7 +83,7 @@ title: Home
 </div>
 
 <!-- Block Trades -->
-{% if blockTrades.trades.length > 0 %}
+{% if blockTrades and blockTrades.trades and blockTrades.trades.length > 0 %}
 <div class="block-trades">
   <div class="bt-header">
     <span class="bt-title">💼 Block Trades Today</span>
