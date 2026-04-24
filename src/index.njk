@@ -122,6 +122,209 @@ title: Home
   </div>
 </div>
 
+<!-- Market Overview Grid -->
+<div style="display: grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1rem;">
+  {% if stocks.stocks %}
+  <!-- BI Rate Panel -->
+  <div class="bi-rate-panel">
+    <div class="bi-header">
+      <span class="bi-tag">BI Rate</span>
+      <span class="bi-tag">Monetary Policy</span>
+    </div>
+    <div class="bi-main">
+      <span class="bi-rate">5.75%</span>
+      <span class="bi-status">unchanged</span>
+    </div>
+    <div class="bi-details">
+      <div class="bi-detail">
+        <span class="bi-detail-label">Last decision</span>
+        <span class="bi-detail-value">19 Mar 2025 — Hold</span>
+      </div>
+      <div class="bi-detail">
+        <span class="bi-detail-label">Next meeting</span>
+        <span class="bi-detail-value">23-24 Apr 2025</span>
+      </div>
+      <div class="bi-detail">
+        <span class="bi-detail-label">Consensus</span>
+        <span class="bi-detail-value">Hold expected</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Market Breadth -->
+  <div class="market-breadth">
+    <div class="breadth-header">
+      <span class="breadth-title">Market Breadth</span>
+      <span class="breadth-status weak">Weak</span>
+    </div>
+    <div class="breadth-stats">
+      <div class="breadth-stat up">
+        <span class="breadth-num">312</span>
+        <span class="breadth-label">Advancing</span>
+      </div>
+      <div class="breadth-stat down">
+        <span class="breadth-num">489</span>
+        <span class="breadth-label">Declining</span>
+      </div>
+      <div class="breadth-stat neutral">
+        <span class="breadth-num">121</span>
+        <span class="breadth-label">Unchanged</span>
+      </div>
+    </div>
+    <div class="breadth-details">
+      <div class="breadth-detail">
+        <span>A/D Ratio</span>
+        <span>0.64 — more sellers than buyers</span>
+      </div>
+      <div class="breadth-detail">
+        <span>52w High</span>
+        <span>18 stocks</span>
+      </div>
+      <div class="breadth-detail">
+        <span>52w Low</span>
+        <span>47 stocks</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Foreign Investor Net Flow -->
+  <div class="foreign-net-flow">
+    <div class="fnf-header">
+      <span class="fnf-title">Foreign Investor Net Flow</span>
+      <span class="fnf-status sell">Net Sell</span>
+    </div>
+    <div class="fnf-main sell">-Rp 2.34T net sell this week</div>
+    <div class="fnf-details">
+      <div class="fnf-detail">
+        <span class="fnf-detail-label">Gross Buy</span>
+        <span class="fnf-detail-value">Rp 8.12T</span>
+      </div>
+      <div class="fnf-detail">
+        <span class="fnf-detail-label">Gross Sell</span>
+        <span class="fnf-detail-value">Rp 10.46T</span>
+      </div>
+      <div class="fnf-detail">
+        <span class="fnf-detail-label">YTD Net</span>
+        <span class="fnf-detail-value">-Rp 18.7T</span>
+      </div>
+    </div>
+    <div class="fnf-chart">
+      <div class="fnf-chart-title">4-week net flow (IDR Trillion)</div>
+      <div class="fnf-weeks">
+        <div class="fnf-week">
+          <span class="fnf-week-label">W-4</span>
+          <div class="fnf-week-bar-wrap">
+            <div class="fnf-week-bar buy" style="width: 25%"></div>
+          </div>
+          <span class="fnf-week-value">+1.2T</span>
+        </div>
+        <div class="fnf-week">
+          <span class="fnf-week-label">W-3</span>
+          <div class="fnf-week-bar-wrap">
+            <div class="fnf-week-bar sell" style="width: 20%"></div>
+          </div>
+          <span class="fnf-week-value">-0.8T</span>
+        </div>
+        <div class="fnf-week">
+          <span class="fnf-week-label">W-2</span>
+          <div class="fnf-week-bar-wrap">
+            <div class="fnf-week-bar sell" style="width: 35%"></div>
+          </div>
+          <span class="fnf-week-value">-1.5T</span>
+        </div>
+        <div class="fnf-week">
+          <span class="fnf-week-label">W-1</span>
+          <div class="fnf-week-bar-wrap">
+            <div class="fnf-week-bar sell" style="width: 55%"></div>
+          </div>
+          <span class="fnf-week-value">-2.34T</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Sector Performance -->
+<div class="sector-performance">
+  <div class="sector-header">
+    <span class="sector-title">Sector Performance</span>
+    <span class="sector-source">IDX Sector Indices · YTD 2025</span>
+  </div>
+  <div class="sector-list">
+    <div class="sector-item">
+      <div class="sector-left">
+        <span class="sector-name">Energy</span>
+        <span class="sector-tickers">ADRO · ITMG · PTBA</span>
+      </div>
+      <div class="sector-right">
+        <span class="sector-change up">+8.4%</span>
+        <span class="sector-period">YTD</span>
+      </div>
+    </div>
+    <div class="sector-item">
+      <div class="sector-left">
+        <span class="sector-name">Basic Materials</span>
+        <span class="sector-tickers">ANTM · INCO · TINS</span>
+      </div>
+      <div class="sector-right">
+        <span class="sector-change up">+5.2%</span>
+        <span class="sector-period">YTD</span>
+      </div>
+    </div>
+    <div class="sector-item">
+      <div class="sector-left">
+        <span class="sector-name">Consumer Cyclical</span>
+        <span class="sector-tickers">MAPI · ACES · ERAA</span>
+      </div>
+      <div class="sector-right">
+        <span class="sector-change up">+2.1%</span>
+        <span class="sector-period">YTD</span>
+      </div>
+    </div>
+    <div class="sector-item">
+      <div class="sector-left">
+        <span class="sector-name">Financials</span>
+        <span class="sector-tickers">BBRI · BBCA · BMRI</span>
+      </div>
+      <div class="sector-right">
+        <span class="sector-change down">-1.3%</span>
+        <span class="sector-period">YTD</span>
+      </div>
+    </div>
+    <div class="sector-item">
+      <div class="sector-left">
+        <span class="sector-name">Industrials</span>
+        <span class="sector-tickers">ASII · SMGR · INTP</span>
+      </div>
+      <div class="sector-right">
+        <span class="sector-change down">-2.8%</span>
+        <span class="sector-period">YTD</span>
+      </div>
+    </div>
+    <div class="sector-item">
+      <div class="sector-left">
+        <span class="sector-name">Healthcare</span>
+        <span class="sector-tickers">SIDO · KLBF · MIKA</span>
+      </div>
+      <div class="sector-right">
+        <span class="sector-change down">-3.5%</span>
+        <span class="sector-period">YTD</span>
+      </div>
+    </div>
+    <div class="sector-item">
+      <div class="sector-left">
+        <span class="sector-name">Technology</span>
+        <span class="sector-tickers">GOTO · BUKA · EMTK</span>
+      </div>
+      <div class="sector-right">
+        <span class="sector-change down">-5.1%</span>
+        <span class="sector-period">YTD</span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Commodities -->
 <div class="commodities">
   {% set comms = [

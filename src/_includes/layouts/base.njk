@@ -595,6 +595,313 @@
       border-radius: 4px;
     }
     .bt-note { font-size: 12px; color: var(--text-2); line-height: 1.4; }
+    
+    /* Sector Performance */
+    .sector-performance {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow);
+    }
+    .sector-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .sector-title {
+      font-weight: 600;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .sector-source {
+      font-size: 11px;
+      color: var(--text-3);
+    }
+    .sector-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .sector-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.625rem 0.75rem;
+      background: var(--bg-subtle);
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    .sector-item:hover {
+      background: var(--bg);
+    }
+    .sector-left {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+    .sector-name {
+      font-weight: 600;
+      color: var(--text);
+    }
+    .sector-tickers {
+      font-size: 11px;
+      color: var(--text-3);
+      font-family: var(--mono);
+    }
+    .sector-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.15rem;
+    }
+    .sector-change {
+      font-weight: 600;
+      font-family: var(--mono);
+    }
+    .sector-change.up { color: var(--up); }
+    .sector-change.down { color: var(--down); }
+    .sector-period {
+      font-size: 10px;
+      color: var(--text-3);
+      text-transform: uppercase;
+    }
+    
+    /* BI Rate Panel */
+    .bi-rate-panel {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow);
+    }
+    .bi-header {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .bi-tag {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--bg-subtle);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .bi-main {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+    .bi-rate {
+      font-size: 32px;
+      font-weight: 700;
+      font-family: var(--mono);
+      color: var(--text);
+    }
+    .bi-status {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--bg-subtle);
+      color: var(--text-2);
+    }
+    .bi-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-size: 12px;
+      color: var(--text-2);
+    }
+    .bi-detail {
+      display: flex;
+      justify-content: space-between;
+    }
+    .bi-detail-label { color: var(--text-3); }
+    .bi-detail-value { font-weight: 500; }
+    
+    /* Market Breadth */
+    .market-breadth {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow);
+    }
+    .breadth-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .breadth-title {
+      font-weight: 600;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .breadth-status {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .breadth-status.strong { background: var(--up-bg); color: var(--up); }
+    .breadth-status.weak { background: var(--down-bg); color: var(--down); }
+    .breadth-status.neutral { background: var(--bg-subtle); color: var(--text-3); }
+    .breadth-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+    .breadth-stat {
+      text-align: center;
+      padding: 0.5rem;
+      background: var(--bg-subtle);
+      border-radius: 6px;
+    }
+    .breadth-stat.up { background: var(--up-bg); }
+    .breadth-stat.down { background: var(--down-bg); }
+    .breadth-stat.neutral { background: var(--bg); }
+    .breadth-num {
+      display: block;
+      font-size: 20px;
+      font-weight: 700;
+      font-family: var(--mono);
+    }
+    .breadth-stat.up .breadth-num { color: var(--up); }
+    .breadth-stat.down .breadth-num { color: var(--down); }
+    .breadth-stat.neutral .breadth-num { color: var(--text-3); }
+    .breadth-label {
+      font-size: 10px;
+      color: var(--text-2);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .breadth-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-size: 12px;
+      color: var(--text-2);
+    }
+    .breadth-detail {
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    /* Foreign Investor Net Flow Panel */
+    .foreign-net-flow {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow);
+    }
+    .fnf-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .fnf-title {
+      font-weight: 600;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .fnf-status {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .fnf-status.buy { background: var(--up-bg); color: var(--up); }
+    .fnf-status.sell { background: var(--down-bg); color: var(--down); }
+    .fnf-main {
+      font-size: 18px;
+      font-weight: 700;
+      font-family: var(--mono);
+      margin-bottom: 0.75rem;
+    }
+    .fnf-main.buy { color: var(--up); }
+    .fnf-main.sell { color: var(--down); }
+    .fnf-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-size: 12px;
+      color: var(--text-2);
+    }
+    .fnf-detail {
+      display: flex;
+      justify-content: space-between;
+    }
+    .fnf-detail-label { color: var(--text-3); }
+    .fnf-detail-value { font-family: var(--mono); }
+    .fnf-chart {
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+    .fnf-chart-title {
+      font-size: 11px;
+      color: var(--text-3);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+    }
+    .fnf-weeks {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .fnf-week {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 12px;
+    }
+    .fnf-week-label {
+      width: 40px;
+      color: var(--text-3);
+      font-family: var(--mono);
+    }
+    .fnf-week-bar-wrap {
+      flex: 1;
+      height: 16px;
+      background: var(--bg-subtle);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .fnf-week-bar {
+      height: 100%;
+      border-radius: 3px;
+    }
+    .fnf-week-bar.buy { background: var(--up); }
+    .fnf-week-bar.sell { background: var(--down); }
+    .fnf-week-value {
+      width: 60px;
+      text-align: right;
+      font-family: var(--mono);
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
