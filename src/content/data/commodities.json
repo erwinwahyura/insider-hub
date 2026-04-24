@@ -1,44 +1,44 @@
 {
-  "timestamp": "2026-04-13T02:01:43.151Z",
+  "timestamp": "2026-04-24T01:02:21.318Z",
   "commodities": {
     "coal": {
       "price": 128.5,
       "change": 2.4,
       "changePct": 1.9,
       "source": "manual",
-      "timestamp": "2026-04-13T02:01:43.098Z"
+      "timestamp": "2026-04-24T01:02:21.318Z"
     },
     "nickel": {
       "price": 16200,
       "change": -80,
       "changePct": -0.5,
       "source": "manual",
-      "timestamp": "2026-04-13T02:01:43.108Z"
+      "timestamp": "2026-04-24T01:02:20.950Z"
     },
     "cpo": {
       "price": 3850,
       "change": 30,
       "changePct": 0.8,
       "source": "manual",
-      "timestamp": "2026-04-13T02:01:43.032Z"
+      "timestamp": "2026-04-24T01:02:20.963Z"
     },
     "gold": {
       "price": 2318,
       "change": 14,
       "changePct": 0.6,
       "source": "manual",
-      "timestamp": "2026-04-13T02:01:43.151Z"
+      "timestamp": "2026-04-24T01:02:21.034Z"
     },
     "idr_usd": {
-      "price": 17090.01,
+      "price": 17302.43,
       "change": 0,
       "changePct": 0,
       "source": "exchangerate-api",
-      "timestamp": "2026-04-13T02:01:43.105Z"
+      "timestamp": "2026-04-24T01:02:21.017Z"
     }
   },
   "meta": {
-    "nextUpdate": "2026-04-13T02:31:43.151Z",
+    "nextUpdate": "2026-04-24T01:32:21.318Z",
     "dataSource": "mixed-api-rss-manual"
   }
 }
