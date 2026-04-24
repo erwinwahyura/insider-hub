@@ -1,0 +1,103 @@
+{
+  "timestamp": "2026-04-24T12:05:00.000Z",
+  "date": "2026-04-24",
+  "summary": {
+    "accumulationCount": 5,
+    "distributionCount": 4,
+    "neutralCount": 3,
+    "topSignals": [
+      {
+        "ticker": "ESSA",
+        "pattern": "STRONG_ACCUMULATION",
+        "signal": "BULLISH",
+        "confidence": "HIGH"
+      },
+      {
+        "ticker": "BBCA",
+        "pattern": "ACCUMULATION",
+        "signal": "BULLISH",
+        "confidence": "MEDIUM"
+      },
+      {
+        "ticker": "PGEO",
+        "pattern": "STRONG_DISTRIBUTION",
+        "signal": "BEARISH",
+        "confidence": "HIGH"
+      }
+    ]
+  },
+  "tickers": {
+    "ESSA": {
+      "name": "Surya Esa Perkasa Tbk",
+      "price": 930,
+      "changePct": 0.54,
+      "volume": 329770600,
+      "pattern": "STRONG_ACCUMULATION",
+      "confidence": "HIGH",
+      "signal": "BULLISH",
+      "volumeRatio": 1.65,
+      "avgVolume": 200000000,
+      "interpretation": "Institutional buying detected — large blocks being absorbed"
+    },
+    "BBCA": {
+      "name": "Bank Central Asia",
+      "price": 6100,
+      "changePct": -5.06,
+      "volume": 287587400,
+      "pattern": "ACCUMULATION",
+      "confidence": "MEDIUM",
+      "signal": "BULLISH",
+      "volumeRatio": 1.44,
+      "avgVolume": 200000000,
+      "interpretation": "Smart money accumulating — watch for breakout"
+    },
+    "BBRI": {
+      "name": "Bank Rakyat Indonesia",
+      "price": 3090,
+      "changePct": -2.22,
+      "volume": 297775400,
+      "pattern": "ACCUMULATION",
+      "confidence": "MEDIUM",
+      "signal": "BULLISH",
+      "volumeRatio": 1.49,
+      "avgVolume": 200000000,
+      "interpretation": "Smart money accumulating — watch for breakout"
+    },
+    "PGEO": {
+      "name": "Pertamina Geothermal Energy",
+      "price": 985,
+      "changePct": -3.90,
+      "volume": 23302200,
+      "pattern": "STRONG_DISTRIBUTION",
+      "confidence": "HIGH",
+      "signal": "BEARISH",
+      "volumeRatio": 1.55,
+      "avgVolume": 15000000,
+      "interpretation": "Heavy institutional selling — caution advised"
+    },
+    "PTPS": {
+      "name": "PT Pulau Subur Tbk",
+      "price": 183,
+      "changePct": -1.08,
+      "volume": 7409100,
+      "pattern": "DISTRIBUTION",
+      "confidence": "MEDIUM",
+      "signal": "BEARISH",
+      "volumeRatio": 1.48,
+      "avgVolume": 5000000,
+      "interpretation": "Distribution pattern — reduce exposure"
+    },
+    "ITMG": {
+      "name": "Indo Tambangraya Megah",
+      "price": 26450,
+      "changePct": -1.12,
+      "volume": 1210100,
+      "pattern": "NEUTRAL",
+      "confidence": "LOW",
+      "signal": null,
+      "volumeRatio": 1.21,
+      "avgVolume": 1000000,
+      "interpretation": "No clear institutional signal"
+    }
+  }
+}

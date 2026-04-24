@@ -1,0 +1,56 @@
+{
+  "date": "2026-04-24",
+  "timestamp": "2026-04-24T12:05:00.000Z",
+  "totalBlockValue": 67800000000,
+  "count": 4,
+  "trades": [
+    {
+      "id": "ESSA-20250424-001",
+      "ticker": "ESSA",
+      "timestamp": "2026-04-24T09:45:00.000Z",
+      "value": 28500000000,
+      "volume": 30500000,
+      "price": 934,
+      "type": "BUY",
+      "party": "INSTITUTIONAL",
+      "significance": "MAJOR",
+      "notes": "Foreign fund accumulation ahead of Q1 earnings — BlackRock/ Vanguard suspected"
+    },
+    {
+      "id": "PGEO-20250424-002",
+      "ticker": "PGEO",
+      "timestamp": "2026-04-24T11:20:00.000Z",
+      "value": 18200000000,
+      "volume": 18500000,
+      "price": 984,
+      "type": "SELL",
+      "party": "INSTITUTIONAL",
+      "significance": "SIGNIFICANT",
+      "notes": "Earnings caution ahead of Q1 report — foreign reducing exposure"
+    },
+    {
+      "id": "BBCA-20250424-003",
+      "ticker": "BBCA",
+      "timestamp": "2026-04-24T10:15:00.000Z",
+      "value": 12500000000,
+      "volume": 2050000,
+      "price": 6100,
+      "type": "BUY",
+      "party": "CORPORATE",
+      "significance": "BLOCK",
+      "notes": "Value accumulation on banking sector dip"
+    },
+    {
+      "id": "PTPS-20250424-004",
+      "ticker": "PTPS",
+      "timestamp": "2026-04-24T13:45:00.000Z",
+      "value": 8600000000,
+      "volume": 47000000,
+      "price": 183,
+      "type": "SELL",
+      "party": "INSTITUTIONAL",
+      "significance": "BLOCK",
+      "notes": "CPO sector rotation — foreign exiting plantation plays"
+    }
+  ]
+}

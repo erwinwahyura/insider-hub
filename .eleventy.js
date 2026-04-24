@@ -59,6 +59,36 @@ module.exports = function(eleventyConfig) {
     }
   });
   
+  // Global data: foreign flow
+  eleventyConfig.addGlobalData("foreignFlow", () => {
+    try {
+      const raw = fs.readFileSync('./src/content/data/foreign-flow.json', 'utf-8');
+      return JSON.parse(raw);
+    } catch (e) {
+      return { summary: { topBuyers: [], topSellers: [], netFlow: 0 }, tickers: {} };
+    }
+  });
+  
+  // Global data: block trades
+  eleventyConfig.addGlobalData("blockTrades", () => {
+    try {
+      const raw = fs.readFileSync('./src/content/data/block-trades.json', 'utf-8');
+      return JSON.parse(raw);
+    } catch (e) {
+      return { trades: [], count: 0, totalBlockValue: 0 };
+    }
+  });
+  
+  // Global data: smart money
+  eleventyConfig.addGlobalData("smartMoney", () => {
+    try {
+      const raw = fs.readFileSync('./src/content/data/smart-money.json', 'utf-8');
+      return JSON.parse(raw);
+    } catch (e) {
+      return { summary: { accumulationCount: 0, distributionCount: 0, topSignals: [] }, tickers: {} };
+    }
+  });
+  
   // Read all news articles
   eleventyConfig.addGlobalData("news", () => {
     const newsDir = './src/content/news';

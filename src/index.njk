@@ -12,6 +12,92 @@ title: Home
   {% if item.category == 'macro' %}{% set macroCount = macroCount + 1 %}{% endif %}
 {% endfor %}
 
+<!-- Smart Money Summary -->
+<div class="smart-money-summary">
+  <div class="sm-header">
+    <span class="sm-title">🎯 Smart Money Today</span>
+    <span class="sm-time">{{ smartMoney.timestamp | dateFormat }}</span>
+  </div>
+  <div class="sm-stats">
+    <div class="sm-stat buy">
+      <span class="sm-num">{{ smartMoney.summary.accumulationCount }}</span>
+      <span class="sm-label">Accumulating</span>
+    </div>
+    <div class="sm-stat sell">
+      <span class="sm-num">{{ smartMoney.summary.distributionCount }}</span>
+      <span class="sm-label">Distributing</span>
+    </div>
+    <div class="sm-stat">
+      <span class="sm-num">{{ foreignFlow.summary.topBuyers.length }}</span>
+      <span class="sm-label">Foreign Buy</span>
+    </div>
+    <div class="sm-stat">
+      <span class="sm-num">{{ blockTrades.count }}</span>
+      <span class="sm-label">Block Trades</span>
+    </div>
+  </div>
+  {% if smartMoney.summary.topSignals.length > 0 %}
+  <div class="sm-signals">
+    {% for signal in smartMoney.summary.topSignals.slice(0, 3) %}
+    <div class="sm-signal {{ signal.signal | lower }}">
+      <span class="sm-ticker">{{ signal.ticker }}</span>
+      <span class="sm-pattern">{{ signal.pattern | replace('_', ' ') }}</span>
+      <span class="sm-conf {{ signal.confidence | lower }}">{{ signal.confidence }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+
+<!-- Foreign Flow -->
+<div class="foreign-flow">
+  <div class="ff-header">
+    <span class="ff-title">🌏 Foreign Flow (IDR)</span>
+    <span class="ff-net {% if foreignFlow.summary.netFlow > 0 %}up{% else %}down{% endif %}">
+      {% if foreignFlow.summary.netFlow > 0 %}+{% endif %}{{ (foreignFlow.summary.netFlow / 1000000000).toFixed(1) }}B
+    </span>
+  </div>
+  <div class="ff-bars">
+    {% for ticker in ['ESSA', 'BBCA', 'BBRI', 'PGEO', 'PTPS', 'ITMG'] %}
+    {% set flow = foreignFlow.tickers[ticker] %}
+    {% if flow %}
+    <div class="ff-row">
+      <span class="ff-ticker">{{ ticker }}</span>
+      <div class="ff-bar-wrap">
+        <div class="ff-bar {% if flow.netFlow > 0 %}buy{% else %}sell{% endif %}" 
+             style="width: {{ (flow.netFlow | abs / 100000000) | min(100) }}%">
+        </div>
+      </div>
+      <span class="ff-val {% if flow.netFlow > 0 %}up{% else %}down{% endif %}">
+        {% if flow.netFlow > 0 %}+{% endif %}{{ (flow.netFlow / 1000000000).toFixed(1) }}B
+      </span>
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Block Trades -->
+{% if blockTrades.trades.length > 0 %}
+<div class="block-trades">
+  <div class="bt-header">
+    <span class="bt-title">💼 Block Trades Today</span>
+    <span class="bt-total">Rp {{ (blockTrades.totalBlockValue / 1000000000).toFixed(1) }}B</span>
+  </div>
+  {% for trade in blockTrades.trades.slice(0, 3) %}
+  <div class="bt-trade {{ trade.type | lower }}">
+    <div class="bt-main">
+      <span class="bt-ticker">{{ trade.ticker }}</span>
+      <span class="bt-type">{{ trade.type }}</span>
+      <span class="bt-val">Rp {{ (trade.value / 1000000000).toFixed(1) }}B</span>
+      <span class="bt-party">{{ trade.party }}</span>
+    </div>
+    <div class="bt-note">{{ trade.notes }}</div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
 <!-- Stats -->
 <div class="stats-row">
   <div class="stat">
