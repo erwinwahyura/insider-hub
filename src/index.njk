@@ -69,8 +69,10 @@ title: Home
     <div class="ff-row">
       <span class="ff-ticker">{{ ticker }}</span>
       <div class="ff-bar-wrap">
+        {% set barWidth = (flow.netFlow | abs / 1000000000) * 20 %}
+        {% if barWidth > 100 %}{% set barWidth = 100 %}{% endif %}
         <div class="ff-bar {% if flow.netFlow > 0 %}buy{% else %}sell{% endif %}" 
-             style="width: {{ (flow.netFlow | abs / 100000000) | min(100) }}%">
+             style="width: {{ barWidth }}%">
         </div>
       </div>
       <span class="ff-val {% if flow.netFlow > 0 %}up{% else %}down{% endif %}">
