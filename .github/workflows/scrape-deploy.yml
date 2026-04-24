@@ -28,7 +28,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: insider-hub
-          directory: _site
+          directory: dist
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Apply D1 migrations
