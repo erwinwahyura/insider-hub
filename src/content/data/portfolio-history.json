@@ -839,12 +839,47 @@
           "pnlPct": -7.959669116341818
         }
       }
+    },
+    {
+      "timestamp": "2026-04-27T07:05:49.634Z",
+      "totalEquity": 189592400,
+      "totalInvested": 130224934,
+      "totalMarketValue": 133592400,
+      "totalUnrealizedPnl": 3367466.0000000084,
+      "totalReturnPct": 2.585884205554682,
+      "cash": 56000000,
+      "positions": {
+        "PTPS": {
+          "price": 182,
+          "marketValue": 51542400,
+          "pnl": -2313743.9999999967,
+          "pnlPct": -4.29615607088394
+        },
+        "PGEO": {
+          "price": 1005,
+          "marketValue": 37185000,
+          "pnl": -1159579.999999997,
+          "pnlPct": -3.0241040585136076
+        },
+        "ESSA": {
+          "price": 950,
+          "marketValue": 42275000,
+          "pnl": 7067490.000000002,
+          "pnlPct": 20.07381379711318
+        },
+        "ITMG": {
+          "price": 25900,
+          "marketValue": 2590000,
+          "pnl": -226700,
+          "pnlPct": -8.048425462420564
+        }
+      }
     }
   ],
   "metadata": {
     "firstSnapshot": "2026-04-10T04:55:08.614Z",
-    "lastSnapshot": "2026-04-27T03:31:44.209Z",
-    "count": 24,
+    "lastSnapshot": "2026-04-27T07:05:49.634Z",
+    "count": 25,
     "prunedToday": 0
   }
 }
