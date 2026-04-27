@@ -52,7 +52,14 @@ function isMarketOpen() {
   const wibHour = (now.getUTCHours() + 7) % 24;
   const wibDay = now.getUTCDay();
   
-  const isWeekday = wibDay >= 1 && wibDay <= 5;
+  // Handle UTC day boundary (Sunday = 0, Monday = 1)
+  // When UTC is Sunday night, WIB is Monday morning
+  let adjustedDay = wibDay;
+  if (now.getUTCHours() + 7 >= 24) {
+    adjustedDay = (wibDay + 1) % 7;
+  }
+  
+  const isWeekday = adjustedDay >= 1 && adjustedDay <= 5;
   const isMorningSession = wibHour >= 9 && wibHour < 12;
   const isAfternoonSession = wibHour >= 13 && wibHour < 16;
   
