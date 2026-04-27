@@ -1,102 +1,155 @@
 {
-  "timestamp": "2026-04-24T12:05:00.000Z",
-  "date": "2026-04-24",
+  "timestamp": "2026-04-27T10:45:19.149Z",
+  "date": "2026-04-27",
   "summary": {
     "accumulationCount": 5,
-    "distributionCount": 4,
-    "neutralCount": 3,
-    "topSignals": [
-      {
-        "ticker": "ESSA",
-        "pattern": "STRONG_ACCUMULATION",
-        "signal": "BULLISH",
-        "confidence": "HIGH"
-      },
-      {
-        "ticker": "BBCA",
-        "pattern": "ACCUMULATION",
-        "signal": "BULLISH",
-        "confidence": "MEDIUM"
-      },
-      {
-        "ticker": "PGEO",
-        "pattern": "STRONG_DISTRIBUTION",
-        "signal": "BEARISH",
-        "confidence": "HIGH"
-      }
-    ]
+    "distributionCount": 1,
+    "neutralCount": 6,
+    "topSignals": []
   },
   "tickers": {
-    "ESSA": {
-      "name": "Surya Esa Perkasa Tbk",
-      "price": 930,
-      "changePct": 0.54,
-      "volume": 329770600,
-      "pattern": "STRONG_ACCUMULATION",
-      "confidence": "HIGH",
-      "signal": "BULLISH",
-      "volumeRatio": 1.65,
-      "avgVolume": 200000000,
-      "interpretation": "Institutional buying detected — large blocks being absorbed"
-    },
-    "BBCA": {
-      "name": "Bank Central Asia",
-      "price": 6100,
-      "changePct": -5.06,
-      "volume": 287587400,
-      "pattern": "ACCUMULATION",
-      "confidence": "MEDIUM",
-      "signal": "BULLISH",
-      "volumeRatio": 1.44,
-      "avgVolume": 200000000,
-      "interpretation": "Smart money accumulating — watch for breakout"
-    },
-    "BBRI": {
-      "name": "Bank Rakyat Indonesia",
-      "price": 3090,
-      "changePct": -2.22,
-      "volume": 297775400,
-      "pattern": "ACCUMULATION",
-      "confidence": "MEDIUM",
-      "signal": "BULLISH",
-      "volumeRatio": 1.49,
-      "avgVolume": 200000000,
-      "interpretation": "Smart money accumulating — watch for breakout"
-    },
-    "PGEO": {
-      "name": "Pertamina Geothermal Energy",
-      "price": 985,
-      "changePct": -3.90,
-      "volume": 23302200,
-      "pattern": "STRONG_DISTRIBUTION",
-      "confidence": "HIGH",
-      "signal": "BEARISH",
-      "volumeRatio": 1.55,
-      "avgVolume": 15000000,
-      "interpretation": "Heavy institutional selling — caution advised"
-    },
     "PTPS": {
       "name": "PT Pulau Subur Tbk",
       "price": 183,
-      "changePct": -1.08,
-      "volume": 7409100,
-      "pattern": "DISTRIBUTION",
-      "confidence": "MEDIUM",
-      "signal": "BEARISH",
-      "volumeRatio": 1.48,
-      "avgVolume": 5000000,
-      "interpretation": "Distribution pattern — reduce exposure"
-    },
-    "ITMG": {
-      "name": "Indo Tambangraya Megah",
-      "price": 26450,
-      "changePct": -1.12,
-      "volume": 1210100,
+      "changePct": 1.1049723756906076,
+      "volume": 2443600,
       "pattern": "NEUTRAL",
       "confidence": "LOW",
       "signal": null,
-      "volumeRatio": 1.21,
+      "volumeRatio": 0.49,
+      "avgVolume": 5000000,
+      "interpretation": "No clear institutional signal"
+    },
+    "PGEO": {
+      "name": "Pertamina Geothermal Energy",
+      "price": 1010,
+      "changePct": 1,
+      "volume": 32569900,
+      "pattern": "ACCUMULATION",
+      "confidence": "MEDIUM",
+      "signal": "BULLISH",
+      "volumeRatio": 2.17,
+      "avgVolume": 15000000,
+      "interpretation": "Smart money accumulating — watch for breakout"
+    },
+    "ESSA": {
+      "name": "Surya Esa Perkasa Tbk",
+      "price": 950,
+      "changePct": 0.5291005291005291,
+      "volume": 152102500,
+      "pattern": "NEUTRAL",
+      "confidence": "LOW",
+      "signal": null,
+      "volumeRatio": 0.76,
+      "avgVolume": 200000000,
+      "interpretation": "No clear institutional signal"
+    },
+    "ITMG": {
+      "name": "Indo Tambangraya Megah",
+      "price": 25375,
+      "changePct": -3.882575757575758,
+      "volume": 2512000,
+      "pattern": "STRONG_DISTRIBUTION",
+      "confidence": "MEDIUM",
+      "signal": "BEARISH",
+      "volumeRatio": 2.51,
       "avgVolume": 1000000,
+      "interpretation": "Heavy institutional selling — caution advised"
+    },
+    "ADRO": {
+      "name": "Adaro Energy Indonesia",
+      "price": 2530,
+      "changePct": 0.796812749003984,
+      "volume": 42550400,
+      "pattern": "NEUTRAL",
+      "confidence": "LOW",
+      "signal": null,
+      "volumeRatio": 1.06,
+      "avgVolume": 40000000,
+      "interpretation": "No clear institutional signal"
+    },
+    "AALI": {
+      "name": "Astra Agro Lestari",
+      "price": 8250,
+      "changePct": 1.8518518518518516,
+      "volume": 4665300,
+      "pattern": "ACCUMULATION",
+      "confidence": "MEDIUM",
+      "signal": "BULLISH",
+      "volumeRatio": 2.33,
+      "avgVolume": 2000000,
+      "interpretation": "Smart money accumulating — watch for breakout"
+    },
+    "LSIP": {
+      "name": "Lippo Sumatera Plantation",
+      "price": 1785,
+      "changePct": 6.88622754491018,
+      "volume": 18025800,
+      "pattern": "STRONG_ACCUMULATION",
+      "confidence": "MEDIUM",
+      "signal": "BULLISH",
+      "volumeRatio": 2.25,
+      "avgVolume": 8000000,
+      "interpretation": "Institutional buying detected — large blocks being absorbed"
+    },
+    "ANTM": {
+      "name": "Aneka Tambang Tbk",
+      "price": 4120,
+      "changePct": 1.728395061728395,
+      "volume": 74724100,
+      "pattern": "ACCUMULATION",
+      "confidence": "MEDIUM",
+      "signal": "BULLISH",
+      "volumeRatio": 2.49,
+      "avgVolume": 30000000,
+      "interpretation": "Smart money accumulating — watch for breakout"
+    },
+    "INCO": {
+      "name": "Vale Indonesia",
+      "price": 6850,
+      "changePct": 2.2388059701492535,
+      "volume": 18293600,
+      "pattern": "STRONG_ACCUMULATION",
+      "confidence": "MEDIUM",
+      "signal": "BULLISH",
+      "volumeRatio": 2.29,
+      "avgVolume": 8000000,
+      "interpretation": "Institutional buying detected — large blocks being absorbed"
+    },
+    "BBRI": {
+      "name": "Bank Rakyat Indonesia",
+      "price": 3070,
+      "changePct": 0,
+      "volume": 163336300,
+      "pattern": "NEUTRAL",
+      "confidence": "LOW",
+      "signal": null,
+      "volumeRatio": 0.82,
+      "avgVolume": 200000000,
+      "interpretation": "No clear institutional signal"
+    },
+    "BBCA": {
+      "name": "Bank Central Asia",
+      "price": 5975,
+      "changePct": -1.2396694214876034,
+      "volume": 223810200,
+      "pattern": "NEUTRAL",
+      "confidence": "LOW",
+      "signal": null,
+      "volumeRatio": 1.12,
+      "avgVolume": 200000000,
+      "interpretation": "No clear institutional signal"
+    },
+    "TLKM": {
+      "name": "Telkom Indonesia",
+      "price": 2830,
+      "changePct": 0.7117437722419928,
+      "volume": 47663100,
+      "pattern": "NEUTRAL",
+      "confidence": "LOW",
+      "signal": null,
+      "volumeRatio": 0.48,
+      "avgVolume": 100000000,
       "interpretation": "No clear institutional signal"
     }
   }
