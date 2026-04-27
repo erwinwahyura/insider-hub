@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-04-27T01:10:51.092Z",
-  "nextUpdate": "2026-04-27T01:40:51.092Z",
+  "timestamp": "2026-04-27T01:31:59.850Z",
+  "nextUpdate": "2026-04-27T02:01:59.850Z",
   "stocks": {
     "PTPS": {
       "ticker": "PTPS",
@@ -12,7 +12,7 @@
       "low": 175,
       "prevClose": 185,
       "source": "yahoo",
-      "timestamp": "2026-04-27T01:10:44.792Z",
+      "timestamp": "2026-04-27T01:31:53.489Z",
       "name": "PT Pulau Subur Tbk",
       "sector": "CPO/Plantation",
       "position": {
@@ -35,7 +35,7 @@
       "low": 985,
       "prevClose": 1025,
       "source": "yahoo",
-      "timestamp": "2026-04-27T01:10:45.344Z",
+      "timestamp": "2026-04-27T01:31:54.050Z",
       "name": "Pertamina Geothermal Energy",
       "sector": "Geothermal/Energy",
       "position": {
@@ -58,7 +58,7 @@
       "low": 895,
       "prevClose": 925,
       "source": "yahoo",
-      "timestamp": "2026-04-27T01:10:45.901Z",
+      "timestamp": "2026-04-27T01:31:54.617Z",
       "name": "Surya Esa Perkasa Tbk",
       "sector": "Ammonia/Chemical",
       "position": {
@@ -81,7 +81,7 @@
       "low": 26325,
       "prevClose": 26750,
       "source": "yahoo",
-      "timestamp": "2026-04-27T01:10:46.466Z",
+      "timestamp": "2026-04-27T01:31:55.194Z",
       "name": "Indo Tambangraya Megah",
       "sector": "Coal",
       "position": {
@@ -104,7 +104,7 @@
       "low": 2490,
       "prevClose": 2510,
       "source": "yahoo",
-      "timestamp": "2026-04-27T01:10:47.030Z",
+      "timestamp": "2026-04-27T01:31:55.779Z",
       "name": "Adaro Energy Indonesia",
       "sector": "Coal/Aluminum"
     },
@@ -118,7 +118,7 @@
       "low": 7975,
       "prevClose": 7965,
       "source": "yahoo",
-      "timestamp": "2026-04-27T01:10:47.605Z",
+      "timestamp": "2026-04-27T01:31:56.358Z",
       "name": "Astra Agro Lestari",
       "sector": "CPO"
     },
@@ -132,7 +132,7 @@
       "low": 1645,
       "prevClose": 1720,
       "source": "yahoo",
-      "timestamp": "2026-04-27T01:10:48.179Z",
+      "timestamp": "2026-04-27T01:31:56.943Z",
       "name": "Lippo Sumatera Plantation",
       "sector": "CPO"
     },
@@ -146,7 +146,7 @@
       "low": 3960,
       "prevClose": 4020,
       "source": "yahoo",
-      "timestamp": "2026-04-27T01:10:48.749Z",
+      "timestamp": "2026-04-27T01:31:57.524Z",
       "name": "Aneka Tambang Tbk",
       "sector": "Nickel/Gold"
     },
@@ -160,7 +160,7 @@
       "low": 6650,
       "prevClose": 6700,
       "source": "yahoo",
-      "timestamp": "2026-04-27T01:10:49.374Z",
+      "timestamp": "2026-04-27T01:31:58.108Z",
       "name": "Vale Indonesia",
       "sector": "Nickel"
     },
@@ -174,7 +174,7 @@
       "low": 3060,
       "prevClose": 3160,
       "source": "yahoo",
-      "timestamp": "2026-04-27T01:10:49.952Z",
+      "timestamp": "2026-04-27T01:31:58.690Z",
       "name": "Bank Rakyat Indonesia",
       "sector": "Banking"
     },
@@ -188,7 +188,7 @@
       "low": 6050,
       "prevClose": 6425,
       "source": "yahoo",
-      "timestamp": "2026-04-27T01:10:50.523Z",
+      "timestamp": "2026-04-27T01:31:59.269Z",
       "name": "Bank Central Asia",
       "sector": "Banking"
     },
@@ -202,7 +202,7 @@
       "low": 2750,
       "prevClose": 2880,
       "source": "yahoo",
-      "timestamp": "2026-04-27T01:10:51.092Z",
+      "timestamp": "2026-04-27T01:31:59.850Z",
       "name": "Telkom Indonesia",
       "sector": "Telecom"
     }
