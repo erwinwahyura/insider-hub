@@ -1,0 +1,265 @@
+{
+  "daily": [
+    {
+      "date": "2026-04-27",
+      "timestamp": "2026-04-27T10:45:52.973Z",
+      "source": "simulated-enhanced",
+      "summary": {
+        "totalForeignBuy": 27500000000,
+        "totalForeignSell": 20080000000,
+        "netFlow": 7420000000,
+        "topBuyers": [
+          {
+            "ticker": "ESSA",
+            "netFlow": 8500000000,
+            "intensity": "high",
+            "sector": "Ammonia/Fertilizer"
+          },
+          {
+            "ticker": "BBCA",
+            "netFlow": 6200000000,
+            "intensity": "medium",
+            "sector": "Banking"
+          },
+          {
+            "ticker": "BBRI",
+            "netFlow": 4800000000,
+            "intensity": "medium",
+            "sector": "Banking"
+          },
+          {
+            "ticker": "ADRO",
+            "netFlow": 2100000000,
+            "intensity": "low",
+            "sector": "Coal"
+          },
+          {
+            "ticker": "ANTM",
+            "netFlow": 1500000000,
+            "intensity": "low",
+            "sector": "Mining"
+          }
+        ],
+        "topSellers": [
+          {
+            "ticker": "PGEO",
+            "netFlow": -5200000000,
+            "intensity": "high",
+            "sector": "Geothermal"
+          },
+          {
+            "ticker": "PTPS",
+            "netFlow": -3100000000,
+            "intensity": "medium",
+            "sector": "Plantation"
+          },
+          {
+            "ticker": "ITMG",
+            "netFlow": -1800000000,
+            "intensity": "low",
+            "sector": "Coal"
+          },
+          {
+            "ticker": "AALI",
+            "netFlow": -1200000000,
+            "intensity": "low",
+            "sector": "Plantation"
+          },
+          {
+            "ticker": "LSIP",
+            "netFlow": -900000000,
+            "intensity": "low",
+            "sector": "Plantation"
+          }
+        ],
+        "marketWideNet": 11130000000
+      },
+      "tickers": {
+        "PTPS": {
+          "netFlow": -3100000000,
+          "buyValue": 930000000,
+          "sellValue": 3100000000,
+          "intensity": "medium",
+          "trend": "distributing",
+          "sector": "Plantation",
+          "lastUpdated": "2026-04-27T10:45:52.973Z",
+          "volumeParticipation": 0.2507410123256913,
+          "consecutiveDays": -4
+        },
+        "PGEO": {
+          "netFlow": -5200000000,
+          "buyValue": 1560000000,
+          "sellValue": 5200000000,
+          "intensity": "high",
+          "trend": "distributing",
+          "sector": "Geothermal",
+          "lastUpdated": "2026-04-27T10:45:52.973Z",
+          "volumeParticipation": 0.1098781574402197,
+          "consecutiveDays": -4
+        },
+        "ESSA": {
+          "netFlow": 8500000000,
+          "buyValue": 8500000000,
+          "sellValue": 2550000000,
+          "intensity": "high",
+          "trend": "accumulating",
+          "sector": "Ammonia/Fertilizer",
+          "lastUpdated": "2026-04-27T10:45:52.973Z",
+          "volumeParticipation": 0.11190627828969013,
+          "consecutiveDays": 5
+        },
+        "ITMG": {
+          "netFlow": -1800000000,
+          "buyValue": 540000000,
+          "sellValue": 1800000000,
+          "intensity": "low",
+          "trend": "neutral",
+          "sector": "Coal",
+          "lastUpdated": "2026-04-27T10:45:52.973Z",
+          "volumeParticipation": 0.38159340158704214,
+          "consecutiveDays": 0
+        },
+        "ADRO": {
+          "netFlow": 2100000000,
+          "buyValue": 2100000000,
+          "sellValue": 630000000,
+          "intensity": "low",
+          "trend": "accumulating",
+          "sector": "Coal",
+          "lastUpdated": "2026-04-27T10:45:52.973Z",
+          "volumeParticipation": 0.2670200356582218,
+          "consecutiveDays": 1
+        },
+        "AALI": {
+          "netFlow": -1200000000,
+          "buyValue": 360000000,
+          "sellValue": 1200000000,
+          "intensity": "low",
+          "trend": "distributing",
+          "sector": "Plantation",
+          "lastUpdated": "2026-04-27T10:45:52.973Z",
+          "volumeParticipation": 0.10935005754098771,
+          "consecutiveDays": -1
+        },
+        "LSIP": {
+          "netFlow": -900000000,
+          "buyValue": 270000000,
+          "sellValue": 900000000,
+          "intensity": "low",
+          "trend": "neutral",
+          "sector": "Plantation",
+          "lastUpdated": "2026-04-27T10:45:52.973Z",
+          "volumeParticipation": 0.27563832436020297,
+          "consecutiveDays": 0
+        },
+        "ANTM": {
+          "netFlow": 1500000000,
+          "buyValue": 1500000000,
+          "sellValue": 450000000,
+          "intensity": "low",
+          "trend": "accumulating",
+          "sector": "Mining",
+          "lastUpdated": "2026-04-27T10:45:52.973Z",
+          "volumeParticipation": 0.17044631450668546,
+          "consecutiveDays": 2
+        },
+        "INCO": {
+          "netFlow": -800000000,
+          "buyValue": 240000000,
+          "sellValue": 800000000,
+          "intensity": "low",
+          "trend": "neutral",
+          "sector": "Mining",
+          "lastUpdated": "2026-04-27T10:45:52.973Z",
+          "volumeParticipation": 0.21753384126537387,
+          "consecutiveDays": 0
+        },
+        "BBRI": {
+          "netFlow": 4800000000,
+          "buyValue": 4800000000,
+          "sellValue": 1440000000,
+          "intensity": "medium",
+          "trend": "accumulating",
+          "sector": "Banking",
+          "lastUpdated": "2026-04-27T10:45:52.973Z",
+          "volumeParticipation": 0.30719552946430656,
+          "consecutiveDays": 1
+        },
+        "BBCA": {
+          "netFlow": 6200000000,
+          "buyValue": 6200000000,
+          "sellValue": 1860000000,
+          "intensity": "medium",
+          "trend": "accumulating",
+          "sector": "Banking",
+          "lastUpdated": "2026-04-27T10:45:52.973Z",
+          "volumeParticipation": 0.3849568613599934,
+          "consecutiveDays": 4
+        },
+        "TLKM": {
+          "netFlow": 500000000,
+          "buyValue": 500000000,
+          "sellValue": 150000000,
+          "intensity": "low",
+          "trend": "neutral",
+          "sector": "Telecom",
+          "lastUpdated": "2026-04-27T10:45:52.973Z",
+          "volumeParticipation": 0.17252884084849307,
+          "consecutiveDays": 0
+        }
+      },
+      "sectors": {
+        "Plantation": {
+          "netFlow": -5200000000,
+          "buyValue": 1560000000,
+          "sellValue": 5200000000,
+          "tickerCount": 3,
+          "trend": "distributing"
+        },
+        "Geothermal": {
+          "netFlow": -5200000000,
+          "buyValue": 1560000000,
+          "sellValue": 5200000000,
+          "tickerCount": 1,
+          "trend": "distributing"
+        },
+        "Ammonia/Fertilizer": {
+          "netFlow": 8500000000,
+          "buyValue": 8500000000,
+          "sellValue": 2550000000,
+          "tickerCount": 1,
+          "trend": "accumulating"
+        },
+        "Coal": {
+          "netFlow": 300000000,
+          "buyValue": 2640000000,
+          "sellValue": 2430000000,
+          "tickerCount": 2,
+          "trend": "neutral"
+        },
+        "Mining": {
+          "netFlow": 700000000,
+          "buyValue": 1740000000,
+          "sellValue": 1250000000,
+          "tickerCount": 2,
+          "trend": "neutral"
+        },
+        "Banking": {
+          "netFlow": 11000000000,
+          "buyValue": 11000000000,
+          "sellValue": 3300000000,
+          "tickerCount": 2,
+          "trend": "accumulating"
+        },
+        "Telecom": {
+          "netFlow": 500000000,
+          "buyValue": 500000000,
+          "sellValue": 150000000,
+          "tickerCount": 1,
+          "trend": "neutral"
+        }
+      }
+    }
+  ],
+  "lastUpdated": "2026-04-27T10:45:52.973Z"
+}

@@ -1,0 +1,125 @@
+{
+  "trades": [
+    {
+      "id": "ANTM-1777286752983-f6f8stzoe",
+      "ticker": "ANTM",
+      "timestamp": "2026-04-27T10:45:52.983Z",
+      "value": 58757413580,
+      "volume": 14029194,
+      "price": 4188,
+      "type": "SELL",
+      "party": "CORPORATE",
+      "significance": "MAJOR",
+      "notes": "CORPORATE sell block — monitoring required"
+    },
+    {
+      "id": "PTPS-1777286752983-4qptv01yw",
+      "ticker": "PTPS",
+      "timestamp": "2026-04-27T10:45:52.983Z",
+      "value": 58636110756,
+      "volume": 43477931,
+      "price": 1349,
+      "type": "SELL",
+      "party": "INSTITUTIONAL",
+      "significance": "MAJOR",
+      "notes": "CPO sector rotation"
+    },
+    {
+      "id": "ITMG-1777286752983-vi5v7qpkh",
+      "ticker": "ITMG",
+      "timestamp": "2026-04-27T10:45:52.983Z",
+      "value": 55447630288,
+      "volume": 35743511,
+      "price": 1551,
+      "type": "BUY",
+      "party": "INSTITUTIONAL",
+      "significance": "MAJOR",
+      "notes": "Coal price recovery positioning"
+    },
+    {
+      "id": "TLKM-1777286752983-44v8dic3r",
+      "ticker": "TLKM",
+      "timestamp": "2026-04-27T10:45:52.983Z",
+      "value": 47871861049,
+      "volume": 14894159,
+      "price": 3214,
+      "type": "SELL",
+      "party": "CORPORATE",
+      "significance": "MAJOR",
+      "notes": "CORPORATE sell block — monitoring required"
+    },
+    {
+      "id": "BBCA-1777286752983-9ur203d9k",
+      "ticker": "BBCA",
+      "timestamp": "2026-04-27T10:45:52.983Z",
+      "value": 40422942730,
+      "volume": 11357250,
+      "price": 3559,
+      "type": "SELL",
+      "party": "CORPORATE",
+      "significance": "MAJOR",
+      "notes": "CORPORATE sell block — monitoring required"
+    },
+    {
+      "id": "LSIP-1777286752983-4tnkqgsh8",
+      "ticker": "LSIP",
+      "timestamp": "2026-04-27T10:45:52.983Z",
+      "value": 39801162217,
+      "volume": 9191934,
+      "price": 4330,
+      "type": "BUY",
+      "party": "CORPORATE",
+      "significance": "MAJOR",
+      "notes": "CORPORATE buy block — monitoring required"
+    },
+    {
+      "id": "ESSA-1777286752983-vu29nd75i",
+      "ticker": "ESSA",
+      "timestamp": "2026-04-27T10:45:52.983Z",
+      "value": 39042313146,
+      "volume": 24618691,
+      "price": 1586,
+      "type": "BUY",
+      "party": "CORPORATE",
+      "significance": "MAJOR",
+      "notes": "CORPORATE buy block — monitoring required"
+    },
+    {
+      "id": "INCO-1777286752983-x5l805cb0",
+      "ticker": "INCO",
+      "timestamp": "2026-04-27T10:45:52.983Z",
+      "value": 38449520898,
+      "volume": 6471692,
+      "price": 5941,
+      "type": "BUY",
+      "party": "INSTITUTIONAL",
+      "significance": "MAJOR",
+      "notes": "INSTITUTIONAL buy block — monitoring required"
+    },
+    {
+      "id": "AALI-1777286752983-9xbr9sruo",
+      "ticker": "AALI",
+      "timestamp": "2026-04-27T10:45:52.983Z",
+      "value": 33266237558,
+      "volume": 6042085,
+      "price": 5506,
+      "type": "SELL",
+      "party": "INSTITUTIONAL",
+      "significance": "MAJOR",
+      "notes": "INSTITUTIONAL sell block — monitoring required"
+    },
+    {
+      "id": "PGEO-1777286752983-lh5l1xpmb",
+      "ticker": "PGEO",
+      "timestamp": "2026-04-27T10:45:52.983Z",
+      "value": 26602194947,
+      "volume": 10060614,
+      "price": 2644,
+      "type": "BUY",
+      "party": "INSTITUTIONAL",
+      "significance": "SIGNIFICANT",
+      "notes": "Geothermal energy transition play"
+    }
+  ],
+  "lastUpdated": "2026-04-27T10:45:52.983Z"
+}
